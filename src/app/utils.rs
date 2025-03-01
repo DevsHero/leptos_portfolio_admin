@@ -1,4 +1,4 @@
-use chrono::{ DateTime, Datelike, NaiveDate, TimeZone, Utc };
+use chrono::{ DateTime, Datelike, NaiveDate, NaiveDateTime, TimeZone, Utc };
 use wasm_bindgen::JsValue;
 #[wasm_bindgen::prelude::wasm_bindgen(module = "/public/utils.js")]
 extern "C" {
@@ -34,5 +34,15 @@ pub fn convert_date_format(input: &String) -> String {
         }
         // Fallback to default date
         NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().format("%d/%m/%Y").to_string()
+    }
+}
+pub fn format_date_for_input(date_str: &str) -> String {
+    // Parse the ISO 8601 date string
+    if let Ok(datetime) = NaiveDateTime::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%SZ") {
+        // Format as YYYY-MM-DD
+        datetime.format("%Y-%m-%d").to_string()
+    } else {
+        // Return a default date if parsing fails
+        String::from("2000-01-01")
     }
 }

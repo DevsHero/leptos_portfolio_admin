@@ -1,19 +1,11 @@
 use crate::app::components::{ Experience, SkillChips };
 use crate::app::models::{ Profile, Skill };
 use crate::app::server::api::{ get_profile, update_profile };
-use chrono::NaiveDateTime;
+use crate::app::utils::format_date_for_input;
+
 use leptos::*;
 use web_sys::SubmitEvent;
-fn format_date_for_input(date_str: &str) -> String {
-    // Parse the ISO 8601 date string
-    if let Ok(datetime) = NaiveDateTime::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%SZ") {
-        // Format as YYYY-MM-DD
-        datetime.format("%Y-%m-%d").to_string()
-    } else {
-        // Return a default date if parsing fails
-        String::from("2000-01-01")
-    }
-}
+
 #[component]
 pub fn EditPage() -> impl IntoView {
     let get_profile_info = Resource::new(
@@ -247,6 +239,7 @@ pub fn EditPage() -> impl IntoView {
                                 </div>
                             </div>
                             <SkillChips
+                            is_page=false
                             skills=skills
                             on_delete=Callback::new(move |index| delete_skill(index))
                            use_delete=true

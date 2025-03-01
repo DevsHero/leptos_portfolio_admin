@@ -1,49 +1,39 @@
-use crate::app::{ components::Experience, models::portfolio::Experience };
+use crate::app::{ components::{ Experience, RenderTab }, models::portfolio::Experience };
 use leptos::*;
-#[component]
-pub fn Tab(no: i32, active_page: ReadSignal<i32>, children: Children) -> impl IntoView {
-    let class = Memo::new(move |_| {
-        if no == active_page() { "tabContainer activePage" } else { "tabContainer" }
-    });
-    view! {
-        <div class=class id=no>
-            {children()}
-        </div>
-    }
-}
+
 #[component]
 pub fn SelectTab(experiences: Vec<Experience>) -> impl IntoView {
-    let (page, set_page) = create_signal(1);
+    let (select_tab, set_select_tab) = create_signal(1);
     view! {
-        <section class="projectSection">
-            <div class="projectSectionSelector">
+        <section class="tabSection">
+            <div class="tabSectionSelector">
                 <button
                     class=move || {
-                        if page() == 1 { "projectsTitle active" } else { "projectsTitle" }
+                        if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
                     }
-                    on:click=move |_| set_page(1)
+                    on:click=move |_| set_select_tab(1)
                 >
                    Experience
                 </button>
                 <button
                     class=move || {
-                        if page() == 2 { "projectsTitle active" } else { "projectsTitle" }
+                        if select_tab() == 2 { "tabsTitle active" } else { "tabsTitle" }
                     }
-                    on:click=move |_| set_page(2)
+                    on:click=move |_| set_select_tab(2)
                 >
                     My Project
                 </button>
             </div>
-            <Tab no=1 active_page=page>
+            <RenderTab is_page=false no=1 active_page=select_tab>
             { experiences.into_iter().enumerate().map(|(index, experience)| {
                 view! {
                     <Experience  experience=experience index=(index + 1).to_string()/>
                 }
             }).collect::<Vec<_>>() }
-            </Tab>
-            <Tab no=2 active_page=page>
-            <p>"Tab 2"</p>
-            </Tab>
+            </RenderTab>
+            <RenderTab is_page=false no=2 active_page=select_tab>
+            <p>"RenderTab 2"</p>
+            </RenderTab>
         </section>
     }
 }

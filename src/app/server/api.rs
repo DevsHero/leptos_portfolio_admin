@@ -3,7 +3,7 @@ use crate::app::models::{ Profile, Skill };
 #[server(GetProfile, "/api")]
 pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
     let data = retrieve_profile_api().await;
-    // println!("Query result: {:?}",data);
+    println!("Query result: {:?}", data);
     match data {
         Ok(result) => Ok(result.into_iter().collect()),
         Err(e) => Err(ServerFnError::from(e)),

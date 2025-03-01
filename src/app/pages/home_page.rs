@@ -85,6 +85,7 @@ pub fn HomePage() -> impl IntoView {
                                     <h3>Skills</h3>
                                     <div >
                                     <SkillChips
+                                    is_page=false
                                     skills=skills
                                     on_delete=Callback::new(move |index: usize| set_skills(Vec::new()))
                                     use_delete=false

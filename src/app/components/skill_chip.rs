@@ -4,16 +4,17 @@ use leptos::*;
 pub fn SkillChips(
     skills: ReadSignal<Vec<Skill>>,
     on_delete: Callback<usize>,
+    is_page: bool,
     use_delete: bool
 ) -> impl IntoView {
     view! {
-        <div class="skills-list">
+        <div class=if is_page {"skillPageList"} else {"skillList"}>
             {move || skills.get().into_iter().enumerate().map(|(index, skill)| {
                 let level_class = skill.level.to_lowercase();
                 view! {
-                    <div class="skill-chip">
-                        <span class="skill-name">{skill.name}</span>
-                        <span class=format!("level-badge level-{}", level_class)>
+                    <div class="skillChip">
+                        <span class="skillName">{skill.name}</span>
+                        <span class=format!("levelBadge level-{}", level_class)>
                             {skill.level}
                         </span>
                         {
@@ -24,7 +25,7 @@ pub fn SkillChips(
                                         view! {
                                             <div>
                                                 <button
-                                                    class="delete-skill"
+                                                    class="deleteSkill"
                                                     on:click=move |_| on_delete.call(index)
                                                 >
                                                     "×"

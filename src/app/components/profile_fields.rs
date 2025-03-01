@@ -7,17 +7,17 @@ pub fn ProfileFields(
     use_delete: bool
 ) -> impl IntoView {
     view! {
-        <div class="skills-list">
+        <div class="skillList">
             {move || skills.get().into_iter().enumerate().map(|(index, skill)| {
                 view! {
-                    <div class="skill-chip">
-                        <span class="skill-name">{&skill.name}</span>
-                        <span class=format!("level-badge level-{}", skill.level.to_lowercase())>
+                    <div class="skillChip">
+                        <span class="skillName">{&skill.name}</span>
+                        <span class=format!("levelBadge level-{}", skill.level.to_lowercase())>
                             {&skill.level}
                         </span>
                         {if use_delete {
                             view! { <div>   <button
-                            class="delete-skill"
+                            class="deleteSkill"
                             on:click=move |_| on_delete.call(index)
                         >
                             "×"
