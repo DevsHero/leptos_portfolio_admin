@@ -1,0 +1,3 @@
+#V2
+CREATE about CONTENT {\n    details: "about thanon is handsome guy",\n    updateDate: time::now()\n};\n
+USE NS surreal DB portfolio;\n\nCREATE about CONTENT {\n    details: "about thanon is handsome guy",\n    updateDate: time::now()\n};\n
