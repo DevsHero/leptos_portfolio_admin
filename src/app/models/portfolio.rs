@@ -9,7 +9,7 @@ impl Default for Skill {
     fn default() -> Self {
         Self {
             name: String::from("Javascript"),
-            level: String::from("basic"),
+            level: String::from("Expert"),
         }
     }
 }
@@ -56,8 +56,8 @@ pub struct Profile {
     pub about: String,
     pub avatar: String,
     pub id: Thing,
-    pub skills: Vec<Skill>,
-    pub experiences: Vec<Experience>,
+    pub skills: Option<Vec<Skill>>,
+    pub experiences: Option<Vec<Experience>>,
 }
 impl Default for Profile {
     fn default() -> Self {
@@ -74,8 +74,8 @@ impl Default for Profile {
             ),
             nick_name: String::from("Rookie"),
             role: String::from("Developer"),
-            skills: vec![Skill::default()],
-            experiences: vec![Experience::default()],
+            skills: vec![Skill::default()].into(),
+            experiences: vec![Experience::default()].into(),
         }
     }
 }

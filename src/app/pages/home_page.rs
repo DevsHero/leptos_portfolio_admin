@@ -20,7 +20,7 @@ pub fn HomePage() -> impl IntoView {
         move || {
             let profile_data = get_profile_info.get().and_then(Result::ok).unwrap_or_default();
             let profile = profile_data.first().cloned().unwrap_or_default();
-            let (skills, set_skills) = create_signal(profile.skills.clone());
+            let (skills, set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new).clone());
             let (birth_date, set_birth_date) = create_signal(String::new());
             Effect::new_isomorphic(move |_| {
                 let age = calculate_age(&profile.birth_date);
@@ -84,16 +84,17 @@ pub fn HomePage() -> impl IntoView {
                                 <div class="skills">
                                     <h3>Skills</h3>
                                     <div >
-                                    <SkillChips
-                                    is_page=false
-                                    skills=skills
-                                    on_delete=Callback::new(move |index: usize| set_skills(Vec::new()))
-                                    use_delete=false
-                                />
+                                   
+<SkillChips
+is_page=false
+skills=skills
+on_delete=None
+use_delete=false
+/>
                                     </div>
                                 </div>
                             </section>
-                            <SelectTab experiences= profile.experiences/>
+                            <SelectTab experiences= profile.experiences.unwrap()/>
                         </main>
                     }
                 }

@@ -1,7 +1,9 @@
 [package]
 name = "leptos-portfolio-admin"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
+authors = ["Thanon Aphithanawat(Hero) <thanon@aphithanawat.me>"]
+license = "MIT"
 [lib]
 crate-type = ["cdylib", "rlib"]
 [dependencies]

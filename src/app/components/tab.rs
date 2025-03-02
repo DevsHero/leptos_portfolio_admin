@@ -27,7 +27,7 @@ pub fn SelectTab(experiences: Vec<Experience>) -> impl IntoView {
             <RenderTab is_page=false no=1 active_page=select_tab>
             { experiences.into_iter().enumerate().map(|(index, experience)| {
                 view! {
-                    <Experience  experience=experience index=(index + 1).to_string()/>
+                    <Experience is_page=false experience=experience index=(index + 1).to_string()/>
                 }
             }).collect::<Vec<_>>() }
             </RenderTab>

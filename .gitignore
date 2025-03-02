@@ -16,3 +16,4 @@ target
 .env
 file:
 rustblog.db
+history

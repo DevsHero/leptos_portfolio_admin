@@ -17,6 +17,7 @@ pub fn RenderTab(
     view! {
         <div class=class id=no>
             {children()}
+       
         </div>
         }
 }

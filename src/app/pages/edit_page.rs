@@ -32,7 +32,7 @@ pub fn EditPage() -> impl IntoView {
             let (experiences, set_experiences) = create_signal(profile.experiences);
             let (skill_name, set_skill_name) = create_signal(String::new());
             let (skill_level, set_skill_level) = create_signal(String::from("basic"));
-            let (skills, set_skills) = create_signal(profile.skills);
+            let (skills, set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new));
             let (is_update_skill, set_is_update_skill) = create_signal(false);
             let (is_saving, set_is_saving) = create_signal(false);
                 let update_profile_action = Action::new(move |profile: &Profile| {
@@ -63,7 +63,7 @@ pub fn EditPage() -> impl IntoView {
                 birth_date: birth_date.get(),
                 nationality: nationality.get(),
                 avatar: avatar.get(),
-                skills:skills.get(),
+                skills:Some(skills.get()),
                 experiences :  experiences.get()
             };
             update_profile_action.dispatch(updated_profile);
@@ -95,7 +95,7 @@ pub fn EditPage() -> impl IntoView {
                     <div class="edit-container">
                         <h1>"Edit Profile"</h1>
                         <form on:submit=on_submit class="edit-form">
-                            <div class="form-group">
+                            <div class="formGroup">
                             <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
                                 <label for="avatar">"Avatar URL"</label>
                                 <input
@@ -107,8 +107,8 @@ pub fn EditPage() -> impl IntoView {
                                     }
                                 />
                             </div>
-                            <div class="form-row">
-                                <div class="form-group">
+                            <div class="formRow">
+                                <div class="formGroup">
                                     <label for="first_name">"First Name"</label>
                                     <input
                                         type="text"
@@ -119,7 +119,7 @@ pub fn EditPage() -> impl IntoView {
                                         }
                                     />
                                 </div>
-                                <div class="form-group">
+                                <div class="formGroup">
                                     <label for="last_name">"Last Name"</label>
                                     <input
                                         type="text"
@@ -131,7 +131,7 @@ pub fn EditPage() -> impl IntoView {
                                     />
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="formGroup">
                                 <label for="nick_name">"Nickname"</label>
                                 <input
                                     type="text"
@@ -142,8 +142,8 @@ pub fn EditPage() -> impl IntoView {
                                     }
                                 />
                             </div>
-                            <div class="form-row">
-                                <div class="form-group">
+                            <div class="formRow">
+                                <div class="formGroup">
                                     <label for="gender">"Gender"</label>
                                     <select
                                         id="gender"
@@ -157,7 +157,7 @@ pub fn EditPage() -> impl IntoView {
                                         <option value="Other">"Other"</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="formGroup">
                                     <label for="birth_date">"Birth Date"</label>
                                     <input
                     type="date"
@@ -169,7 +169,7 @@ pub fn EditPage() -> impl IntoView {
                         />
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="formGroup">
                                 <label for="role">"Role"</label>
                                 <input
                                     type="text"
@@ -180,7 +180,7 @@ pub fn EditPage() -> impl IntoView {
                                     }
                                 />
                             </div>
-                            <div class="form-group">
+                            <div class="formGroup">
                                 <label for="nationality">"Nationality"</label>
                                 <input
                                     type="text"
@@ -191,7 +191,7 @@ pub fn EditPage() -> impl IntoView {
                                     }
                                 />
                             </div>
-                            <div class="form-group">
+                            <div class="formGroup">
                                 <label for="about">"About"</label>
                                 <textarea
                                 id="about"
@@ -204,8 +204,8 @@ pub fn EditPage() -> impl IntoView {
                         <div class="skills-section">
                             <h2>"Skills"</h2>
                             // Add new skill form
-                            <div class="form-row">
-                                <div class="form-group">
+                            <div class="formRow">
+                                <div class="formGroup">
                                     <label for="skill_name">"Skill Name"</label>
                                     <input
                                         type="text"
@@ -216,7 +216,7 @@ pub fn EditPage() -> impl IntoView {
                                         }
                                     />
                                 </div>
-                                <div class="form-group">
+                                <div class="formGroup">
                                     <label for="skill_level">"Level"</label>
                                     <select
                                         id="skill_level"
@@ -231,7 +231,7 @@ pub fn EditPage() -> impl IntoView {
                                     </select>
                                     <button
                                     type="button"
-                                    class="add-skill-button"
+                                    class="addButton"
                                     on:click=add_skill
                                 >
                                     "Add Skill"
@@ -241,14 +241,14 @@ pub fn EditPage() -> impl IntoView {
                             <SkillChips
                             is_page=false
                             skills=skills
-                            on_delete=Callback::new(move |index| delete_skill(index))
+                            on_delete=Some(Callback::new(move |index| delete_skill(index)))
                            use_delete=true
                         />
                         </div>
                         <div class="skills-section">
                         <h2>"Experience"</h2>
                         // Add new skill form
-                            <div class="form-group">
+                            <div class="formGroup">
                                 <label for="skill_name">"Company Name"</label>
                                 <input
                                     type="text"
@@ -259,7 +259,7 @@ pub fn EditPage() -> impl IntoView {
                                     }
                                 />
                             </div>
-                        <div class="form-group">
+                        <div class="formGroup">
                                 <label for="skill_level">"Company Logo Url"</label>
                                 <input
                                 type="text"
@@ -270,7 +270,7 @@ pub fn EditPage() -> impl IntoView {
                                 }
                             />
                             </div>
-                        <div class="form-group">
+                        <div class="formGroup">
                             <label for="skill_level">"Position"</label>
                             <input
                             type="text"
@@ -281,7 +281,7 @@ pub fn EditPage() -> impl IntoView {
                             }
                         />
                         </div>
-                    <div class="form-group">
+                    <div class="formGroup">
                         <label for="skill_level">"Start Date"</label>
                         <input
                         type="text"
@@ -292,7 +292,7 @@ pub fn EditPage() -> impl IntoView {
                         }
                         />
                         </div>
-                    <div class="form-group">
+                    <div class="formGroup">
                         <label for="skill_level">"End Date"</label>
                         <input
                         type="text"
@@ -303,7 +303,7 @@ pub fn EditPage() -> impl IntoView {
                         }
                     />
                     </div>
-                    <div class="form-group">
+                    <div class="formGroup">
                     <label for="skill_level">"Describe"</label>
                     <textarea
                     id="about"
@@ -315,19 +315,19 @@ pub fn EditPage() -> impl IntoView {
                 </div>
                                 <button
                                 type="button"
-                                class="add-skill-button"
+                                class="addButton"
                                 on:click=add_skill
                             >
                                 "Add Skill"
                             </button>
-                            { experiences.get().into_iter().enumerate().map(|(index, experience)| {
+                            { experiences.get().unwrap().into_iter().enumerate().map(|(index, experience)| {
                                 view! {
-                              <Experience  experience=experience index=(index + 1).to_string()/>               
+                              <Experience is_page=true experience=experience index=(index + 1).to_string()/>               
                                 }
                             }).collect::<Vec<_>>() }
                            
                     </div>
-                        <div class="form-actions">
+                        <div class="formButton">
                         <button
                             type="submit"
                             class="save-button"

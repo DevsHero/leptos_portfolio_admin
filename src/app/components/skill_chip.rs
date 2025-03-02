@@ -3,7 +3,7 @@ use leptos::*;
 #[component]
 pub fn SkillChips(
     skills: ReadSignal<Vec<Skill>>,
-    on_delete: Callback<usize>,
+    on_delete: Option<Callback<usize>>, // made optional
     is_page: bool,
     use_delete: bool
 ) -> impl IntoView {
@@ -26,14 +26,18 @@ pub fn SkillChips(
                                             <div>
                                                 <button
                                                     class="deleteSkill"
-                                                    on:click=move |_| on_delete.call(index)
+                                                    on:click=move |_| {
+                                                        if let Some(ref callback) = on_delete {
+                                                            callback.call(index);
+                                                        }
+                                                    }
                                                 >
                                                     "×"
                                                 </button>
                                             </div>
                                         }
                                     } else {
-                                      view! { <div></div> }
+                                        view! { <div></div> }
                                     }}
                                 </>
                             }

@@ -1161,6 +1161,10 @@ body {
   font-size: 1.125rem;
   line-height: 1.75rem;
 }
+:root {
+  /* Example of a typical outer shadow */
+  --shadow1: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 .tabContainer {
   position: relative;
   margin-top: 0.375rem;
@@ -1172,6 +1176,7 @@ body {
   padding: 1rem;
   overflow-y: scroll;
   box-shadow: var(--shadow1);
+
 }
 
 @media (min-width: 768px) {
@@ -1193,7 +1198,7 @@ body {
 
 @media (min-width: 768px) {
   .tabPageContainer {
-    height: 35rem;
+    height: 32rem;
   }
 }
 .tabContainer > p {
@@ -1333,17 +1338,16 @@ body {
 }
 .edit-page {
   padding: 2rem;
-   width: 800px;
+   width: 65vw;
 
-  height: 100vh; /* Full viewport height */
+ 
   overflow-y: auto; /* Enable scrolling */
   position: relative; /* Create stacking context */
 }
 .edit-container {
   background: var(--background);
-  margin-bottom: 2rem;
- 
-  width: 800px;
+
+  width: 65vw;
  
 }
 /* Optional: Add custom scrollbar for the edit page */
@@ -1366,7 +1370,7 @@ body {
   flex-direction: column;
   gap: 1.5rem;
 }
-.form-row {
+.formRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
@@ -1385,9 +1389,10 @@ textarea {
   min-height: 100px;
   resize: vertical;
 }
-.form-group {
+.formGroup {
   display: flex;
   flex-direction: column;
+  margin-bottom: 15px;
   gap: 0.5rem;
 }
 /* Add these new styles for avatar container */
@@ -1410,9 +1415,10 @@ textarea {
   width: 100%;
   max-width: 400px;
 }
-.form-actions {
+.formButton {
   display: flex;
-  gap: 1rem;
+  justify-content: center;
+  gap: 5rem;
   margin-top: 1rem;
 }
 .save-button, .cancel-button {
@@ -1487,7 +1493,6 @@ button:hover {
   display: flex;
   gap: 0.4rem;
   flex-wrap: wrap;
-  margin-top: 20px;
   overflow-y: scroll; 
 }
 .skillChip {
@@ -1547,7 +1552,7 @@ button:hover {
   background: var(--red);
   color: white;
 }
-.add-skill-button {
+.addButton {
   align-self: flex-end;
   padding: 0.5rem 1rem;
   background: hwb(125 3% 42%);
@@ -1556,16 +1561,28 @@ button:hover {
   border-radius: 4px;
   cursor: pointer;
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
-.add-skill-button:hover {
+.addButton:hover {
   background: var(--sapphire);
 }
 .experience-container {
   display: flex;
   flex-direction: column;
-  height: calc(50% - 2rem);
+  height: calc(50% - 4rem);
   gap: 1rem;
   padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--surface0);
+  width:100%; 
+}
+.experiencePageContainer {
+  display: flex;
+  flex-direction: column;
+  height: calc(15% - 4rem);
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 20px;
   border-radius: 8px;
   background-color: var(--surface0);
   width:100%; 
@@ -1579,9 +1596,14 @@ button:hover {
 /* Apply this to the description element to prevent it from expanding beyond its container */
 .descriptions {
   font-size: 13;
-  height: calc(50% - 1rem);
+  height: 12vh;
   flex-grow: 1; /* Allow description to take up remaining space */
-  overflow-y: auto; /* Enable scrolling within the description */
+  overflow-y: scroll; /* Enable scrolling within the description */
+}
+.errorInput{
+  font-size: small;
+  font-weight: bold;
+  color: red;
 }
 @keyframes pulse {
   0% { opacity: 1; }

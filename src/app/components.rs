@@ -8,5 +8,5 @@ pub mod skill_chip;
 pub use skill_chip::SkillChips;
 pub mod render_tab;
 pub use render_tab::RenderTab;
-// pub mod profile_fields;
-// pub use profile_fields::ProfileFields;
+pub mod input;
+pub use input::InputField;

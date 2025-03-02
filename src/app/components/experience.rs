@@ -1,9 +1,9 @@
 use leptos::{ component, view, IntoView };
 use crate::app::{ models::portfolio::Experience, utils::convert_date_format };
 #[component]
-pub fn Experience(experience: Experience, index: String) -> impl IntoView {
+pub fn Experience(experience: Experience, index: String, is_page: bool) -> impl IntoView {
     view! {
-        <a href=experience.company_url target="_blank" class="experience-container">
+        <a href=experience.company_url target="_blank" class= if is_page {"experiencePageContainer"} else {"experience-container"}>
             <article class="">
                 <span class="experienceRow">
                 <span class="experienceRowFirstItem">
