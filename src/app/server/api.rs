@@ -18,25 +18,15 @@ pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
 //         Err(e) => Err(ServerFnError::from(e)),
 //     }
 // }
-#[server(UpdateProfile, "/api")]
-pub async fn update_profile(
+#[server(UpdatePortfolio, "/api")]
+pub async fn update_portfolio(
     profile: Profile,
     is_update_skill: bool,
     skills: Vec<Skill>
-) -> Result<Profile, ServerFnError> {
-    let updated = update_profile_api(profile).await;
+) -> Result<Option<Profile>, ServerFnError> {
+    let updated = update_portfolio_api(profile).await;
     match updated {
-        Ok(updated_result) => {
-            // If successfully returned a Some in an Option of a Person
-            if let Some(updated_person) = updated_result {
-                if is_update_skill {
-                    update_skill_api(skills).await;
-                }
-                Ok(updated_person)
-            } else {
-                Err(ServerFnError::Args("dd".to_string()))
-            }
-        }
+        Ok(updated_result) => Ok(updated_result),
         Err(e) => Err(ServerFnError::from(e)),
     }
 }
@@ -57,7 +47,7 @@ cfg_if::cfg_if! {
         pub async fn retrieve_skill_api() -> Result<Option<Skill>, ServerFnError> {
             database::fetch_skill().await
         }
-        pub async fn update_profile_api(
+        pub async fn update_portfolio_api(
             profile: Profile
         ) -> Result<Option<Profile>, ServerFnError> {
             database::update_profile(profile).await

@@ -34,8 +34,8 @@ pub fn HomePage() -> impl IntoView {
                                         <icons::Home />
                                     </button>
                                     <a
-                                        href="https://github.com/gxskpo/portfolio"
-                                        target="_blank"
+                                        href="/tab"
+                                        target="_self"
                                         aria-label="Source code"
                                         class="topbarButton"
                                     >

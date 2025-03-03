@@ -1,7 +1,14 @@
-use crate::app::components::{ RenderTab, SkillChips, Experience };
+use crate::app::components::{
+    Experience,
+    InputField,
+    RenderTab,
+    SkillChips,
+    TextAreaField,
+    RichTextEditor,
+};
 use crate::app::models::portfolio::Experience;
 use crate::app::models::{ Profile, Skill };
-use crate::app::server::api::{ get_profile, update_profile };
+use crate::app::server::api::{ get_profile, update_portfolio };
 use crate::app::utils::format_date_for_input;
 
 use leptos::*;
@@ -49,13 +56,14 @@ pub fn TabPage() -> impl IntoView {
                 let (skills, set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new));
                 
                 let (is_update_skill, set_is_update_skill) = create_signal(false);
+                let (is_update_experience, set_is_update_experience) = create_signal(false);
                 let (is_saving, set_is_saving) = create_signal(false);
                     let update_profile_action = Action::new(move |profile: &Profile| {
                     set_is_saving.set(true);
                     let profile = profile.clone();
                     let get_skills = skills.get();
                     async move {
-                        let result = update_profile(profile , is_update_skill.get() , get_skills ).await;
+                        let result = update_portfolio(profile , is_update_skill.get() , get_skills ).await;
                         set_is_saving.set(false);
                         set_is_update_skill(false);
                         result
@@ -102,12 +110,7 @@ pub fn TabPage() -> impl IntoView {
                     set_is_update_skill(true)
                 };
                       let add_experience = move |_| {
-                          if company_name.get().trim().is_empty() {
-                set_error(Some("Company name is required.".to_string()));
-            } else {
-                set_error(None);
-                // Process the form data as needed...
-            }
+              
                     if !company_name.get().is_empty() {
                         let new_experience = Experience {
                             company_name: company_name.get(),
@@ -127,7 +130,7 @@ pub fn TabPage() -> impl IntoView {
                         set_end_date.set(String::new()); 
                         set_describe.set(String::new()); 
                     }
-                    set_is_update_skill(true)
+                    set_is_update_experience(true)
                 };
                 let delete_skill = move |index: usize| {
                     set_skills.update(|skills| {
@@ -186,56 +189,23 @@ pub fn TabPage() -> impl IntoView {
                         <form on:submit=on_submit >
                         <div class="edit-form">
                         <RenderTab is_page=true no=1 active_page=select_tab >
+                      
                         <div class="edit-container">
                         <h1>"Edit Profile"</h1>
-                   
-                            <div class="formGroup">
-                            <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
-                                <label for="avatar">"Avatar URL"</label>
-                                <input
-                                    type="text"
-                                    id="avatar"
-                                    prop:value=avatar
-                                    on:input=move |ev| {
-                                        set_avatar(event_target_value(&ev));
-                                    }
-                                />
-                            </div>
+                        
+                             <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
+                                <InputField  id="avatar" label="Avatar URL" set_field=set_avatar  get_value=avatar require=false />  
+                           
                             <div class="formRow">
-                                <div class="formGroup">
-                                    <label for="first_name">"First Name"</label>
-                                    <input
-                                        type="text"
-                                        id="first_name"
-                                        prop:value=first_name
-                                        on:input=move |ev| {
-                                            set_first_name(event_target_value(&ev));
-                                        }
-                                    />
-                                </div>
-                                <div class="formGroup">
-                                    <label for="last_name">"Last Name"</label>
-                                    <input
-                                        type="text"
-                                        id="last_name"
-                                        prop:value=last_name
-                                        on:input=move |ev| {
-                                            set_last_name(event_target_value(&ev));
-                                        }
-                                    />
-                                </div>
+                                <InputField  id="first_name" label="First Name" set_field=set_first_name  get_value=first_name require=true />
+                                <InputField  id="last_name" label="Last Name" set_field=set_last_name  get_value=last_name require=true />
                             </div>
-                            <div class="formGroup">
-                                <label for="nick_name">"Nickname"</label>
-                                <input
-                                    type="text"
-                                    id="nick_name"
-                                    prop:value=nick_name
-                                    on:input=move |ev| {
-                                        set_nick_name(event_target_value(&ev));
-                                    }
-                                />
+
+                            <div class="formRow">
+                            <InputField  id="nick_name" label="Nick Name" set_field=set_nick_name  get_value=nick_name require=false />
+                            <InputField  id="nationality" label="Nationality" set_field=set_nationality  get_value=nationality require=true />
                             </div>
+
                             <div class="formRow">
                                 <div class="formGroup">
                                     <label for="gender">"Gender"</label>
@@ -251,11 +221,11 @@ pub fn TabPage() -> impl IntoView {
                                         <option value="Other">"Other"</option>
                                     </select>
                                 </div>
-                                <div class="formGroup">
-                                    <label for="birth_date">"Birth Date"</label>
-                                    <input
-                    type="date"
-                    id="birth_date"
+                        <div class="formGroup">
+                        <label for="birth_date">"Birth Date"</label>
+                        <input
+                        type="date"
+                        id="birth_date"
                         prop:value=birth_date
                         on:input=move |ev| {
                          set_birth_date(event_target_value(&ev));
@@ -263,38 +233,9 @@ pub fn TabPage() -> impl IntoView {
                         />
                                 </div>
                             </div>
-                            <div class="formGroup">
-                                <label for="role">"Role"</label>
-                                <input
-                                    type="text"
-                                    id="role"
-                                    prop:value=role
-                                    on:input=move |ev| {
-                                        set_role(event_target_value(&ev));
-                                    }
-                                />
-                            </div>
-                            <div class="formGroup">
-                                <label for="nationality">"Nationality"</label>
-                                <input
-                                    type="text"
-                                    id="nationality"
-                                    prop:value=nationality
-                                    on:input=move |ev| {
-                                        set_nationality(event_target_value(&ev));
-                                    }
-                                />
-                            </div>
-                            <div class="formGroup">
-                                <label for="about">"About"</label>
-                                <textarea
-                                id="about"
-                                prop:value=about
-                                on:input=move |ev| {
-                                    set_about(event_target_value(&ev));
-                                }
-                            ></textarea>
-                            </div>
+                            <InputField  id="role" label="Job Role" set_field=set_role  get_value=role require=true />
+                            <TextAreaField  id="about" label="About" set_field=set_about  get_value=about require=true />
+                    
                             </div>
                             </RenderTab>
                         <RenderTab is_page=true no=2 active_page=select_tab>
@@ -303,17 +244,9 @@ pub fn TabPage() -> impl IntoView {
                         <h1>"Edit Skill"</h1>
                         // Add new skill form
                         <div class="formRow">
-                            <div class="formGroup">
-                                <label for="skill_name">"Skill Name"</label>
-                                <input
-                                    type="text"
-                                    id="skill_name"
-                                   prop:value=move || skill_name.get()
-                                    on:input=move |ev| {
-                                        set_skill_name(event_target_value(&ev));
-                                    }
-                                />
-                            </div>
+                        
+                            <InputField  id="skill_name" label="Skill Name" set_field=set_skill_name  get_value=skill_name require=true />
+                         
                             <div class="formGroup">
                                 <label for="skill_level">"Level"</label>
                                 <select
@@ -348,86 +281,17 @@ pub fn TabPage() -> impl IntoView {
                         <div class="edit-container">
                         <h1>"Edit Experience"</h1>
                         // Add new skill form
-                            <div class="formGroup">
-                                <label for="company_name">"Company Name"</label>
-                                <input
-                                    type="text"
-                                    id="company_name"
-                                   prop:value=move || company_name.get()
-                                    on:input=move |ev| {
-                                        let value = event_target_value(&ev);
-                                        set_company_name(value.clone());
-                                        // Optionally, perform live validation:
-                                        if value.trim().is_empty() {
-                                            set_error(Some("Company name is required.".to_string()));
-                                        } else {
-                                            set_error(None);
-                                        }
-                                    }
-                                    
-                                />
-                                {move || {
-                                    if let Some(msg) = error.get() {
-                                        view! { <p class="errorInput">{msg}</p> }
-                                    } else {
-                                        view! { <p class="errorInput">{}</p> }
-                                    }
-                                }}
-                            </div>
-                        <div class="formGroup">
-                                <label for="company_logo_url">"Company Logo Url"</label>
-                                <input
-                                type="text"
-                                id="company_logo_url"
-                               prop:value=move || company_logo_url.get()
-                                on:input=move |ev| {
-                                    set_company_logo_url(event_target_value(&ev));
-                                }
-                            />
-                            </div>
-                        <div class="formGroup">
-                            <label for="position_name">"Position Name"</label>
-                            <input
-                            type="text"
-                            id="position_name"
-                           prop:value=move || position_name.get()
-                            on:input=move |ev| {
-                                set_position_name(event_target_value(&ev));
-                            }
-                        />
-                        </div>
-                    <div class="formGroup">
-                        <label for="start_date">"Start Date"</label>
-                        <input
-                        type="text"
-                        id="start_date"
-                       prop:value=move || start_date.get()
-                        on:input=move |ev| {
-                            set_start_date(event_target_value(&ev));
-                        }
-                        />
-                        </div>
-                    <div class="formGroup">
-                        <label for="end_date">"End Date"</label>
-                        <input
-                        type="text"
-                        id="end_date"
-                       prop:value=move || end_date.get()
-                        on:input=move |ev| {
-                            set_end_date(event_target_value(&ev));
-                        }
-                    />
-                    </div>
-                    <div class="formGroup">
-                    <label for="describe">"Describe"</label>
-                    <textarea
-                    id="describe"
-                    prop:value=describe
-                    on:input=move |ev| {
-                        set_describe(event_target_value(&ev));
-                    }
-                ></textarea>
-                </div>
+                        <InputField  id="company_name" label="Company Name" set_field=set_company_name  get_value=company_name require=true />
+                        <InputField  id="company_logo_url" label="Company Logo Url" set_field=set_company_logo_url  get_value=company_logo_url require=true />
+                        <InputField  id="position_name" label="Position Name" set_field=set_position_name  get_value=position_name require=true />
+                        <InputField  id="start_date" label="Start Date" set_field=set_start_date  get_value=start_date require=true />
+                        <InputField  id="end_date" label="End Date" set_field=set_end_date  get_value=end_date require=true />
+                       
+                  
+                
+                    <TextAreaField  id="describe" label="Describe" set_field=set_describe  get_value=describe require=false />
+                       
+              
                                 <button
                                 type="button"
                                 class="addButton"
@@ -435,11 +299,15 @@ pub fn TabPage() -> impl IntoView {
                             >
                                 "Add Experience"
                             </button>
-                            { experiences.get().into_iter().enumerate().map(|(index, experience)| {
-                                view! {
-                              <Experience  is_page = true experience=experience index=(index + 1).to_string()/>               
-                                }
-                            }).collect::<Vec<_>>() }
+                    
+                              <Experience  
+                              is_page = true 
+                              experiences=experiences
+                              on_delete=Some(Callback::new(move |index| delete_experience(index)))
+                              use_delete=true
+                              />               
+                                
+                        
                            
                     </div>
                         </RenderTab>
@@ -516,30 +384,25 @@ pub fn TabPage() -> impl IntoView {
                                 <button
                                 type="button"
                                 class="addButton"
-                                on:click=add_skill
+                                on:click=add_experience
                             >
                                 "Add Experience"
                             </button>
-                            { experiences.get().into_iter().enumerate().map(|(index, experience)| {
-                                view! {
-                              <Experience  is_page = true experience=experience index=(index + 1).to_string()/>               
-                                }
-                            }).collect::<Vec<_>>() }
-                           
+                          
                     </div>
                         </RenderTab>
                         </div>
                         <div class="formButton">
                         <button
                             type="submit"
-                            class="save-button"
+                            class="updateButton"
                             disabled=is_saving
                         >
                             {move || if is_saving.get() { "Updating..." } else { "Update" }}
                         </button>
                         <button
                             type="button"
-                            class="cancel-button"
+                            class="cancelButton"
                             disabled=is_saving
                             on:click=reset_form  // Add the reset_form handler here
                         >

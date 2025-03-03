@@ -14,6 +14,25 @@ impl Default for Skill {
     }
 }
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
+pub struct Portfolio {
+    pub portfolio_name: String,
+    pub portfolio_link: String,
+    pub is_private: bool,
+    pub portfolio_detail: String,
+    pub portfolio_icon_url: String,
+}
+impl Default for Portfolio {
+    fn default() -> Self {
+        Self {
+            portfolio_name: String::from("Javascript"),
+            portfolio_link: String::from("Expert"),
+            is_private: bool::from(false),
+            portfolio_detail: String::from("Expert"),
+            portfolio_icon_url: String::from("Expert"),
+        }
+    }
+}
+#[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Experience {
     pub company_name: String,
     pub company_logo_url: String,

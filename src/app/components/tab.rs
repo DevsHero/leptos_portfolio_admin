@@ -4,6 +4,7 @@ use leptos::*;
 #[component]
 pub fn SelectTab(experiences: Vec<Experience>) -> impl IntoView {
     let (select_tab, set_select_tab) = create_signal(1);
+    let (experiences, set_experiences) = create_signal(experiences);
     view! {
         <section class="tabSection">
             <div class="tabSectionSelector">
@@ -25,11 +26,12 @@ pub fn SelectTab(experiences: Vec<Experience>) -> impl IntoView {
                 </button>
             </div>
             <RenderTab is_page=false no=1 active_page=select_tab>
-            { experiences.into_iter().enumerate().map(|(index, experience)| {
-                view! {
-                    <Experience is_page=false experience=experience index=(index + 1).to_string()/>
-                }
-            }).collect::<Vec<_>>() }
+            <Experience  
+            is_page = false 
+            experiences=experiences
+            on_delete=None
+            use_delete=false
+            />    
             </RenderTab>
             <RenderTab is_page=false no=2 active_page=select_tab>
             <p>"RenderTab 2"</p>

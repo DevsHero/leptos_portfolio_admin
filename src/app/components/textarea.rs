@@ -2,7 +2,7 @@ use leptos::*;
 use leptos::{ component, view, IntoView };
 
 #[component]
-pub fn InputField(
+pub fn TextAreaField(
     set_field: WriteSignal<String>,
     get_value: ReadSignal<String>,
     id: impl Into<String>,
@@ -19,7 +19,7 @@ pub fn InputField(
     view! {
         <div class="formGroup">
             <label for={id.clone()}>{label}</label>
-            <input
+            <textarea
                 type="text"
                 id={id.clone()}
                 prop:value=move || get_value.get()

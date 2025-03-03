@@ -1,11 +1,11 @@
 use chrono::{ DateTime, Datelike, NaiveDate, NaiveDateTime, TimeZone, Utc };
 use wasm_bindgen::JsValue;
-#[wasm_bindgen::prelude::wasm_bindgen(module = "/public/utils.js")]
-extern "C" {
-    pub fn setItem(key: &str, value: &str) -> JsValue;
-    pub fn getItem(key: &str) -> JsValue;
-    pub fn removeItem(key: &str);
-}
+// #[wasm_bindgen::prelude::wasm_bindgen(module = "/public/utils.js")]
+// extern "C" {
+//     pub fn setItem(key: &str, value: &str) -> JsValue;
+//     pub fn getItem(key: &str) -> JsValue;
+//     pub fn removeItem(key: &str);
+// }
 pub fn calculate_age(birth_date: &str) -> i64 {
     let parsed_date = NaiveDate::parse_from_str(birth_date, "%Y-%m-%d").unwrap();
     let datetime_utc = Utc.with_ymd_and_hms(

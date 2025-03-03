@@ -1,6 +1,6 @@
 use crate::app::components::{ Experience, SkillChips };
 use crate::app::models::{ Profile, Skill };
-use crate::app::server::api::{ get_profile, update_profile };
+use crate::app::server::api::{ get_profile, update_portfolio };
 use crate::app::utils::format_date_for_input;
 
 use leptos::*;
@@ -40,7 +40,7 @@ pub fn EditPage() -> impl IntoView {
                 let profile = profile.clone();
                 let get_skills = skills.get();
                 async move {
-                    let result = update_profile(profile , is_update_skill.get() , get_skills ).await;
+                    let result = update_portfolio(profile , is_update_skill.get() , get_skills ).await;
                     set_is_saving.set(false);
                     set_is_update_skill(false);
                     result
@@ -320,24 +320,20 @@ pub fn EditPage() -> impl IntoView {
                             >
                                 "Add Skill"
                             </button>
-                            { experiences.get().unwrap().into_iter().enumerate().map(|(index, experience)| {
-                                view! {
-                              <Experience is_page=true experience=experience index=(index + 1).to_string()/>               
-                                }
-                            }).collect::<Vec<_>>() }
+                       
                            
                     </div>
                         <div class="formButton">
                         <button
                             type="submit"
-                            class="save-button"
+                            class="updateButton"
                             disabled=is_saving
                         >
                             {move || if is_saving.get() { "Updating..." } else { "Update" }}
                         </button>
                         <button
                             type="button"
-                            class="cancel-button"
+                            class="cancelButton"
                             disabled=is_saving
                             on:click=reset_form  // Add the reset_form handler here
                         >

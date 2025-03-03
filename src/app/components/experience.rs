@@ -1,23 +1,70 @@
-use leptos::{ component, view, IntoView };
+use leptos::*;
 use crate::app::{ models::portfolio::Experience, utils::convert_date_format };
 #[component]
-pub fn Experience(experience: Experience, index: String, is_page: bool) -> impl IntoView {
+pub fn Experience(
+    experiences: ReadSignal<Vec<Experience>>,
+    on_delete: Option<Callback<usize>>, // made optional
+    is_page: bool,
+    use_delete: bool
+) -> impl IntoView {
     view! {
-        <a href=experience.company_url target="_blank" class= if is_page {"experiencePageContainer"} else {"experience-container"}>
-            <article class="">
+        {
+            move ||
+                experiences
+                    .get()
+                    .into_iter()
+                    .enumerate()
+                    .map(|(index, experience)| {
+                        view! {
+        
+               <div class= if is_page {"experiencePageContainer"} else {"experience-container"}>
                 <span class="experienceRow">
+                <a href=experience.company_url target="_blank" >
                 <span class="experienceRowFirstItem">
                     <img src=experience.company_logo_url alt="Company Icon" />
-                    <span class="experienceRowFirstItemText">
+                    <div class="experienceRowFirstItemText">
                     <h4><b>Company</b>: {experience.company_name}</h4> <h3><b>Position</b>: {experience.position_name}</h3>
                     <p>{convert_date_format(&experience.start_date) } - {convert_date_format(&experience.end_date) }</p>
+                    </div>
                     </span>
-                    </span>
-                    <b><h4 class="experienceNumber">{index} </h4></b>
+                    </a>
+                    <div class="experienceRowFirstItemText">
+                    // <b><span class="experienceNumber">{(index + 1).to_string()} </span></b>
+                    {
+                        // Wrap the conditional in a fragment so both branches return the same type.
+                        view! {
+                            <>
+                                {if use_delete {
+                                    view! {
+                                        <div>
+                                            <button
+                                                class="deleteButton"
+                                                on:click=move |_| {
+                                                    if let Some(ref callback) = on_delete {
+                                                        callback.call(index);
+                                                    }
+                                                }
+                                            >
+                                            <b> "×"</b>
+                                            </button>
+                                        </div>
+                                    }
+                                } else {
+                                    view! { <div></div> }
+                                }}
+                            </>
+                        }
+                    }
+                    </div>
                 </span>
+                
                 <div class="descriptions" inner_html=experience.describe></div>
                 // <div class="projectIcons">{icns}</div>
-            </article>
-        </a>
+       
+       </div>
+         }
+                    })
+                    .collect::<Vec<_>>()
+        }
     }
 }

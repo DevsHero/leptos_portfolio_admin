@@ -1421,7 +1421,7 @@ textarea {
   gap: 5rem;
   margin-top: 1rem;
 }
-.save-button, .cancel-button {
+.updateButton, .cancelButton {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   border: none;
@@ -1429,27 +1429,27 @@ textarea {
   font-weight: 500;
   transition: all 0.2s ease;
 }
-.save-button {
+.updateButton {
   background: var(--blue); /* Using your theme's blue color */
   color: white;
   position: relative;
   min-width: 100px;
 }
-.save-button:hover {
-  background: #093adc;  /* Darker blue on hover */
+.updateButton:hover {
+  background: #0057c0;  /* Darker blue on hover */
 }
-.save-button:disabled {
+.updateButton:disabled {
   animation: pulse 1.5s infinite;
 }
-.cancel-button:disabled {
+.cancelButton:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
-.cancel-button {
+.cancelButton {
   background: #ef4444; /* Tailwind's red-500 */
   color: white;
 }
-.cancel-button:hover {
+.cancelButton:hover {
   background: #c50b0b; /* Tailwind's red-600 - darker red on hover */
 }
 button:hover {
@@ -1534,7 +1534,7 @@ button:hover {
   background: rgb(10, 143, 191);
   color: white;
 }
-.deleteSkill {
+.deleteButton {
   width: 20px;
   height: 20px;
   display: flex;
@@ -1548,7 +1548,7 @@ button:hover {
   line-height: 1;
   padding: 0;
 }
-.deleteSkill:hover {
+.deleteButton:hover {
   background: var(--red);
   color: white;
 }
@@ -1569,7 +1569,7 @@ button:hover {
 .experience-container {
   display: flex;
   flex-direction: column;
-  height: calc(50% - 4rem);
+  height: 200px;
   gap: 1rem;
   padding: 1rem;
   border-radius: 8px;
@@ -1579,7 +1579,7 @@ button:hover {
 .experiencePageContainer {
   display: flex;
   flex-direction: column;
-  height: calc(15% - 4rem);
+  height: 200px;
   gap: 1rem;
   padding: 1rem;
   margin-bottom: 20px;

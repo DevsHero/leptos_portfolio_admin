@@ -1,3 +1,5 @@
+use crate::app::models::Experience;
+
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use leptos::ServerFnError;
@@ -81,13 +83,36 @@ cfg_if::cfg_if! {
                 Err(e) => Err(ServerFnError::Args(e.to_string())),
             }
         }
+
         pub async fn update_profile(profile: Profile) -> Result<Option<Profile>, ServerFnError> {
             open_db_connection().await;
+
+            // Extract the profile ID
+            let profile_id = profile.id.clone();
+
+            // Create a map of the fields to update
+            let mut update_data = std::collections::HashMap::new();
+            update_data.insert("first_name", profile.first_name);
+            update_data.insert("last_name", profile.last_name);
+            update_data.insert("nick_name", profile.nick_name);
+            update_data.insert("gender", profile.gender);
+            update_data.insert("birth_date", profile.birth_date);
+            update_data.insert("role", profile.role);
+            update_data.insert("nationality", profile.nationality);
+            update_data.insert("about", profile.about);
+            update_data.insert("avatar", profile.avatar);
+
+            let skill_result = update_skill(profile.skills.clone().expect("REASON")).await;
+            // println!("skill_result: {:?}", skill_result);
+            let experience_result = update_experience(
+                profile.experiences.clone().expect("REASON")
+            ).await;
+            // println!("experience_result: {:?}", experience_result);
             let updated_user: Result<Option<Profile>, Error> = DB.update((
                 profile.id.tb.clone(),
                 profile.id.id.to_string(),
-            )).merge(profile).await;
-            // let _ = DB.invalidate().await;
+            )).merge(update_data).await;
+            let _ = DB.invalidate().await;
             match updated_user {
                 Ok(returned_user) => Ok(returned_user),
                 Err(e) => Err(ServerFnError::from(e)),
@@ -102,6 +127,27 @@ cfg_if::cfg_if! {
                     let insert_records: Result<Vec<Skill>, Error> = DB.insert("skill").content(
                         json_value
                     ).await;
+                    // println!("Query result: {:?}",insert_records);
+                    match insert_records {
+                        Ok(inserted) => Ok(inserted),
+                        // let _ = DB.invalidate().await;
+                        Err(e) => Err(ServerFnError::from(e)),
+                    }
+                }
+                Err(e) => Err(ServerFnError::from(e)),
+            }
+        }
+        pub async fn update_experience(
+            experiences: Vec<Experience>
+        ) -> Result<Vec<Experience>, ServerFnError> {
+            open_db_connection().await;
+            let delete_all_records: Result<Vec<Experience>, Error> = DB.delete("experience").await;
+            match delete_all_records {
+                Ok(_deleted) => {
+                    let json_value = serde_json::to_value(&experiences).unwrap();
+                    let insert_records: Result<Vec<Experience>, Error> = DB.insert(
+                        "experience"
+                    ).content(json_value).await;
                     // println!("Query result: {:?}",insert_records);
                     match insert_records {
                         Ok(inserted) => Ok(inserted),

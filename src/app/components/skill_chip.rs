@@ -25,14 +25,14 @@ pub fn SkillChips(
                                         view! {
                                             <div>
                                                 <button
-                                                    class="deleteSkill"
+                                                    class="deleteButton"
                                                     on:click=move |_| {
                                                         if let Some(ref callback) = on_delete {
                                                             callback.call(index);
                                                         }
                                                     }
                                                 >
-                                                    "×"
+                                                <b> "×"</b>
                                                 </button>
                                             </div>
                                         }
