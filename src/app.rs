@@ -7,7 +7,7 @@ pub mod utils;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-use pages::{ EditPage, HomePage, TabPage };
+use pages::{ HomePage, EditPage };
 #[component]
 pub fn App() -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
@@ -34,15 +34,10 @@ pub fn App() -> impl IntoView {
                     
                         }
                     }/>
+                 
                     <Route path="/edit" view=move || {
                         view! {
                             <EditPage />
-                       
-                        }
-                    }/>
-                    <Route path="/tab" view=move || {
-                        view! {
-                            <TabPage />
                      
                         }
                     }/>

@@ -12,3 +12,7 @@ pub mod input;
 pub use input::InputField;
 pub mod textarea;
 pub use textarea::TextAreaField;
+pub mod portfolio;
+pub use portfolio::Portfolio;
+pub mod image_slider;
+pub use image_slider::ImageSlider;

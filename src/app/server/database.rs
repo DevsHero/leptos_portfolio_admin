@@ -1,4 +1,4 @@
-use crate::app::models::Experience;
+use crate::app::models::{ Experience, Portfolio };
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
@@ -29,7 +29,8 @@ cfg_if::cfg_if! {
                 "
             SELECT *,
                 (SELECT * FROM skill  ) AS skills, 
-                (SELECT * FROM experience  ) AS experiences 
+                (SELECT * FROM experience  ) AS experiences ,
+                (SELECT * FROM portfolio  ) AS portfolios 
             FROM profile 
             LIMIT 1;
         "
@@ -147,6 +148,27 @@ cfg_if::cfg_if! {
                     let json_value = serde_json::to_value(&experiences).unwrap();
                     let insert_records: Result<Vec<Experience>, Error> = DB.insert(
                         "experience"
+                    ).content(json_value).await;
+                    // println!("Query result: {:?}",insert_records);
+                    match insert_records {
+                        Ok(inserted) => Ok(inserted),
+                        // let _ = DB.invalidate().await;
+                        Err(e) => Err(ServerFnError::from(e)),
+                    }
+                }
+                Err(e) => Err(ServerFnError::from(e)),
+            }
+        }
+        pub async fn update_portfolio(
+            experiences: Vec<Portfolio>
+        ) -> Result<Vec<Portfolio>, ServerFnError> {
+            open_db_connection().await;
+            let delete_all_records: Result<Vec<Portfolio>, Error> = DB.delete("portfolio").await;
+            match delete_all_records {
+                Ok(_deleted) => {
+                    let json_value = serde_json::to_value(&experiences).unwrap();
+                    let insert_records: Result<Vec<Portfolio>, Error> = DB.insert(
+                        "portfolio"
                     ).content(json_value).await;
                     // println!("Query result: {:?}",insert_records);
                     match insert_records {

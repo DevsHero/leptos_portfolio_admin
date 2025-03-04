@@ -11,7 +11,7 @@ actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4", optional = true, features = ["macros"] }
 console_error_panic_hook = "0.1"
 http = { version = "1.0.0", optional = true }
-leptos = { version = "0.6", features = ["nightly"] }
+leptos = { version = "0.6", features = ["nightly" ] }
 leptos_meta = { version = "0.6", features = ["nightly"] }
 leptos_actix = { version = "0.6", optional = true }
 leptos_router = { version = "0.6", features = ["nightly"] }
@@ -30,6 +30,8 @@ dotenvy = "0.15.7"
 log = "0.4.25"
 serde_json = "1.0.139"
 getrandom = { version = "0.3", features = ["wasm_js"] }
+icondata = "0.5.0"
+leptos_icons = "0.3.1"
 [dependencies.uuid]
 version = "1.15.1"
 features = ["v4", "rng-getrandom"]

@@ -34,7 +34,7 @@ pub fn HomePage() -> impl IntoView {
                                         <icons::Home />
                                     </button>
                                     <a
-                                        href="/tab"
+                                        href="/edit"
                                         target="_self"
                                         aria-label="Source code"
                                         class="topbarButton"
@@ -85,16 +85,16 @@ pub fn HomePage() -> impl IntoView {
                                     <h3>Skills</h3>
                                     <div >
                                    
-<SkillChips
-is_page=false
-skills=skills
-on_delete=None
-use_delete=false
-/>
+                                <SkillChips
+                                is_page=false
+                                skills=skills
+                                on_delete=None
+                                use_delete=false
+                                />
                                     </div>
                                 </div>
                             </section>
-                            <SelectTab experiences= profile.experiences.unwrap()/>
+                            <SelectTab experiences=profile.experiences.unwrap() portfolios=profile.portfolios.unwrap()/>
                         </main>
                     }
                 }

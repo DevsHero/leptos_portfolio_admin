@@ -20,15 +20,30 @@ pub struct Portfolio {
     pub is_private: bool,
     pub portfolio_detail: String,
     pub portfolio_icon_url: String,
+    pub stacks: Vec<String>,
+    pub screenshots_url: Vec<String>,
 }
 impl Default for Portfolio {
     fn default() -> Self {
         Self {
-            portfolio_name: String::from("Javascript"),
-            portfolio_link: String::from("Expert"),
+            portfolio_name: String::from("Leptos Portfolio Admin"),
+            portfolio_link: String::from("https://github.com/zelda2003/leptos_portfolio_admin"),
             is_private: bool::from(false),
-            portfolio_detail: String::from("Expert"),
-            portfolio_icon_url: String::from("Expert"),
+            portfolio_detail: String::from("Fullstack rust portfolio project with admin system"),
+            portfolio_icon_url: String::from("https://cdn-icons-png.flaticon.com/512/25/25231.png"),
+            screenshots_url: vec![
+                String::from(
+                    "https://149842033.v2.pressablecdn.com/wp-content/uploads/2019/03/breed2-free-portfolio-website-templates.jpg"
+                ),
+                String::from("https://themewagon.com/wp-content/uploads/2021/11/html.design.jpg")
+            ],
+            stacks: vec![
+                String::from("Rust"),
+                String::from("Leptos"),
+                String::from("Actix Web"),
+                String::from("Tailwind"),
+                String::from("SurrealDB")
+            ],
         }
     }
 }
@@ -77,6 +92,7 @@ pub struct Profile {
     pub id: Thing,
     pub skills: Option<Vec<Skill>>,
     pub experiences: Option<Vec<Experience>>,
+    pub portfolios: Option<Vec<Portfolio>>,
 }
 impl Default for Profile {
     fn default() -> Self {
@@ -95,6 +111,7 @@ impl Default for Profile {
             role: String::from("Developer"),
             skills: vec![Skill::default()].into(),
             experiences: vec![Experience::default()].into(),
+            portfolios: vec![Portfolio::default()].into(),
         }
     }
 }
