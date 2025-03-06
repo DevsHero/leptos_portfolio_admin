@@ -1,10 +1,9 @@
-use crate::app::icons;
-
 use leptos::*;
 use leptos::{ component, view, IntoView };
-use wasm_bindgen::JsValue;
-use web_sys::window;
 
+use web_sys::window;
+use leptos_icons::Icon;
+use icondata as i;
 fn darkmode(enable: bool) {
     let window = window().expect("Failed to get window");
     let document = window.document().expect("Failed to get document");
@@ -30,9 +29,9 @@ pub fn ThemeButton() -> impl IntoView {
     // });
     let icon = move || {
         if dark_mode() {
-            view! { <icons::Moon /> }
+            view! { <Icon icon={i::MdiWeatherNight} /> }
         } else {
-            view! { <icons::Sun /> }
+            view! { <Icon icon={i::FiSun} /> }
         }
     };
     view! {

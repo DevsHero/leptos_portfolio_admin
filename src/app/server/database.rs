@@ -115,6 +115,7 @@ cfg_if::cfg_if! {
                 ).await;
                 // println!("_experience_result: {:?}", _experience_result);
             }
+
             if _is_update_portfolio {
                 let _portfolio_result = update_portfolio(
                     profile.portfolios.clone().expect("REASON")

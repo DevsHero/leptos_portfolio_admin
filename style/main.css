@@ -1137,9 +1137,7 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
   border-radius: 9999px;
-  padding: 0.75rem;
   box-shadow: var(--shadow1);
 }
 .tabSectionSelector > button {
@@ -1421,7 +1419,7 @@ textarea {
   display: flex;
   justify-content: center;
   gap: 5rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 .updateButton, .cancelButton {
   padding: 0.75rem 1.5rem;

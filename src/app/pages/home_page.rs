@@ -1,11 +1,12 @@
 use crate::app::components::SkillChips;
 use crate::app::{
     components::{ SelectTab, ThemeButton, HomeContacts },
-    icons,
     server::api::get_profile,
     utils::calculate_age,
 };
 use leptos::*;
+use leptos_icons::Icon;
+use icondata as i;
 #[component]
 pub fn HomePage() -> impl IntoView {
     let get_profile_info = Resource::new(
@@ -20,7 +21,7 @@ pub fn HomePage() -> impl IntoView {
         move || {
             let profile_data = get_profile_info.get().and_then(Result::ok).unwrap_or_default();
             let profile = profile_data.first().cloned().unwrap_or_default();
-            let (skills, set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new).clone());
+            let (skills, _set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new).clone());
             let (birth_date, set_birth_date) = create_signal(String::new());
             Effect::new_isomorphic(move |_| {
                 let age = calculate_age(&profile.birth_date);
@@ -31,7 +32,7 @@ pub fn HomePage() -> impl IntoView {
                             <section class="topbar">
                                 <div class="pill">
                                     <button class="topbarButton active">
-                                        <icons::Home />
+                                    <Icon icon={i::AiHomeOutlined} />
                                     </button>
                                     <a
                                         href="/edit"
@@ -39,7 +40,7 @@ pub fn HomePage() -> impl IntoView {
                                         aria-label="Source code"
                                         class="topbarButton"
                                     >
-                                        <icons::Code />
+                                    <Icon icon={i::OcGearSm} />
                                     </a>
                                     <ThemeButton />
                                 </div>

@@ -1,5 +1,4 @@
 pub mod components;
-pub mod icons;
 pub mod models;
 pub mod pages;
 pub mod server;

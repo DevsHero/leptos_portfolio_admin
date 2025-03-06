@@ -1,14 +1,15 @@
 use crate::app::components::{
+    CheckBox,
+    EditContacts,
     Experience,
+    IconDropdown,
     InputArrayField,
     InputField,
+    Portfolio,
     RenderTab,
     SkillChips,
     TextAreaField,
-    CheckBox,
-    IconDropdown,
-    EditContacts,
-    Portfolio,
+    ThemeButton,
 };
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
@@ -92,8 +93,8 @@ pub fn EditPage() -> impl IntoView {
                         let result = update_portfolio(
                             profile , 
                             _is_update_skill.get() ,
-                            _is_update_experience.get(),
                             _is_update_portfolio.get(),
+                            _is_update_experience.get(),
                         _is_update_contact.get()
                          ).await;
                          // reset fields after update
@@ -233,6 +234,22 @@ pub fn EditPage() -> impl IntoView {
                 };
                 view! {
                     <main class="tabPage">
+                    <section class="topbar">
+                                <div class="pill">
+                                    <button class="topbarButton ">
+                                    <Icon icon={i::AiHomeOutlined} />
+                                    </button>
+                                    <a
+                                        href="/edit"
+                                        target="_self"
+                                        aria-label="Source code"
+                                        class="topbarButton active"
+                                    >
+                                    <Icon icon={i::OcGearSm} />
+                                    </a>
+                                    <ThemeButton />
+                                </div>
+                            </section>
                         <div class="tabSectionSelector">
                             <button
                                 class=move || {

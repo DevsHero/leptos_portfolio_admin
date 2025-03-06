@@ -50,8 +50,12 @@ pub static ICON_MAP: phf::Map<
     &'static str,
     &'static icondata_core::IconData
 > = phf_map! {
-    "AiMailFilled" => i::AiMailFilled,
+    "AiMailOutlined" => i::AiMailOutlined,
     "AiFacebookOutlined" => i::AiFacebookOutlined,
     "FaSquareXTwitterBrands" => i::FaSquareXTwitterBrands,
+    "AiLinkedinOutlined" => i::AiLinkedinOutlined,
+    "AiHomeOutlined" => i::AiHomeOutlined,
+    "MdiWeatherNight" => i::MdiWeatherNight,
+    "FiSun" => i::FiSun,
 
 };
