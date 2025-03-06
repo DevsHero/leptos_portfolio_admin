@@ -31,7 +31,9 @@ pub fn HomePage() -> impl IntoView {
                             <main class="indexLayout">
                             <section class="topbar">
                                 <div class="pill">
-                                    <button class="topbarButton active">
+                                    <button 
+                                    disabled
+                                    class="topbarButton active">
                                     <Icon icon={i::AiHomeOutlined} />
                                     </button>
                                     <a
@@ -48,7 +50,11 @@ pub fn HomePage() -> impl IntoView {
                             <section class="info">
                                 <div class="aboutMe">
                                     <span class="avatar">
+                                    <a href={profile.avatar.clone()}  target="_blank" >
+                                    <span class="avatar">
                                         <img alt="avatar" src={profile.avatar} width="80" height="80" />
+                                        </span>
+                                        </a>
                                         <div class="details">
                                         <h1>{profile.first_name}" "{profile.last_name}" ("{profile.nick_name}")"</h1>
                                             <p>{profile.role}</p>

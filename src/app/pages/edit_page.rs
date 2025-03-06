@@ -236,17 +236,21 @@ pub fn EditPage() -> impl IntoView {
                     <main class="tabPage">
                     <section class="topbar">
                                 <div class="pill">
-                                    <button class="topbarButton ">
+                                <a
+                                href="/"
+                                target="_self"
+                                aria-label="Source code"
+                                  class="topbarButton"
+                            
+                            >
                                     <Icon icon={i::AiHomeOutlined} />
-                                    </button>
-                                    <a
-                                        href="/edit"
-                                        target="_self"
-                                        aria-label="Source code"
+                                    </a>
+                                    <button
                                         class="topbarButton active"
+                                    disabled
                                     >
                                     <Icon icon={i::OcGearSm} />
-                                    </a>
+                                    </button>
                                     <ThemeButton />
                                 </div>
                             </section>
@@ -313,9 +317,10 @@ pub fn EditPage() -> impl IntoView {
                             </div>
 
                             <div class="formRow">
-                                <div class="formGroup">
+                                <div class="formGroup" >
                                     <label for="gender">"Gender"</label>
                                     <select
+                                    style="height:3.2rem;"
                                         id="gender"
                                         prop:value=gender
                                         on:change=move |ev| {
