@@ -1,6 +1,6 @@
 use crate::app::components::SkillChips;
 use crate::app::{
-    components::{ SelectTab, ThemeButton, Contacts },
+    components::{ SelectTab, ThemeButton, HomeContacts },
     icons,
     server::api::get_profile,
     utils::calculate_age,
@@ -55,7 +55,7 @@ pub fn HomePage() -> impl IntoView {
                                             <p>"Nationality: "{profile.nationality}</p>
                                         </div>
                                     </span>
-                                    <Contacts contacts=profile.contacts.unwrap_or_else(Vec::new) />
+                                    <HomeContacts contacts=profile.contacts.unwrap_or_else(Vec::new) />
                                 </div>
                                 <div class="description">
                                     <h2>About me</h2>

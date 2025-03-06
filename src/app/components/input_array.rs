@@ -24,7 +24,7 @@ pub fn InputArrayField(
                         type="button"
                         class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4  opacity-75 hover:opacity-100"
     
-                        on:click=move |ev| { 
+                        on:click=move |_ev| { 
                             set_fields.update(|field| field.push("".to_string()));
                         }
                     >
@@ -54,7 +54,7 @@ pub fn InputArrayField(
                             });
                         }
                     >
-                    <Icon icon={i::CgRemove} />
+                    <Icon class="deleteButton" icon={i::CgRemove} />
                     </button>
                            <input
                            class="w-full"

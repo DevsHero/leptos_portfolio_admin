@@ -7,11 +7,13 @@ use crate::app::components::{
     TextAreaField,
     CheckBox,
     IconDropdown,
+    EditContacts,
+    Portfolio,
 };
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
 use crate::app::server::api::{ get_profile, update_portfolio };
-use crate::app::utils::format_date_for_input;
+use crate::app::utils::{ format_date_for_input, get_icon_by_name };
 use leptos_icons::Icon;
 use icondata as i;
 use leptos::*;
@@ -33,7 +35,7 @@ pub fn EditPage() -> impl IntoView {
                 
                 let profile_data = get_profile_info.get().and_then(Result::ok).unwrap_or_default();
                 let profile = profile_data.first().cloned().unwrap_or_default();
-                let (error, set_error) = create_signal(None::<String>);
+      
                 //Profile 
                 let (first_name, set_first_name) = create_signal(profile.first_name);
                 let (last_name, set_last_name) = create_signal(profile.last_name);
@@ -77,17 +79,29 @@ pub fn EditPage() -> impl IntoView {
                 let (is_href, set_is_href) = create_signal(bool::from(false)); 
 
 
-                let (is_update_skill, set_is_update_skill) = create_signal(false);
-                let (is_update_experience, set_is_update_experience) = create_signal(false);
+                let (_is_update_skill, set_is_update_skill) = create_signal(false);
+                    let (_is_update_experience, set_is_update_experience) = create_signal(false);
+                let (_is_update_portfolio, set_is_update_portfolio) = create_signal(false);
+                let (_is_update_contact, set_is_update_contact) = create_signal(false);
+            
                 let (is_saving, set_is_saving) = create_signal(false);
                     let update_profile_action = Action::new(move |profile: &Profile| {
                     set_is_saving.set(true);
                     let profile = profile.clone();
-                    let get_skills = skills.get();
                     async move {
-                        let result = update_portfolio(profile , is_update_skill.get() , get_skills ).await;
+                        let result = update_portfolio(
+                            profile , 
+                            _is_update_skill.get() ,
+                            _is_update_experience.get(),
+                            _is_update_portfolio.get(),
+                        _is_update_contact.get()
+                         ).await;
+                         // reset fields after update
                         set_is_saving.set(false);
                         set_is_update_skill(false);
+                        set_is_update_experience(false);
+                        set_is_update_portfolio(false);
+                        set_is_update_contact(false);
                         result
                     }
                 });
@@ -176,7 +190,7 @@ pub fn EditPage() -> impl IntoView {
                         set_screenshots_url.set(vec!["".to_string()]);
                         set_stacks.set(vec!["".to_string()]);
                     }
-                    set_is_update_skill(true)
+                    set_is_update_portfolio(true)
                 };
 
                 let add_contact = move |_| {
@@ -191,17 +205,31 @@ pub fn EditPage() -> impl IntoView {
                         set_contact_value.set(String::new());
                         set_is_href.set(bool::from(false));
                     }
-                    set_is_update_skill(true)
+                set_is_update_contact(true)
                 };
                 let delete_skill = move |index: usize| {
                     set_skills.update(|skills| {
                         skills.remove(index);
                     });
+                      set_is_update_skill(true)
                 };
                 let delete_experience = move |index: usize| {
                     set_experiences.update(|experiences| {
                         experiences.remove(index);
                     });
+                      set_is_update_experience(true)
+                };
+                 let delete_portfolio= move |index: usize| {
+                    set_portfolios.update(|portfolios| {
+                        portfolios.remove(index);
+                    });
+                      set_is_update_portfolio(true)
+                };
+                 let delete_contact= move |index: usize| {
+                    set_contacts.update(|contacts| {
+                        contacts.remove(index);
+                    });
+                      set_is_update_contact(true)
                 };
                 view! {
                     <main class="tabPage">
@@ -323,7 +351,7 @@ pub fn EditPage() -> impl IntoView {
                                 </select>
                                 <button
                                 type="button"
-                                class="addButton"
+                                    class="addButton"
                                 on:click=add_skill
                             >
                                 "Add Skill"
@@ -379,7 +407,7 @@ pub fn EditPage() -> impl IntoView {
                         
                         <InputField  id="portfolio_name" label="Project Name" set_field=set_portfolio_name  get_value=portfolio_name require=true />
                         <InputField  id="portfolio_detail" label="Project Detail" set_field=set_portfolio_detail  get_value=portfolio_detail require=true />
-                        <InputField  id="portfolio_link" label="Project Link Url" set_field=set_portfolio_link  get_value=portfolio_detail require=false />
+                        <InputField  id="portfolio_link" label="Project Link Url" set_field=set_portfolio_link  get_value=portfolio_link require=false />
                         <InputField  id="portfolio_icon_url" label="Project Icon Url" set_field=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />
                         <InputArrayField  id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
                         <InputArrayField  id="stacks" label="Project Stack" set_fields=set_stacks  get_values=stacks require=false />
@@ -390,7 +418,12 @@ pub fn EditPage() -> impl IntoView {
                             >
                                 "Add Portfolio Project"
                             </button>
-                          
+                          <Portfolio  
+                          portfolios=portfolios
+                          use_delete=true
+                          is_page=true 
+                          on_delete=Some(Callback::new(move |index| delete_portfolio(index)))
+                          />
                     </div>
                         </RenderTab>
                     
@@ -404,8 +437,7 @@ pub fn EditPage() -> impl IntoView {
                        </a>
                       
                         <CheckBox id="is_href" label= "Use Href Link" set_field=set_is_href  get_value=is_href />
-                        <InputField  id="contact_icon" label="Contact Icon" set_field=set_contact_icon  get_value=contact_icon require=true />
-                        <IconDropdown / >
+                        <IconDropdown label="Contact Icon"  id="contact_icon" set_field=set_contact_icon/ >
                         <InputField  id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
                        
                                 <button
@@ -415,7 +447,11 @@ pub fn EditPage() -> impl IntoView {
                             >
                                 "Add Contact"
                             </button>
-                          
+                            <EditContacts  
+                            contacts=contacts  
+                            on_delete=Some(Callback::new(move |index| delete_contact(index)))
+                            use_delete=true
+                             / >
                     </div>
                         </RenderTab>
                         </div>

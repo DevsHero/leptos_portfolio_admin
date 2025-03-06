@@ -5,7 +5,7 @@ use icondata as i;
 use crate::app::{ models::portfolio::Contact, utils::get_icon_by_name };
 
 #[component]
-pub fn Contacts(contacts: Vec<Contact>) -> impl IntoView {
+pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
     view! {
         <div class="socialButtons">
         {

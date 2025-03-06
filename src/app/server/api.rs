@@ -21,18 +21,26 @@ pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
 #[server(UpdatePortfolio, "/api")]
 pub async fn update_portfolio(
     profile: Profile,
-    is_update_skill: bool,
-    skills: Vec<Skill>
+    _is_update_skill: bool,
+    _is_update_portfolio: bool,
+    _is_update_experience: bool,
+    _is_update_contact: bool
 ) -> Result<Option<Profile>, ServerFnError> {
-    let updated = update_portfolio_api(profile).await;
+    let updated = update_portfolio_api(
+        profile,
+        _is_update_skill,
+        _is_update_portfolio,
+        _is_update_experience,
+        _is_update_contact
+    ).await;
     match updated {
         Ok(updated_result) => Ok(updated_result),
         Err(e) => Err(ServerFnError::from(e)),
     }
 }
 #[server(UpdateSkill, "/api")]
-pub async fn update_skill(skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
-    let updated = update_skill_api(skills).await;
+pub async fn update_skill(_skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
+    let updated = update_skill_api(_skills).await;
     match updated {
         Ok(updated_result) => Ok(updated_result),
         Err(e) => Err(ServerFnError::from(e)),
@@ -48,12 +56,22 @@ cfg_if::cfg_if! {
             database::fetch_skill().await
         }
         pub async fn update_portfolio_api(
-            profile: Profile
+            profile: Profile,
+            _is_update_skill: bool,
+            _is_update_portfolio: bool,
+            _is_update_experience: bool,
+            _is_update_contact: bool
         ) -> Result<Option<Profile>, ServerFnError> {
-            database::update_profile(profile).await
+            database::update_all_tables(
+                profile,
+                _is_update_skill,
+                _is_update_portfolio,
+                _is_update_experience,
+                _is_update_contact
+            ).await
         }
-        pub async fn update_skill_api(skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
-            database::update_skill(skills).await
+        pub async fn update_skill_api(_skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
+            database::update_skill(_skills).await
         }
     }
 }

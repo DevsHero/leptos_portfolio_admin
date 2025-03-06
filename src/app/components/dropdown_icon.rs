@@ -2,14 +2,23 @@ use leptos::*;
 use leptos_icons::Icon;
 use crate::app::utils::ICON_MAP;
 #[component]
-pub fn IconDropdown() -> impl IntoView {
+pub fn IconDropdown(
+    id: impl Into<String>,
+    label: impl Into<String>,
+    set_field: WriteSignal<String>
+) -> impl IntoView {
     // Signal for the currently selected icon name (if any)
     let (selected_icon, set_selected_icon) = create_signal(None::<&'static str>);
     // Signal for whether the dropdown is open
     let (is_open, set_is_open) = create_signal(false);
-
+    let label = label.into();
     view! { 
-        <div class="icon-dropdown" style="position: relative; display: inline-block;">
+
+        <div style="display: flex;flex-direction: row;">
+        <label style="margin-right: 52px; margin-bottom: 15px;" >{label}</label>
+       
+        <div  style="position: relative;  ">
+     
             <button 
             type="button"
                 on:click=move |_| set_is_open.update(|open| *open = !*open)
@@ -27,10 +36,10 @@ pub fn IconDropdown() -> impl IntoView {
                                     </div>
                                 }
                             } else {
-                                view! {   <div>  "Select an icon" </div> }
+                                view! {   <div class="dropdown">  "Select an icon" </div> }
                             }
                         } else {
-                            view! { <div>  "Select an icon" </div> }
+                            view! { <div class="dropdown">  "Select an icon" </div> }
                         }
                     }
                 }
@@ -56,6 +65,7 @@ pub fn IconDropdown() -> impl IntoView {
                                     on:click=move |_| {
                                         set_selected_icon.set(Some(name));
                                         set_is_open.set(false);
+                                        set_field.set(name.to_string());
                                     }
                                     style="
                                         padding: 8px;
@@ -76,6 +86,7 @@ pub fn IconDropdown() -> impl IntoView {
             } else {
                 view! {  <ul></ul> }
             } }
+        </div>
         </div>
     }
 }

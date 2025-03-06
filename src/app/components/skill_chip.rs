@@ -1,5 +1,7 @@
 use crate::app::models::Skill;
 use leptos::*;
+use leptos_icons::Icon;
+use icondata as i;
 #[component]
 pub fn SkillChips(
     skills: ReadSignal<Vec<Skill>>,
@@ -32,7 +34,7 @@ pub fn SkillChips(
                                                         }
                                                     }
                                                 >
-                                                <b> "×"</b>
+                                                <Icon icon={i::BsTrash} />
                                                 </button>
                                             </div>
                                         }

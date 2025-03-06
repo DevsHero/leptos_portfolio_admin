@@ -1,5 +1,7 @@
 use leptos::*;
 use crate::app::{ components::ImageSlider, models::portfolio::Portfolio };
+use leptos_icons::Icon;
+use icondata as i;
 #[component]
 pub fn Portfolio(
     portfolios: ReadSignal<Vec<Portfolio>>,
@@ -7,15 +9,14 @@ pub fn Portfolio(
     is_page: bool,
     use_delete: bool
 ) -> impl IntoView {
-    view! {
-        {
-            move ||
-                portfolios
-                    .get()
-                    .into_iter()
-                    .enumerate()
-                    .map(|(index, portfolio)| {
-                        view! {
+    {
+        move ||
+            portfolios
+                .get()
+                .into_iter()
+                .enumerate()
+                .map(|(index, portfolio)| {
+                    view! {
                  <div class="portfolioContainer">     
                <div class="portfolioRow">
             
@@ -30,33 +31,9 @@ pub fn Portfolio(
                     </div>
                     </div>
                     </a>
-                    <div class="experienceRowFirstItemText"> 
-                    {
- 
-                        view! {
-                            <>
-                                {if use_delete {
-                                    view! {
-                                        <div>
-                                            <button
-                                                class="deleteButton"
-                                                on:click=move |_| {
-                                                    if let Some(ref callback) = on_delete {
-                                                        callback.call(index);
-                                                    }
-                                                }
-                                            >
-                                            <b> "×"</b>
-                                            </button>
-                                        </div>
-                                    }
-                                } else {
-                                    view! { <div></div> }
-                                }}
-                            </>
-                        }
-                    }
-                    </div>
+              
+                  
+              
             
                 
                 <div class="portfolioDescriptions" inner_html=portfolio.portfolio_detail></div>
@@ -65,16 +42,42 @@ pub fn Portfolio(
                 </div>
    <div class="portfolioSlide">  <ImageSlider images=portfolio.screenshots_url/></div>
        </div>
+       <div class="editContactRow">
        <div class="stackRow">
-       <b class="pr-4">Stack:</b> {let stacks = portfolio.stacks.clone();
+       <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
            move || stacks.iter().enumerate().map(|(index, stack)| {
-               view! { <p class="pr-4">{index +1}.{stack} </p> }
+               view! { <p  >{index +1}.{stack} </p> }
            }).collect::<Vec<_>>()}
+              {
+ 
+            view! {
+                <>
+                    {if use_delete {
+                        view! {
+                            <div>
+                                <button
+                                    class="deleteButton"
+                                    on:click=move |_| {
+                                        if let Some(ref callback) = on_delete {
+                                            callback.call(index);
+                                        }
+                                    }
+                                >
+                                <Icon icon={i::BsTrash} />
+                                </button>
+                            </div>
+                        }
+                    } else {
+                        view! { <div></div> }
+                    }}
+                </>
+            }
+        }
            </div>
+           </div> 
    </div>
          }
-                    })
-                    .collect::<Vec<_>>()
-        }
+                })
+                .collect::<Vec<_>>()
     }
 }

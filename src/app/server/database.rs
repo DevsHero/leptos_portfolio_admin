@@ -1,7 +1,7 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use leptos::ServerFnError;
-        use crate::app::models::{ Experience, Portfolio, Profile, Skill };
+        use crate::app::models::portfolio::{ Experience, Portfolio, Profile, Skill, Contact };
         use surrealdb::engine::remote::ws::{ Client, Wss };
         use surrealdb::opt::auth::Root;
         use surrealdb::{ Surreal, Error };
@@ -84,11 +84,14 @@ cfg_if::cfg_if! {
             }
         }
 
-        pub async fn update_profile(profile: Profile) -> Result<Option<Profile>, ServerFnError> {
+        pub async fn update_all_tables(
+            profile: Profile,
+            _is_update_skill: bool,
+            _is_update_portfolio: bool,
+            _is_update_experience: bool,
+            _is_update_contact: bool
+        ) -> Result<Option<Profile>, ServerFnError> {
             open_db_connection().await;
-
-            // Extract the profile ID
-            let profile_id = profile.id.clone();
 
             // Create a map of the fields to update
             let mut update_data = std::collections::HashMap::new();
@@ -101,13 +104,29 @@ cfg_if::cfg_if! {
             update_data.insert("nationality", profile.nationality);
             update_data.insert("about", profile.about);
             update_data.insert("avatar", profile.avatar);
+            if _is_update_skill {
+                let _skill_result = update_skill(profile.skills.clone().expect("REASON")).await;
+                // println!("_skill_result: {:?}", _skill_result);
+            }
 
-            let skill_result = update_skill(profile.skills.clone().expect("REASON")).await;
-            // println!("skill_result: {:?}", skill_result);
-            let experience_result = update_experience(
-                profile.experiences.clone().expect("REASON")
-            ).await;
-            // println!("experience_result: {:?}", experience_result);
+            if _is_update_experience {
+                let _experience_result = update_experience(
+                    profile.experiences.clone().expect("REASON")
+                ).await;
+                // println!("_experience_result: {:?}", _experience_result);
+            }
+            if _is_update_portfolio {
+                let _portfolio_result = update_portfolio(
+                    profile.portfolios.clone().expect("REASON")
+                ).await;
+                // println!("_portfolio_result: {:?}", _portfolio_result);
+            }
+            if _is_update_contact {
+                let _contact_result = update_contact(
+                    profile.contacts.clone().expect("REASON")
+                ).await;
+                // println!("_contact_result: {:?}", _contact_result);
+            }
             let updated_user: Result<Option<Profile>, Error> = DB.update((
                 profile.id.tb.clone(),
                 profile.id.id.to_string(),
@@ -159,16 +178,35 @@ cfg_if::cfg_if! {
             }
         }
         pub async fn update_portfolio(
-            experiences: Vec<Portfolio>
+            portfolios: Vec<Portfolio>
         ) -> Result<Vec<Portfolio>, ServerFnError> {
             open_db_connection().await;
             let delete_all_records: Result<Vec<Portfolio>, Error> = DB.delete("portfolio").await;
             match delete_all_records {
                 Ok(_deleted) => {
-                    let json_value = serde_json::to_value(&experiences).unwrap();
+                    let json_value = serde_json::to_value(&portfolios).unwrap();
                     let insert_records: Result<Vec<Portfolio>, Error> = DB.insert(
                         "portfolio"
                     ).content(json_value).await;
+                    // println!("Query result: {:?}",insert_records);
+                    match insert_records {
+                        Ok(inserted) => Ok(inserted),
+                        // let _ = DB.invalidate().await;
+                        Err(e) => Err(ServerFnError::from(e)),
+                    }
+                }
+                Err(e) => Err(ServerFnError::from(e)),
+            }
+        }
+        pub async fn update_contact(contacts: Vec<Contact>) -> Result<Vec<Contact>, ServerFnError> {
+            open_db_connection().await;
+            let delete_all_records: Result<Vec<Contact>, Error> = DB.delete("contact").await;
+            match delete_all_records {
+                Ok(_deleted) => {
+                    let json_value = serde_json::to_value(&contacts).unwrap();
+                    let insert_records: Result<Vec<Contact>, Error> = DB.insert("contact").content(
+                        json_value
+                    ).await;
                     // println!("Query result: {:?}",insert_records);
                     match insert_records {
                         Ok(inserted) => Ok(inserted),

@@ -1,5 +1,7 @@
 use leptos::*;
 use crate::app::{ models::portfolio::Experience, utils::convert_date_format };
+use leptos_icons::Icon;
+use icondata as i;
 #[component]
 pub fn Experience(
     experiences: ReadSignal<Vec<Experience>>,
@@ -45,7 +47,7 @@ pub fn Experience(
                                                     }
                                                 }
                                             >
-                                            <b> "×"</b>
+                                            <Icon icon={i::BsTrash} />
                                             </button>
                                         </div>
                                     }
