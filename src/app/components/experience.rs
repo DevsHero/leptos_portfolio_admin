@@ -23,7 +23,7 @@ pub fn Experience(
                 <span class="experienceRowFirstItem">
                     <img src=experience.company_logo_url alt="Company Icon" />
                     <div class="experienceRowFirstItemText">
-                    <h4><b>Company</b>: {experience.company_name}</h4> <h3><b>Position</b>: {experience.position_name}</h3>
+                    <h4><b>Company</b>: {experience.company_name}</h4> <h4><b>Position</b>: {experience.position_name}</h4>
                     <p>{convert_date_format(&experience.start_date) } - {convert_date_format(&experience.end_date) }</p>
                     </div>
                     </span>

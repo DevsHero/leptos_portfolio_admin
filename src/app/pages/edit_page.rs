@@ -1,9 +1,19 @@
-use crate::app::components::{ Experience, InputField, RenderTab, SkillChips, TextAreaField };
-use crate::app::models::portfolio::Experience;
+use crate::app::components::{
+    Experience,
+    InputArrayField,
+    InputField,
+    RenderTab,
+    SkillChips,
+    TextAreaField,
+    CheckBox,
+    IconDropdown,
+};
+use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
 use crate::app::server::api::{ get_profile, update_portfolio };
 use crate::app::utils::format_date_for_input;
-
+use leptos_icons::Icon;
+use icondata as i;
 use leptos::*;
 use web_sys::SubmitEvent;
 
@@ -54,12 +64,18 @@ pub fn EditPage() -> impl IntoView {
                 let (portfolios, set_portfolios) = create_signal(profile.portfolios.unwrap_or_else(Vec::new));   
                 let (portfolio_name, set_portfolio_name) = create_signal(String::new());
                 let (portfolio_link, set_portfolio_link) = create_signal(String::new());
+                let (is_private, set_is_private) = create_signal(bool::from(false));
                 let (portfolio_icon_url, set_portfolio_icon_url) = create_signal(String::new());
                 let (portfolio_detail, set_portfolio_detail) = create_signal(String::new());
-                let (screenshots_url, set_screenshots_url) = create_signal(Vec::<String>::new());
-                let (stacks, set_stacks) = create_signal(Vec::<String>::new());
+                let (screenshots_url, set_screenshots_url) = create_signal(vec!["".to_string()]);
+                let (stacks, set_stacks) = create_signal(vec!["".to_string()]);
     
-                
+                //Contact
+                let (contacts, set_contacts) = create_signal(profile.contacts.unwrap_or_else(Vec::new));
+                let (contact_value, set_contact_value) = create_signal(String::new());
+                let (contact_icon, set_contact_icon) = create_signal(String::new());
+                let (is_href, set_is_href) = create_signal(bool::from(false)); 
+
 
                 let (is_update_skill, set_is_update_skill) = create_signal(false);
                 let (is_update_experience, set_is_update_experience) = create_signal(false);
@@ -95,6 +111,7 @@ pub fn EditPage() -> impl IntoView {
                     skills:Some(skills.get()),
                     experiences :  Some(experiences.get()),
                     portfolios: Some(portfolios.get()),
+                    contacts: Some(contacts.get()),
                 };
                 update_profile_action.dispatch(updated_profile);
             };
@@ -140,14 +157,39 @@ pub fn EditPage() -> impl IntoView {
                     set_is_update_experience(true)
                 };
                 let add_portfolio = move |_| {
-                    if !skill_name.get().is_empty() {
-                        let new_skill = Skill {
-                            name: skill_name.get(),
-                            level: skill_level.get(),
+                    if !portfolio_name.get().is_empty() {
+                        let new_portfolio = Portfolio {
+                            portfolio_name: portfolio_name.get(),
+                            portfolio_detail: portfolio_detail.get(),
+                            portfolio_icon_url: portfolio_icon_url.get(),
+                            portfolio_link: portfolio_link.get(),
+                            is_private: is_private.get(),
+                            screenshots_url: screenshots_url.get(),
+                            stacks: stacks.get()
                         };
-                        set_skills.update(|skills| skills.push(new_skill));
-                        set_skill_name.set(String::new());
-                        set_skill_level.set(String::from("Basic"));
+                        set_portfolios.update(|portfolio| portfolio.push(new_portfolio));
+                        set_portfolio_name.set(String::new());
+                        set_portfolio_detail.set(String::new());
+                        set_portfolio_icon_url.set(String::new());
+                        set_portfolio_link.set(String::new());
+                        set_is_private.set(bool::from(false));
+                        set_screenshots_url.set(vec!["".to_string()]);
+                        set_stacks.set(vec!["".to_string()]);
+                    }
+                    set_is_update_skill(true)
+                };
+
+                let add_contact = move |_| {
+                    if !contact_value.get().is_empty() {
+                        let new_contact = Contact {
+                            contact_icon: contact_icon.get(),
+                            contact_value: contact_value.get(),
+                            is_href: is_href.get()
+                        };
+                        set_contacts.update(|contact| contact.push(new_contact));
+                        set_contact_icon.set(String::new());
+                        set_contact_value.set(String::new());
+                        set_is_href.set(bool::from(false));
                     }
                     set_is_update_skill(true)
                 };
@@ -202,7 +244,7 @@ pub fn EditPage() -> impl IntoView {
                     }
                     on:click=move |_| set_select_tab(5)
                 >
-                    contact
+                    Contact
                 </button>
                         </div>
                         <form on:submit=on_submit >
@@ -339,15 +381,39 @@ pub fn EditPage() -> impl IntoView {
                         <InputField  id="portfolio_detail" label="Project Detail" set_field=set_portfolio_detail  get_value=portfolio_detail require=true />
                         <InputField  id="portfolio_link" label="Project Link Url" set_field=set_portfolio_link  get_value=portfolio_detail require=false />
                         <InputField  id="portfolio_icon_url" label="Project Icon Url" set_field=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />
-                        // <InputField  id="screenshots_url" label="Project Icon Url" set_field=set_screenshots_url  get_value=screenshots_url require=false />
-                        // <InputField  id="stacks" label="Project Stack" set_field=set_stacks  get_value=stacks require=false />
-                        
-                                <button
+                        <InputArrayField  id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
+                        <InputArrayField  id="stacks" label="Project Stack" set_fields=set_stacks  get_values=stacks require=false />
+                               <button
                                 type="button"
                                 class="addButton"
                                 on:click=add_portfolio
                             >
                                 "Add Portfolio Project"
+                            </button>
+                          
+                    </div>
+                        </RenderTab>
+                    
+                 
+                        <RenderTab is_page=true no=5 active_page=select_tab>
+                        <div class="edit-container">
+                        <h1>"Edit Contact"</h1>
+                      
+                        <a   href="https://carloskiki.github.io/icondata/" target="_blank" aria-label="Paypal" >
+                        <div class="inputArrayRow"> <Icon icon={i::ImInfo} />     Icon List     </div>
+                       </a>
+                      
+                        <CheckBox id="is_href" label= "Use Href Link" set_field=set_is_href  get_value=is_href />
+                        <InputField  id="contact_icon" label="Contact Icon" set_field=set_contact_icon  get_value=contact_icon require=true />
+                        <IconDropdown / >
+                        <InputField  id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
+                       
+                                <button
+                                type="button"
+                                class="addButton"
+                                on:click=add_contact
+                            >
+                                "Add Contact"
                             </button>
                           
                     </div>

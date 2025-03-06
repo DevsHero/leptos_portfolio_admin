@@ -1,11 +1,6 @@
 use chrono::{ DateTime, Datelike, NaiveDate, NaiveDateTime, TimeZone, Utc };
-use wasm_bindgen::JsValue;
-// #[wasm_bindgen::prelude::wasm_bindgen(module = "/public/utils.js")]
-// extern "C" {
-//     pub fn setItem(key: &str, value: &str) -> JsValue;
-//     pub fn getItem(key: &str) -> JsValue;
-//     pub fn removeItem(key: &str);
-// }
+use phf::phf_map;
+use icondata as i;
 pub fn calculate_age(birth_date: &str) -> i64 {
     let parsed_date = NaiveDate::parse_from_str(birth_date, "%Y-%m-%d").unwrap();
     let datetime_utc = Utc.with_ymd_and_hms(
@@ -46,3 +41,17 @@ pub fn format_date_for_input(date_str: &str) -> String {
         String::from("2000-01-01")
     }
 }
+
+pub fn get_icon_by_name(name: &str) -> Option<&'static icondata_core::IconData> {
+    ICON_MAP.get(name).copied()
+}
+
+pub static ICON_MAP: phf::Map<
+    &'static str,
+    &'static icondata_core::IconData
+> = phf_map! {
+    "AiMailFilled" => i::AiMailFilled,
+    "AiFacebookOutlined" => i::AiFacebookOutlined,
+    "FaSquareXTwitterBrands" => i::FaSquareXTwitterBrands,
+
+};

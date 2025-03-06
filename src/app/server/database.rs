@@ -1,9 +1,7 @@
-use crate::app::models::{ Experience, Portfolio };
-
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use leptos::ServerFnError;
-        use crate::app::models::{ Profile, Skill };
+        use crate::app::models::{ Experience, Portfolio, Profile, Skill };
         use surrealdb::engine::remote::ws::{ Client, Wss };
         use surrealdb::opt::auth::Root;
         use surrealdb::{ Surreal, Error };
@@ -30,7 +28,8 @@ cfg_if::cfg_if! {
             SELECT *,
                 (SELECT * FROM skill  ) AS skills, 
                 (SELECT * FROM experience  ) AS experiences ,
-                (SELECT * FROM portfolio  ) AS portfolios 
+                (SELECT * FROM portfolio  ) AS portfolios ,
+                (SELECT * FROM contact  ) AS contacts 
             FROM profile 
             LIMIT 1;
         "

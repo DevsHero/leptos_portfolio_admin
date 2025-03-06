@@ -14,6 +14,22 @@ impl Default for Skill {
     }
 }
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
+pub struct Contact {
+    pub contact_icon: String,
+    pub is_href: bool,
+    pub contact_value: String,
+}
+impl Default for Contact {
+    fn default() -> Self {
+        Self {
+            contact_icon: String::from("MdiEmail"),
+            is_href: bool::from(false),
+            contact_value: String::from("developer@portfolio.com"),
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Portfolio {
     pub portfolio_name: String,
     pub portfolio_link: String,
@@ -93,6 +109,7 @@ pub struct Profile {
     pub skills: Option<Vec<Skill>>,
     pub experiences: Option<Vec<Experience>>,
     pub portfolios: Option<Vec<Portfolio>>,
+    pub contacts: Option<Vec<Contact>>,
 }
 impl Default for Profile {
     fn default() -> Self {
@@ -112,6 +129,7 @@ impl Default for Profile {
             skills: vec![Skill::default()].into(),
             experiences: vec![Experience::default()].into(),
             portfolios: vec![Portfolio::default()].into(),
+            contacts: vec![Contact::default()].into(),
         }
     }
 }

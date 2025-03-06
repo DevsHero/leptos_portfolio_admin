@@ -1,6 +1,6 @@
 use crate::app::components::SkillChips;
 use crate::app::{
-    components::{ SelectTab, ThemeButton },
+    components::{ SelectTab, ThemeButton, Contacts },
     icons,
     server::api::get_profile,
     utils::calculate_age,
@@ -55,27 +55,7 @@ pub fn HomePage() -> impl IntoView {
                                             <p>"Nationality: "{profile.nationality}</p>
                                         </div>
                                     </span>
-                                    <div class="socialButtons">
-                                        <a href="https://paypal.me/gxskpo" target="_blank" aria-label="Paypal" >
-                                            <icons::Paypal />
-                                        </a>
-                                        <a href="mailto:hello@hawruka.de" target="_blank">
-                                            <icons::Mail />
-                                        </a>
-                                        <a href="https://github.com/gxskpo" target="_blank" aria-label="github">
-                                            <icons::Github />
-                                        </a>
-                                        <a
-                                            href="https://discordapp.com/users/538821983606145044"
-                                            target="_blank"
-                                            aria-label="discord"
-                                        >
-                                            <icons::Discord color=Some("var(--text)") />
-                                        </a>
-                                        <a href="https://t.me/hawruka_de" target="_blank" aria-label="twitter">
-                                            <icons::Telegram />
-                                        </a>
-                                    </div>
+                                    <Contacts contacts=profile.contacts.unwrap_or_else(Vec::new) />
                                 </div>
                                 <div class="description">
                                     <h2>About me</h2>

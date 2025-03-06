@@ -1012,6 +1012,8 @@ body {
   padding: 0.5rem;
 }
 .avatar > img {
+  height: 7rem;
+  width:  7rem;
   display: inline-block;
   border-radius: 9999px;
 }
@@ -1233,8 +1235,8 @@ body {
   flex-direction: row;
 }
 .experienceRowFirstItem > img {
-  width: 5rem;
-  height: 5rem;
+  width: 4.5rem;
+  height: 4.5rem;
   border-radius: 0.375rem;
 }
 .experienceRowFirstItemText {
@@ -1566,6 +1568,7 @@ button:hover {
 .addButton:hover {
   background: var(--sapphire);
 }
+ 
 .experience-container {
   display: flex;
   flex-direction: column;
@@ -1671,4 +1674,22 @@ button:hover {
   font-size: 10;
   color:rgb(237, 98, 237);
   
+}
+
+.inputArrayRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.checkboxRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 20%;
+}
+.aLinkRow{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+   
 }
