@@ -1,5 +1,6 @@
 use leptos::{ server, ServerFnError };
 use crate::app::models::{ Profile, Skill };
+use std::env;
 #[server(GetProfile, "/api")]
 pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
     let data = retrieve_profile_api().await;
@@ -9,15 +10,11 @@ pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
         Err(e) => Err(ServerFnError::from(e)),
     }
 }
-// #[server(GetSkill, "/api")]
-// pub async fn get_skill() -> Result<Vec<Skill>, ServerFnError> {
-//     let data = retrieve_skill_api().await;
-//     println!("Query result: {:?}",data);
-//     match data {
-//         Ok(result) => Ok(result.into_iter().collect()),
-//         Err(e) => Err(ServerFnError::from(e)),
-//     }
-// }
+#[server(Verify, "/api")]
+pub async fn verify(password: String) -> Result<bool, ServerFnError> {
+    let admin_password = std::env::var("ADMIN_MODE_PASSWORD").unwrap_or("admin".to_string());
+    Ok(admin_password == password)
+}
 #[server(UpdatePortfolio, "/api")]
 pub async fn update_portfolio(
     profile: Profile,

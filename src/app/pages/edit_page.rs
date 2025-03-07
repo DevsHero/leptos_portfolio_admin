@@ -13,8 +13,8 @@ use crate::app::components::{
 };
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
-use crate::app::server::api::{ get_profile, update_portfolio };
-use crate::app::utils::{ format_date_for_input, get_icon_by_name };
+use crate::app::server::api::{ get_profile, update_portfolio, verify };
+use crate::app::utils::format_date_for_input;
 use leptos_icons::Icon;
 use icondata as i;
 use leptos::*;
@@ -27,13 +27,19 @@ pub fn EditPage() -> impl IntoView {
         || (),
         |_| async move { get_profile().await }
     );
+
+    let (is_init, set_is_init) = create_signal(bool::from(false));
+    let (is_verify, set_is_verify) = create_signal(bool::from(false));
+    let (use_password, set_use_password) = create_signal(bool::from(false));
+    let (input_password, set_input_password) = create_signal(String::new());
+    let (is_incorrect, set_is_incorrect) = create_signal(bool::from(false));
     view! {
         <Suspense fallback=move || {
             view! { <h1>"Fetching Data..."</h1> }
         }>
         {
-            move || {
-                
+            move || {      
+                       
                 let profile_data = get_profile_info.get().and_then(Result::ok).unwrap_or_default();
                 let profile = profile_data.first().cloned().unwrap_or_default();
       
@@ -78,15 +84,30 @@ pub fn EditPage() -> impl IntoView {
                 let (contact_value, set_contact_value) = create_signal(String::new());
                 let (contact_icon, set_contact_icon) = create_signal(String::new());
                 let (is_href, set_is_href) = create_signal(bool::from(false)); 
-
-
                 let (_is_update_skill, set_is_update_skill) = create_signal(false);
                     let (_is_update_experience, set_is_update_experience) = create_signal(false);
                 let (_is_update_portfolio, set_is_update_portfolio) = create_signal(false);
                 let (_is_update_contact, set_is_update_contact) = create_signal(false);
             
                 let (is_saving, set_is_saving) = create_signal(false);
-                    let update_profile_action = Action::new(move |profile: &Profile| {
+                
+                let verify_action = Action::new(move |password: &String| {
+                    async move { 
+                        let result = verify(input_password.get()).await;
+                        match result {
+                            Ok(true) => {
+                                set_is_incorrect(false);
+                                set_is_verify(true);
+                                set_is_init(true);
+                            },
+                            _ => {
+                                set_is_incorrect(true);
+                            },
+                        }
+                    }
+                });
+                
+                let update_profile_action = Action::new(move |profile: &Profile| {
                     set_is_saving.set(true);
                     let profile = profile.clone();
                     async move {
@@ -232,6 +253,7 @@ pub fn EditPage() -> impl IntoView {
                     });
                       set_is_update_contact(true)
                 };
+                {if is_init.get() { 
                 view! {
                     <main class="tabPage">
                     <section class="topbar">
@@ -298,11 +320,9 @@ pub fn EditPage() -> impl IntoView {
                         </div>
                         <form on:submit=on_submit >
                         <div class="edit-form">
-                        <RenderTab is_page=true no=1 active_page=select_tab >
-                      
+                        <RenderTab is_page=true no=1 active_page=select_tab > 
                         <div class="edit-container">
                         <h1>"Edit Profile"</h1>
-                        
                              <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
                                 <InputField  id="avatar" label="Avatar URL" set_field=set_avatar  get_value=avatar require=false />  
                            
@@ -346,18 +366,13 @@ pub fn EditPage() -> impl IntoView {
                             </div>
                             <InputField  id="role" label="Job Role" set_field=set_role  get_value=role require=true />
                             <TextAreaField  id="about" label="About" set_field=set_about  get_value=about require=true />
-                    
                             </div>
                             </RenderTab>
-                        <RenderTab is_page=true no=2 active_page=select_tab>
-                        
+                        <RenderTab is_page=true no=2 active_page=select_tab>    
                         <div class="edit-container">
-                        <h1>"Edit Skill"</h1>
-                        
-                        <div class="formRow">
-                        
-                            <InputField  id="skill_name" label="Skill Name" set_field=set_skill_name  get_value=skill_name require=true />
-                         
+                        <h1>"Edit Skill"</h1>             
+                        <div class="formRow">   
+                            <InputField  id="skill_name" label="Skill Name" set_field=set_skill_name  get_value=skill_name require=true />        
                             <div class="formGroup">
                                 <label for="skill_level">"Level"</label>
                                 <select
@@ -390,19 +405,13 @@ pub fn EditPage() -> impl IntoView {
                         </RenderTab>
                         <RenderTab is_page=true no=3 active_page=select_tab>
                         <div class="edit-container">
-                        <h1>"Edit Experience"</h1>
-                        
+                        <h1>"Edit Experience"</h1> 
                         <InputField  id="company_name" label="Company Name" set_field=set_company_name  get_value=company_name require=true />
                         <InputField  id="company_logo_url" label="Company Logo Url" set_field=set_company_logo_url  get_value=company_logo_url require=true />
                         <InputField  id="position_name" label="Position Name" set_field=set_position_name  get_value=position_name require=true />
                         <InputField  id="start_date" label="Start Date" set_field=set_start_date  get_value=start_date require=true />
-                        <InputField  id="end_date" label="End Date" set_field=set_end_date  get_value=end_date require=true />
-                       
-                  
-                
-                    <TextAreaField  id="describe" label="Describe" set_field=set_describe  get_value=describe require=false />
-                       
-              
+                        <InputField  id="end_date" label="End Date" set_field=set_end_date  get_value=end_date require=true /> 
+                    <TextAreaField  id="describe" label="Describe" set_field=set_describe  get_value=describe require=false />       
                                 <button
                                 type="button"
                                 class="addButton"
@@ -410,23 +419,17 @@ pub fn EditPage() -> impl IntoView {
                             >
                                 "Add Experience"
                             </button>
-                    
                               <Experience  
                               is_page = true 
                               experiences=experiences
                               on_delete=Some(Callback::new(move |index| delete_experience(index)))
                               use_delete=true
-                              />               
-                                
-                        
-                           
+                              />                      
                     </div>
                         </RenderTab>
-                 
                         <RenderTab is_page=true no=4 active_page=select_tab>
                         <div class="edit-container">
-                        <h1>"Edit Portfolio"</h1>
-                        
+                        <h1>"Edit Portfolio"</h1>              
                         <InputField  id="portfolio_name" label="Project Name" set_field=set_portfolio_name  get_value=portfolio_name require=true />
                         <InputField  id="portfolio_detail" label="Project Detail" set_field=set_portfolio_detail  get_value=portfolio_detail require=true />
                         <InputField  id="portfolio_link" label="Project Link Url" set_field=set_portfolio_link  get_value=portfolio_link require=false />
@@ -448,27 +451,20 @@ pub fn EditPage() -> impl IntoView {
                           />
                     </div>
                         </RenderTab>
-                    
-                 
                         <RenderTab is_page=true no=5 active_page=select_tab>
                         <div class="edit-container">
                         <h1>"Edit Contact"</h1>
                       
-                        <a   href="https://carloskiki.github.io/icondata/" target="_blank" aria-label="Paypal" >
-                        <div class="inputArrayRow"> <Icon icon={i::ImInfo} />     Icon List     </div>
-                       </a>
-                      
                         <CheckBox id="is_href" label= "Use Href Link" set_field=set_is_href  get_value=is_href />
                         <IconDropdown label="Contact Icon"  id="contact_icon" set_field=set_contact_icon/ >
                         <InputField  id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
-                       
-                                <button
+                        <button
                                 type="button"
                                 class="addButton"
                                 on:click=add_contact
                             >
                                 "Add Contact"
-                            </button>
+                        </button>
                             <EditContacts  
                             contacts=contacts  
                             on_delete=Some(Callback::new(move |index| delete_contact(index)))
@@ -477,7 +473,8 @@ pub fn EditPage() -> impl IntoView {
                     </div>
                         </RenderTab>
                         </div>
-                        <div class="formButton">
+                        {if is_verify.get()  {
+                            view! {   <div class="formButton">
                         <button
                             type="submit"
                             class="updateButton"
@@ -494,10 +491,69 @@ pub fn EditPage() -> impl IntoView {
                             "Cancel"
                         </button>
                     </div>
+                             } }
+                     else{
+                        view! {
+                                <div> </div>
+                        }
+                     }
+                    }
                         </form>
                     </main>
                 }
-        }}
+        }   else{
+            view! {
+                <main  > <b><h1 style="font-size: 30px;">"Edit Page"</h1></b>
+            <div style="display: flex; flex-direction: column; margin-top: 50px;">
+             <b style="font-size: 18px;">Select Access Mode</b>
+                <button style="margin-top: 30px; color:green;"
+                on:click=move |_| {
+                    set_is_init(true);
+                   
+                }
+                
+                
+                ><b>Viewer Mode "(can't update)"</b></button>
+                <button style="margin-top: 30px; color:blue;"
+                on:click=move |_| {
+                    set_use_password(true);
+                }
+                ><b>Admin Mode "(can update)"</b></button>
+                </div>
+                {if use_password.get() {
+                    view! {
+                        <div style="margin-top: 30px;">
+                        <InputField  id="input_password" label="Admin Password" set_field=set_input_password  get_value=input_password require=true />
+                     <p style="color:red;">    {move || if is_incorrect.get() { "Incorrect Password" } else { "" }}</p>
+                         <div class="formButton">
+                        <button
+                            type="button"
+                            class="updateButton"
+                            on:click=  move |_| {
+                                verify_action.dispatch(input_password.get());
+                            } 
+                        >
+                            {move || if is_saving.get() { "Verifying..." } else { "Verify" }}
+                        </button>
+                      
+                    </div>
+                        
+                        </div>
+                }
+                }
+             else{
+                view! {
+ <div></div>
+                }
+             }
+            }
+                       
+                </main>
+            }
+
+        }}}
+ 
+    }
         </Suspense>
     }
 }
