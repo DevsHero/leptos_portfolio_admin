@@ -1622,6 +1622,7 @@ button:hover {
   display: flex;
   flex-direction: row;  
   border-radius: 8px;
+  justify-content: space-between;
 }
 .portfolioContainer {
   gap: 1rem;
