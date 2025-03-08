@@ -6,7 +6,6 @@ use icondata as i;
 pub fn Portfolio(
     portfolios: ReadSignal<Vec<Portfolio>>,
     on_delete: Option<Callback<usize>>, // made optional
-    is_page: bool,
     use_delete: bool
 ) -> impl IntoView {
     {
@@ -59,7 +58,7 @@ pub fn Portfolio(
                                     class="deleteButton"
                                     on:click=move |_| {
                                         if let Some(ref callback) = on_delete {
-                                            callback.call(index);
+                                            leptos::Callable::call(callback, index);
                                         }
                                     }
                                 >

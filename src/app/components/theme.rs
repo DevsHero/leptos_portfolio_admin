@@ -38,7 +38,7 @@ pub fn ThemeButton() -> impl IntoView {
         <button
             on:click=move |_| {
                 set_dark_mode(!dark_mode());
-                let new_value = if dark_mode() { "dark" } else { "light" };
+                let _new_value = if dark_mode() { "dark" } else { "light" };
                 // update_local_storage(new_value);
                 darkmode(dark_mode());
             }

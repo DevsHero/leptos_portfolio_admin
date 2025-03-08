@@ -30,7 +30,7 @@ pub fn SkillChips(
                                                     class="deleteButton"
                                                     on:click=move |_| {
                                                         if let Some(ref callback) = on_delete {
-                                                            callback.call(index);
+                                                            leptos::Callable::call(callback, index);
                                                         }
                                                     }
                                                 >

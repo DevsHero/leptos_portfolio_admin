@@ -2,11 +2,7 @@ use leptos::*;
 use leptos_icons::Icon;
 use crate::app::utils::ICON_MAP;
 #[component]
-pub fn IconDropdown(
-    id: impl Into<String>,
-    label: impl Into<String>,
-    set_field: WriteSignal<String>
-) -> impl IntoView {
+pub fn IconDropdown(label: impl Into<String>, set_field: WriteSignal<String>) -> impl IntoView {
     // Signal for the currently selected icon name (if any)
     let (selected_icon, set_selected_icon) = create_signal(None::<&'static str>);
     // Signal for whether the dropdown is open
@@ -14,12 +10,13 @@ pub fn IconDropdown(
     let label = label.into();
     view! { 
 
-        <div style="display: flex;flex-direction: row;">
+        <div  style="display: flex;flex-direction: row;">
         <label style="margin-right: 52px; margin-bottom: 15px;" >{label}</label>
        
         <div  style="position: relative;  ">
      
             <button 
+            
             type="button"
                 on:click=move |_| set_is_open.update(|open| *open = !*open)
                 style="display: flex; align-items: center; gap: 8px;"

@@ -3,8 +3,6 @@ cfg_if::cfg_if! {
         use std::env;
         use leptos::ServerFnError;
         use crate::app::models::portfolio::{ Experience, Portfolio, Profile, Skill, Contact };
-        use surrealdb::engine::remote::ws::{ Client as WsClient, Wss, Ws };
-        use surrealdb::engine::remote::http::{ Client as HttpClient, Http, Https };
         use surrealdb::engine::any::Any;
         use surrealdb::opt::auth::Root;
         use surrealdb::{ Surreal, Error };
@@ -19,9 +17,9 @@ cfg_if::cfg_if! {
             let password = env::var("SURREAL_PASS").unwrap_or("root".to_string());
             let ns = env::var("SURREAL_NAMESPACE").unwrap_or("surreal".to_string());
             let db_name = env::var("SURREAL_DB").unwrap_or("portfolio".to_string());
-            DB.connect(host).await;
+            let _ = DB.connect(host).await;
 
-            DB.signin(Root {
+            let _ = DB.signin(Root {
                 username: username.as_str(),
                 password: password.as_str(),
             }).await;
@@ -30,7 +28,7 @@ cfg_if::cfg_if! {
             Ok(())
         }
         pub async fn fetch_profile() -> Result<Option<Profile>, ServerFnError> {
-            open_db_connection().await;
+            let _ = open_db_connection().await;
             let query = DB.query(
                 "
             SELECT *,
@@ -56,7 +54,7 @@ cfg_if::cfg_if! {
             }
         }
         // pub async fn fetch_profile_skills() -> Result<Option<ProfileWithSkills>, ServerFnError> {
-        //     open_db_connection().await;
+        //     let _ = open_db_connection().await;
         //     let query = DB.query(
         //         "RETURN {
         //              profile: (SELECT * FROM profile LIMIT 1)[0],
@@ -76,7 +74,7 @@ cfg_if::cfg_if! {
         //     }
         // }
         pub async fn fetch_skill() -> Result<Option<Skill>, ServerFnError> {
-            open_db_connection().await;
+            let _ = open_db_connection().await;
             let query = DB.query("SELECT * FROM skill;").await;
             let _ = DB.invalidate().await;
             println!("Query result: {:?}", query);
@@ -99,7 +97,7 @@ cfg_if::cfg_if! {
             _is_update_experience: bool,
             _is_update_contact: bool
         ) -> Result<Option<Profile>, ServerFnError> {
-            open_db_connection().await;
+            let _ = open_db_connection().await;
 
             // Create a map of the fields to update
             let mut update_data = std::collections::HashMap::new();
@@ -147,7 +145,7 @@ cfg_if::cfg_if! {
             }
         }
         pub async fn update_skill(skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
-            open_db_connection().await;
+            let _ = open_db_connection().await;
             let delete_all_records: Result<Vec<Skill>, Error> = DB.delete("skill").await;
             match delete_all_records {
                 Ok(_deleted) => {
@@ -168,7 +166,7 @@ cfg_if::cfg_if! {
         pub async fn update_experience(
             experiences: Vec<Experience>
         ) -> Result<Vec<Experience>, ServerFnError> {
-            open_db_connection().await;
+            let _ = open_db_connection().await;
             let delete_all_records: Result<Vec<Experience>, Error> = DB.delete("experience").await;
             match delete_all_records {
                 Ok(_deleted) => {
@@ -189,7 +187,7 @@ cfg_if::cfg_if! {
         pub async fn update_portfolio(
             portfolios: Vec<Portfolio>
         ) -> Result<Vec<Portfolio>, ServerFnError> {
-            open_db_connection().await;
+            let _ = open_db_connection().await;
             let delete_all_records: Result<Vec<Portfolio>, Error> = DB.delete("portfolio").await;
             match delete_all_records {
                 Ok(_deleted) => {
@@ -208,7 +206,7 @@ cfg_if::cfg_if! {
             }
         }
         pub async fn update_contact(contacts: Vec<Contact>) -> Result<Vec<Contact>, ServerFnError> {
-            open_db_connection().await;
+            let _ = open_db_connection().await;
             let delete_all_records: Result<Vec<Contact>, Error> = DB.delete("contact").await;
             match delete_all_records {
                 Ok(_deleted) => {

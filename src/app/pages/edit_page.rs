@@ -91,7 +91,7 @@ pub fn EditPage() -> impl IntoView {
             
                 let (is_saving, set_is_saving) = create_signal(false);
                 
-                let verify_action = Action::new(move |password: &String| {
+                let verify_action = Action::new(move |_| {
                     async move { 
                         let result = verify(input_password.get()).await;
                         match result {
@@ -446,7 +446,6 @@ pub fn EditPage() -> impl IntoView {
                           <Portfolio  
                           portfolios=portfolios
                           use_delete=true
-                          is_page=true 
                           on_delete=Some(Callback::new(move |index| delete_portfolio(index)))
                           />
                     </div>
@@ -456,7 +455,7 @@ pub fn EditPage() -> impl IntoView {
                         <h1>"Edit Contact"</h1>
                       
                         <CheckBox id="is_href" label= "Use Href Link" set_field=set_is_href  get_value=is_href />
-                        <IconDropdown label="Contact Icon"  id="contact_icon" set_field=set_contact_icon/ >
+                        <IconDropdown label="Contact Icon"   set_field=set_contact_icon/ >
                         <InputField  id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
                         <button
                                 type="button"
@@ -530,7 +529,7 @@ pub fn EditPage() -> impl IntoView {
                             type="button"
                             class="updateButton"
                             on:click=  move |_| {
-                                verify_action.dispatch(input_password.get());
+                                verify_action.dispatch(());
                             } 
                         >
                             {move || if is_saving.get() { "Verifying..." } else { "Verify" }}
