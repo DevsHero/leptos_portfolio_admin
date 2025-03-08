@@ -12,25 +12,19 @@ pub fn InputArrayField(
 ) -> impl IntoView {
     let id = id.into();
     let label = label.into();
-    // Clone label for use inside the on:input closure.
-
     view! {
                     <div class="formGroup">
                     <div class="experienceRow">
                         <label for={id.clone()}>{label}</label>
-                  
-                    
                         <button
                         type="button"
-                        class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4  opacity-75 hover:opacity-100"
-    
+                        class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4  opacity-75 hover:opacity-100"   
                         on:click=move |_ev| { 
                             set_fields.update(|field| field.push("".to_string()));
                         }
                     >
                     <Icon icon={i::CgAdd} />
                     </button>
-                 
                     </div>
                         {move ||
                             get_values

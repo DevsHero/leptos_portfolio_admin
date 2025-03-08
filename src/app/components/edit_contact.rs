@@ -6,8 +6,7 @@ use crate::app::models::portfolio::Contact;
 #[component]
 pub fn EditContacts(
     contacts: ReadSignal<Vec<Contact>>,
-    on_delete: Option<Callback<usize>>, // made optional
-
+    on_delete: Option<Callback<usize>>,
     use_delete: bool
 ) -> impl IntoView {
     {
@@ -29,7 +28,7 @@ pub fn EditContacts(
                 <p>{contact.contact_icon }</p>
                 </div>
                 {
-                    // Wrap the conditional in a fragment so both branches return the same type.
+      
                     view! {
                         <>
                             {if use_delete {
@@ -55,11 +54,8 @@ pub fn EditContacts(
                 }
                 </div>
                 <p>Value : {contact.contact_value} </p>
-                <p>Use Href : {contact.is_href} </p>
-           
-                        
-              
-                        </div>  }
+                <p>Use Href : {contact.is_href} </p>        
+         </div>  }
                 })
                 .collect::<Vec<_>>()
     }

@@ -17,16 +17,6 @@ fn darkmode(enable: bool) {
 #[component]
 pub fn ThemeButton() -> impl IntoView {
     let (dark_mode, set_dark_mode) = create_signal(false);
-    // create_effect(move |_| {
-    //     let prefered_mode = get_mode();
-    //     let mode = match prefered_mode.as_string() {
-    //         Some(mode) => mode,
-    //         None => "dark".to_string(),
-    //     };
-    //     let value = mode.as_str() == "dark";
-    //     set_dark_mode(value);
-    //     darkmode(value);
-    // });
     let icon = move || {
         if dark_mode() {
             view! { <Icon icon={i::MdiWeatherNight} /> }

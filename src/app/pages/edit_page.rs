@@ -27,22 +27,20 @@ pub fn EditPage() -> impl IntoView {
         || (),
         |_| async move { get_profile().await }
     );
-
     let (is_init, set_is_init) = create_signal(bool::from(false));
     let (is_verify, set_is_verify) = create_signal(bool::from(false));
     let (use_password, set_use_password) = create_signal(bool::from(false));
     let (input_password, set_input_password) = create_signal(String::new());
     let (is_incorrect, set_is_incorrect) = create_signal(bool::from(false));
+
     view! {
         <Suspense fallback=move || {
             view! { <h1>"Fetching Data..."</h1> }
         }>
         {
-            move || {      
-                       
+            move || {                        
                 let profile_data = get_profile_info.get().and_then(Result::ok).unwrap_or_default();
                 let profile = profile_data.first().cloned().unwrap_or_default();
-      
                 //Profile 
                 let (first_name, set_first_name) = create_signal(profile.first_name);
                 let (last_name, set_last_name) = create_signal(profile.last_name);
@@ -53,7 +51,6 @@ pub fn EditPage() -> impl IntoView {
                 let (birth_date, set_birth_date) = create_signal(format_date_for_input(&profile.birth_date));
                 let (nationality, set_nationality) = create_signal(profile.nationality);
                 let (avatar, set_avatar) = create_signal(profile.avatar);
-
                 //Experience 
                 let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
                 let (company_name, set_company_name) = create_signal(String::new());
@@ -62,13 +59,11 @@ pub fn EditPage() -> impl IntoView {
                 let (position_name, set_position_name) = create_signal(String::new());
                 let (start_date, set_start_date) = create_signal(String::new());
                 let (end_date, set_end_date) = create_signal(String::new());
-                let (describe, set_describe) = create_signal(String::new());
-               
+                let (describe, set_describe) = create_signal(String::new());      
                 //Skill 
                 let (skills, set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new));
                 let (skill_name, set_skill_name) = create_signal(String::new());
                 let (skill_level, set_skill_level) = create_signal(String::from("Basic"));
-          
                 //Portfolio
                 let (portfolios, set_portfolios) = create_signal(profile.portfolios.unwrap_or_else(Vec::new));   
                 let (portfolio_name, set_portfolio_name) = create_signal(String::new());
@@ -78,7 +73,6 @@ pub fn EditPage() -> impl IntoView {
                 let (portfolio_detail, set_portfolio_detail) = create_signal(String::new());
                 let (screenshots_url, set_screenshots_url) = create_signal(vec!["".to_string()]);
                 let (stacks, set_stacks) = create_signal(vec!["".to_string()]);
-    
                 //Contact
                 let (contacts, set_contacts) = create_signal(profile.contacts.unwrap_or_else(Vec::new));
                 let (contact_value, set_contact_value) = create_signal(String::new());
@@ -88,9 +82,7 @@ pub fn EditPage() -> impl IntoView {
                     let (_is_update_experience, set_is_update_experience) = create_signal(false);
                 let (_is_update_portfolio, set_is_update_portfolio) = create_signal(false);
                 let (_is_update_contact, set_is_update_contact) = create_signal(false);
-            
                 let (is_saving, set_is_saving) = create_signal(false);
-                
                 let verify_action = Action::new(move |_| {
                     async move { 
                         let result = verify(input_password.get()).await;
@@ -105,8 +97,7 @@ pub fn EditPage() -> impl IntoView {
                             },
                         }
                     }
-                });
-                
+                });         
                 let update_profile_action = Action::new(move |profile: &Profile| {
                     set_is_saving.set(true);
                     let profile = profile.clone();
@@ -134,7 +125,7 @@ pub fn EditPage() -> impl IntoView {
              let on_submit = move |ev: SubmitEvent| {
                 ev.prevent_default();
                 let updated_profile = Profile {
-                    id: profile_id.clone(), // Use the cloned id
+                    id: profile_id.clone(),
                     first_name: first_name.get(),
                     last_name: last_name.get(),
                     about: about.get(),
@@ -510,8 +501,6 @@ pub fn EditPage() -> impl IntoView {
                     set_is_init(true);
                    
                 }
-                
-                
                 ><b>Viewer Mode "(can't update)"</b></button>
                 <button style="margin-top: 30px; color:blue;"
                 on:click=move |_| {
@@ -545,13 +534,10 @@ pub fn EditPage() -> impl IntoView {
  <div></div>
                 }
              }
-            }
-                       
+            }                       
                 </main>
             }
-
         }}}
- 
     }
         </Suspense>
     }

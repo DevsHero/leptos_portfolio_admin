@@ -26,18 +26,10 @@ pub fn Portfolio(
                     <div class="experienceRowFirstItemText">
                     <h4><b>Name</b>: {portfolio.portfolio_name}</h4>  
                     <h4><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h4> 
-                  
                     </div>
-                    </div>
-                    </a>
-              
-                  
-              
-            
-                
-                <div class="portfolioDescriptions" inner_html=portfolio.portfolio_detail></div>
-                // <div class="projectIcons">{icns}</div>
-       
+                </div>
+                </a>
+                <div class="portfolioDescriptions" inner_html=portfolio.portfolio_detail></div>    
                 </div>
    <div class="portfolioSlide">  <ImageSlider images=portfolio.screenshots_url/></div>
        </div>

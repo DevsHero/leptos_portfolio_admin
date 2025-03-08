@@ -18,12 +18,9 @@ pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
                         view! {
                         <a 
                             href=contact.contact_value 
-                            target="_blank" 
-                          
+                            target="_blank"   
                         >
-                      
                         <Icon icon={maybe_icon.unwrap_or(i::BiErrorSolid)} />
-                
                         </a>
                     }
                     } else {
@@ -32,12 +29,9 @@ pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
                        class="aLinkRow"
                         href=""
                         target="_blank" 
-                        style="pointer-events: none; opacity: 0.6;"
-                      
+                        style="pointer-events: none; opacity: 0.6;"     
                     >
-                 
                     <Icon icon={maybe_icon.unwrap_or(i::BiErrorSolid)} />
-                
                     <p> {contact.contact_value} </p>
                     </a>
                       

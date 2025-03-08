@@ -5,7 +5,7 @@ use icondata as i;
 #[component]
 pub fn SkillChips(
     skills: ReadSignal<Vec<Skill>>,
-    on_delete: Option<Callback<usize>>, // made optional
+    on_delete: Option<Callback<usize>>,
     is_page: bool,
     use_delete: bool
 ) -> impl IntoView {
@@ -20,7 +20,7 @@ pub fn SkillChips(
                             {skill.level}
                         </span>
                         {
-                            // Wrap the conditional in a fragment so both branches return the same type.
+
                             view! {
                                 <>
                                     {if use_delete {

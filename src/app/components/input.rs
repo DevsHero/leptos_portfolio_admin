@@ -11,11 +11,8 @@ pub fn InputField(
 ) -> impl IntoView {
     let id = id.into();
     let label = label.into();
-    // Clone label for use inside the on:input closure.
     let label_for_input = label.clone();
-
     let (error, set_error) = create_signal(None::<String>);
-
     view! {
         <div class="formGroup">
             <label for={id.clone()}>{label}</label>

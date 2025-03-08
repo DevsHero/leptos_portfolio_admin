@@ -1,6 +1,7 @@
 use leptos::{ server, ServerFnError };
 use crate::app::models::{ Profile, Skill };
 use std::env;
+
 #[server(GetProfile, "/api")]
 pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
     let data = retrieve_profile_api().await;
@@ -10,11 +11,13 @@ pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
         Err(e) => Err(ServerFnError::from(e)),
     }
 }
+
 #[server(Verify, "/api")]
 pub async fn verify(password: String) -> Result<bool, ServerFnError> {
     let admin_password = std::env::var("ADMIN_MODE_PASSWORD").unwrap_or("admin".to_string());
     Ok(admin_password == password)
 }
+
 #[server(UpdatePortfolio, "/api")]
 pub async fn update_portfolio(
     profile: Profile,
@@ -35,6 +38,7 @@ pub async fn update_portfolio(
         Err(e) => Err(ServerFnError::from(e)),
     }
 }
+
 #[server(UpdateSkill, "/api")]
 pub async fn update_skill(_skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
     let updated = update_skill_api(_skills).await;
@@ -43,6 +47,7 @@ pub async fn update_skill(_skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnErr
         Err(e) => Err(ServerFnError::from(e)),
     }
 }
+
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use crate::app::server::database;

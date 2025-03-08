@@ -5,7 +5,7 @@ use icondata as i;
 #[component]
 pub fn Experience(
     experiences: ReadSignal<Vec<Experience>>,
-    on_delete: Option<Callback<usize>>, // made optional
+    on_delete: Option<Callback<usize>>,
     is_page: bool,
     use_delete: bool
 ) -> impl IntoView {
@@ -33,7 +33,7 @@ pub fn Experience(
                     <div class="experienceRowFirstItemText">
                     // <b><span class="experienceNumber">{(index + 1).to_string()} </span></b>
                     {
-                        // Wrap the conditional in a fragment so both branches return the same type.
+              
                         view! {
                             <>
                                 {if use_delete {
@@ -61,7 +61,7 @@ pub fn Experience(
                 </span>
                 
                 <div class="descriptions" inner_html=experience.describe></div>
-                // <div class="projectIcons">{icns}</div>
+ 
        
        </div>
          }
