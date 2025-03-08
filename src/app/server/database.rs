@@ -1,25 +1,33 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
+        use std::env;
         use leptos::ServerFnError;
         use crate::app::models::portfolio::{ Experience, Portfolio, Profile, Skill, Contact };
-        use surrealdb::engine::remote::ws::{ Client, Wss };
+        use surrealdb::engine::remote::ws::{ Client as WsClient, Wss, Ws };
+        use surrealdb::engine::remote::http::{ Client as HttpClient, Http, Https };
+        use surrealdb::engine::any::Any;
         use surrealdb::opt::auth::Root;
         use surrealdb::{ Surreal, Error };
         use once_cell::sync::Lazy;
-        static DB: Lazy<Surreal<Client>> = Lazy::new(Surreal::init);
-        pub async fn open_db_connection() {
-            use std::env;
-            let host = env::var("SURREAL_HOST").unwrap_or("127.0.0.1:8000".to_string());
+
+        static DB: Lazy<Surreal<Any>> = Lazy::new(Surreal::init);
+        pub async fn open_db_connection() -> Result<(), Error> {
+            let host = env
+                ::var("SURREAL_PROTOCOL_HOST")
+                .unwrap_or("http:127.0.0.1:8000".to_string());
             let username = env::var("SURREAL_USER").unwrap_or("root".to_string());
             let password = env::var("SURREAL_PASS").unwrap_or("root".to_string());
             let ns = env::var("SURREAL_NAMESPACE").unwrap_or("surreal".to_string());
             let db_name = env::var("SURREAL_DB").unwrap_or("portfolio".to_string());
-            DB.connect::<Wss>(host).await;
+            DB.connect(host).await;
+
             DB.signin(Root {
                 username: username.as_str(),
                 password: password.as_str(),
             }).await;
             let _ = DB.use_ns(ns).use_db(db_name).await;
+
+            Ok(())
         }
         pub async fn fetch_profile() -> Result<Option<Profile>, ServerFnError> {
             open_db_connection().await;

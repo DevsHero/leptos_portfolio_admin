@@ -23,7 +23,7 @@ impl Default for Contact {
     fn default() -> Self {
         Self {
             contact_icon: String::from("MdiEmail"),
-            is_href: bool::from(false),
+            is_href: bool::from(true),
             contact_value: String::from("developer@portfolio.com"),
         }
     }
