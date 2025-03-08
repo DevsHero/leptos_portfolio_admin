@@ -7,14 +7,21 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 use pages::{ HomePage, EditPage };
+use server::api::site_config;
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
+    let get_config = Resource::new(
+        || (),
+        move |_| async move { site_config().await }
+    );
+    let config = get_config.get().and_then(Result::ok).unwrap_or_default().clone();
     view! {
+        
         <Stylesheet id="leptos" href="/pkg/leptos-portfolio-admin.css"/>
         <link data-trunk rel="tailwind-css" href="/style/input.css" />
-        <Title text="Full Stack Dashboard App"/>
- 
+        <Title text={config.title}/>
+        <link data-trunk rel="icon" href="public/favicon.ico" />
         <Router>
             <main>
                 <Routes>

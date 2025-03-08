@@ -1,5 +1,5 @@
 use leptos::{ server, ServerFnError };
-use crate::app::models::{ Profile, Skill };
+use crate::app::models::{ Profile, SiteConfig, Skill };
 use std::env;
 
 #[server(GetProfile, "/api")]
@@ -16,6 +16,13 @@ pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
 pub async fn verify(password: String) -> Result<bool, ServerFnError> {
     let admin_password = std::env::var("ADMIN_MODE_PASSWORD").unwrap_or("admin".to_string());
     Ok(admin_password == password)
+}
+
+#[server(SiteConfigs, "/api")]
+pub async fn site_config() -> Result<SiteConfig, ServerFnError> {
+    let title = std::env::var("SITE_TITLE").unwrap();
+    let config = SiteConfig { title };
+    Ok(config)
 }
 
 #[server(UpdatePortfolio, "/api")]

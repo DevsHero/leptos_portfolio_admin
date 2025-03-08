@@ -1,4 +1,5 @@
-# Full Stack Rust Portfolio App with Leptos, Actix Web & SurrealDB
+# Leptos Porfolio Admin
+## Full Stack SSR Pure Rust None Javascript  
 
 ## **Overview**
 
