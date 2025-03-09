@@ -32,13 +32,23 @@ pub fn EditPage() -> impl IntoView {
     let (use_password, set_use_password) = create_signal(bool::from(false));
     let (input_password, set_input_password) = create_signal(String::new());
     let (is_incorrect, set_is_incorrect) = create_signal(bool::from(false));
-
+    let (is_mobile, set_is_mobile) = create_signal(false);
+    create_effect(move |_| {
+        if let Some(window) = web_sys::window() {
+            if let Ok(width) = window.inner_width().map(|w| w.as_f64().unwrap_or(0.0)) {
+                // Here 768 is an example breakpoint; adjust as needed.
+                set_is_mobile(width < 768.0);
+            }
+        }
+    });
     view! {
+        
         <Suspense fallback=move || {
             view! { <h1>"Fetching Data..."</h1> }
         }>
         {
-            move || {                        
+            move || {     
+                             
                 let profile_data = get_profile_info.get().and_then(Result::ok).unwrap_or_default();
                 let profile = profile_data.first().cloned().unwrap_or_default();
                 //Profile 
@@ -246,8 +256,8 @@ pub fn EditPage() -> impl IntoView {
                 };
                 {if is_init.get() { 
                 view! {
-                    <main class="tabPage">
-                    <section class="topbar">
+                    <main class="tabPage" style=if is_mobile.get() {"width: 19rem;"} else {""}>
+                    <section class="topbar"  >
                                 <div class="pill">
                                 <a
                                 href="/"
@@ -267,8 +277,9 @@ pub fn EditPage() -> impl IntoView {
                                     <ThemeButton />
                                 </div>
                             </section>
-                        <div class="tabSectionSelector">
+                        <div class="tabSectionSelector" >
                             <button
+                            style=if is_mobile.get() {"font-size:14px"} else {""}
                                 class=move || {
                                     if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
                                 }
@@ -277,6 +288,7 @@ pub fn EditPage() -> impl IntoView {
                                Profile
                             </button>
                             <button
+                            style=if is_mobile.get() {"font-size:14px"} else {""}
                                 class=move || {
                                     if select_tab() == 2 { "tabsTitle active" } else { "tabsTitle" }
                                 }
@@ -285,6 +297,7 @@ pub fn EditPage() -> impl IntoView {
                                 Skill
                             </button>
                             <button
+                            style=if is_mobile.get() {"font-size:14px"} else {""}
                             class=move || {
                                 if select_tab() == 3 { "tabsTitle active" } else { "tabsTitle" }
                             }
@@ -293,6 +306,7 @@ pub fn EditPage() -> impl IntoView {
                             Experience
                         </button>
                         <button
+                        style=if is_mobile.get() {"font-size:14px"} else {""}
                         class=move || {
                             if select_tab() == 4 { "tabsTitle active" } else { "tabsTitle" }
                         }
@@ -301,6 +315,7 @@ pub fn EditPage() -> impl IntoView {
                         Portfolio
                     </button>
                     <button
+                    style=if is_mobile.get() {"font-size:14px"} else {""}
                     class=move || {
                         if select_tab() == 5 { "tabsTitle active" } else { "tabsTitle" }
                     }
@@ -310,24 +325,24 @@ pub fn EditPage() -> impl IntoView {
                 </button>
                         </div>
                         <form on:submit=on_submit >
-                        <div class="edit-form">
+              
                         <RenderTab is_page=true no=1 active_page=select_tab > 
-                        <div class="edit-container">
+                        <div class="edit-container ">
                         <h1>"Edit Profile"</h1>
                              <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
                                 <InputField  id="avatar" label="Avatar URL" set_field=set_avatar  get_value=avatar require=false />  
                            
-                            <div class="formRow">
+                            <div class=if is_mobile.get() {""} else {"formRow"} >
                                 <InputField  id="first_name" label="First Name" set_field=set_first_name  get_value=first_name require=true />
                                 <InputField  id="last_name" label="Last Name" set_field=set_last_name  get_value=last_name require=true />
                             </div>
 
-                            <div class="formRow">
+                            <div class=if is_mobile.get() {""} else {"formRow"}>
                             <InputField  id="nick_name" label="Nick Name" set_field=set_nick_name  get_value=nick_name require=false />
                             <InputField  id="nationality" label="Nationality" set_field=set_nationality  get_value=nationality require=true />
                             </div>
 
-                            <div class="formRow">
+                            <div class=if is_mobile.get() {""} else {"formRow"}>
                                 <div class="formGroup" >
                                     <label for="gender">"Gender"</label>
                                     <select
@@ -362,7 +377,7 @@ pub fn EditPage() -> impl IntoView {
                         <RenderTab is_page=true no=2 active_page=select_tab>    
                         <div class="edit-container">
                         <h1>"Edit Skill"</h1>             
-                        <div class="formRow">   
+                        <div class=if is_mobile.get() {""} else {"formRow"}>   
                             <InputField  id="skill_name" label="Skill Name" set_field=set_skill_name  get_value=skill_name require=true />        
                             <div class="formGroup">
                                 <label for="skill_level">"Level"</label>
@@ -462,7 +477,7 @@ pub fn EditPage() -> impl IntoView {
                              / >
                     </div>
                         </RenderTab>
-                        </div>
+                    
                         {if is_verify.get()  {
                             view! {   <div class="formButton">
                         <button
@@ -493,20 +508,21 @@ pub fn EditPage() -> impl IntoView {
                 }
         }   else{
             view! {
-                <main  > <b><h1 style="font-size: 30px;">"Edit Page"</h1></b>
+                <main style="  align-items: center;
+  justify-content: center;" > <b><h1 style="font-size: 1.5rem;">"Edit Page"</h1></b>
             <div style="display: flex; flex-direction: column; margin-top: 50px;">
              <b style="font-size: 18px;">Select Access Mode</b>
-                <button style="margin-top: 30px; color:green;"
+                <button style="margin-top: 20px; color:green;"
                 on:click=move |_| {
                     set_is_init(true);
                    
                 }
-                ><b>Viewer Mode "(can't update)"</b></button>
-                <button style="margin-top: 30px; color:blue;"
+                >Viewer Mode "(can't update)"</button>
+                <button style="margin-top: 20px; color:blue;"
                 on:click=move |_| {
                     set_use_password(true);
                 }
-                ><b>Admin Mode "(can update)"</b></button>
+                >Admin Mode "(can update)"</button>
                 </div>
                 {if use_password.get() {
                     view! {

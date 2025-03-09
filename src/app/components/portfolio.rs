@@ -9,6 +9,16 @@ pub fn Portfolio(
     use_delete: bool
 ) -> impl IntoView {
     {
+        let (is_mobile, set_is_mobile) = create_signal(false);
+        create_effect(move |_| {
+            if let Some(window) = web_sys::window() {
+                if let Ok(width) = window.inner_width().map(|w| w.as_f64().unwrap_or(0.0)) {
+                    // Here 768 is an example breakpoint; adjust as needed.
+                    set_is_mobile(width < 768.0);
+                }
+            }
+        });
+
         move ||
             portfolios
                 .get()
@@ -16,58 +26,118 @@ pub fn Portfolio(
                 .enumerate()
                 .map(|(index, portfolio)| {
                     view! {
-                 <div class="portfolioContainer">     
-               <div class="portfolioRow">
-            
-               <div class="portfolioColumn">
-                <a href=portfolio.portfolio_link target="_blank" >
-                <div class="portfolioHeader">
-                    <img src=portfolio.portfolio_icon_url alt="Project Icon" />
-                    <div class="experienceRowFirstItemText">
-                    <h4><b>Name</b>: {portfolio.portfolio_name}</h4>  
-                    <h4><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h4> 
-                    </div>
-                </div>
-                </a>
-                <div class="portfolioDescriptions" inner_html=portfolio.portfolio_detail></div>    
-                </div>
-   <div class="portfolioSlide">  <ImageSlider images=portfolio.screenshots_url/></div>
-       </div>
-       <div class="editContactRow">
-       <div class="stackRow">
-       <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
-           move || stacks.iter().enumerate().map(|(index, stack)| {
-               view! { <p  >{index +1}.{stack} </p> }
-           }).collect::<Vec<_>>()}
-              {
- 
-            view! {
-                <>
-                    {if use_delete {
-                        view! {
-                            <div>
-                                <button
-                                    class="deleteButton"
-                                    on:click=move |_| {
-                                        if let Some(ref callback) = on_delete {
-                                            leptos::Callable::call(callback, index);
+                        {
+                            if is_mobile.get() {
+                                view! {
+                        <div class="portfolioContainerMobile"  >     
+                      
+                        {
+          
+                            view! {
+                                <>
+                                    {if use_delete {
+                                        view! {
+                                            <div>
+                                                <button
+                                                  style="justify-content: right; width: 100%;"
+                                                    class="deleteButton"
+                                                    on:click=move |_| {
+                                                        if let Some(ref callback) = on_delete {
+                                                            leptos::Callable::call(callback, index);
+                                                        }
+                                                    }
+                                                >
+                                                <Icon icon={i::BsTrash} />
+                                                </button>
+                                            </div>
                                         }
-                                    }
-                                >
-                                <Icon icon={i::BsTrash} />
-                                </button>
-                            </div>
+                                    } else {
+                                        view! { <div></div> }
+                                    }}
+                                </>
+                            }
                         }
-                    } else {
-                        view! { <div></div> }
-                    }}
-                </>
-            }
-        }
-           </div>
-           </div> 
-   </div>
-         }
+                         <a href=portfolio.portfolio_link target="_blank" >
+                         <div class="portfolioHeader">
+                             <img src=portfolio.portfolio_icon_url alt="Project Icon" />
+                             <div class="experienceRowFirstItemText">
+                             <h4 style={"font-size: 13px"}><b>Name</b>: {portfolio.portfolio_name}</h4>  
+                             <h4 style={"font-size: 13px"}><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h4> 
+                             </div>
+                         </div>
+                         </a>
+                         <div class="portfolioDescriptions" style={"height: 5rem"} inner_html=portfolio.portfolio_detail ></div>    
+                   
+                         
+                         <ImageSlider images=portfolio.screenshots_url/>
+               
+                <div class="editContactRow">
+                <div class="stackRow">
+                <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
+                    move || stacks.iter().enumerate().map(|(index, stack)| {
+                        view! { <p style="margin-left:5px" >{index +1}.{stack} </p> }
+                    }).collect::<Vec<_>>()}
+                     
+                    </div>
+                    </div> 
+            </div>
+                        }
+                            } else {
+                                view! {
+                       <div class="portfolioContainer">     
+                        <div class="portfolioRow">    
+                        <div class="portfolioColumn">
+                         <a href=portfolio.portfolio_link target="_blank" >
+                         <div class="portfolioHeader">
+                             <img src=portfolio.portfolio_icon_url alt="Project Icon" />
+                             <div class="experienceRowFirstItemText">
+                             <h4><b>Name</b>: {portfolio.portfolio_name}</h4>  
+                             <h4><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h4> 
+                             </div>
+                         </div>
+                         </a>
+                         <div class="portfolioDescriptions" inner_html=portfolio.portfolio_detail></div>    
+                         </div>
+                         
+            <ImageSlider images=portfolio.screenshots_url/>
+                </div>
+                <div class="editContactRow">
+                <div class="stackRow">
+                <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
+                    move || stacks.iter().enumerate().map(|(index, stack)| {
+                        view! { <p style="margin-left:5px"  >{index +1}.{stack} </p> }
+                    }).collect::<Vec<_>>()}
+                       {
+          
+                     view! {
+                         <>
+                             {if use_delete {
+                                 view! {
+                                     <div>
+                                         <button
+                                             class="deleteButton"
+                                             on:click=move |_| {
+                                                 if let Some(ref callback) = on_delete {
+                                                     leptos::Callable::call(callback, index);
+                                                 }
+                                             }
+                                         >
+                                         <Icon icon={i::BsTrash} />
+                                         </button>
+                                     </div>
+                                 }
+                             } else {
+                                 view! { <div></div> }
+                             }}
+                         </>
+                     }
+                 }
+                    </div>
+                    </div> 
+            </div>}
+                            }
+                        }
+                    }
                 })
                 .collect::<Vec<_>>()
     }

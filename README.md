@@ -1,61 +1,47 @@
-# Leptos Porfolio Admin
-## Full Stack SSR Pure Rust None Javascript  
+# Leptos Portfolio Admin
+### Fullstack ssr pure rust portfolio site with admin system 
 
 ## **Overview**
 
-This project we are build a modern full-stack Portfolio application using Rust. It combines:
+This is all in one portfolio project that can manage any data from admin system.
+My inspiration is anyone can update portfolio with dynamic data not just static data.
+And anyone can learning from my scracth how to understand ssr and fullstack role.
 
-- **Leptos** for the frontend, providing interactive and responsive user interfaces.
-- **Actix Web** for the backend, ensuring high-performance and robust API handling.
-- **SurrealDB** for managing and querying complex data with ease.
+## **Stack**
+- **Leptos**: rust frontend with ssr framework .
+- **Actix Web**: rust backend framework for API and other.
+- **SurrealDB**: for storing data in database.
+- **Tailwind**: css for ui.
 
 ## **Features**
 
-- **User-friendly Portfolio:** Displays key statistics like team size and monthly costs.
-- **Team management:**
-  - Add new team members with details like name, title, level, and compensation.
-  - Edit existing team member information.
-  - Delete team members from the system.
-- **Data visualization:** Includes a simple bar chart to visualize team member distribution by role.
-- **Multi-model database:** Integration with SurrealDB for flexible and powerful data handling.
+- **Portfolio page:** 
+  - Profile: name, age, nationality, gender ,job role
+  - About me: support rich html text **(On development)**
+  - Skills: multiple skill name with level
+  - Contact: multiple dynamic contact that can customize icon 
+  - Experiences: company logo , company name, position, work period, description
+  - Portfolio: project name, project photos, is opensource, description, stacks 
+- **Admin edit page:**
+  - Permission Mode: for edit page have 2 mode can access edit page 
+    - viewer mode can only view no password require.
+    - admin mode can update the data and require password (password in .env) 
+  - section Profile: edit profile, about me
+  - section Skill: add or remove add Skill 
+  - section Experience: add or remove Experience 
+  - section Portfolio: add or remove Portfolio 
+  - section Contact: add or remove Contact (The contact icon mapping from rust icondata now only have 7 icons if you need more just add in ICON_MAP utils 
+  you can checkout this link https://carloskiki.github.io/icondata/ for more icon)  
 
----
+- **Server:** Simple API support all connect method to surrealdb
+- **Site Config:** 
+  - site title - support now
+  - meta tags -  on development
+  - other seo tags - maybe
+- **Darkmode:** now support darkmode (but not permanent setup yet on progress to store config localstorage)
 
-## **What is Leptos?**
 
-[Leptos](https://github.com/leptos-rs/leptos) is a Rust-based framework for building modern web applications. It allows you to write reactive UIs using declarative syntax.
-
-- Why Leptos?
-  - Performance: Highly optimized for speed and efficiency.
-  - SSR: Render HTML on the server for better SEO and faster initial load times.
-  - Reusability: Build reusable components for a modular codebase.
-
----
-
-## **SSR vs. CSR**
-
-- **Server-Side Rendering (SSR):**
-  - Renders the application’s HTML on the server before sending it to the client.
-  - Benefits: Faster initial load, SEO-friendly, and works well for content-heavy applications.
-  - Example: When a user visits the Portfolio, the server generates the initial view before the browser loads additional interactivity.
-- **Client-Side Rendering (CSR):**
-  - Renders the application on the client’s browser using JavaScript or WebAssembly.
-  - Benefits: Rich interactivity and smoother navigation without reloading the page.
-  - Example: After the Portfolio loads, any user interaction (e.g., adding data) is handled dynamically in the browser.
-
----
-
-## **Technologies Used:**
-
-- **Rust:** Programming language.
-- **Leptos:** Frontend framework.
-- **Actix Web:** Backend framework.
-- **SurrealDB:** NoSQL database.
-- **Tailwind CSS:** For styling.
-
----
-
-## **How It Works**
+## **How to run**
 
 1. Frontend (Leptos):
 

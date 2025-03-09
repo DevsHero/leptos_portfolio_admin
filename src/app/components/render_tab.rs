@@ -11,7 +11,7 @@ pub fn RenderTab(
         if !is_page {
             if no == active_page() { "tabContainer activePage" } else { "tabContainer" }
         } else {
-            if no == active_page() { "tabPageContainer activePage" } else { "tabPageContainer" }
+            if no == active_page() { "tabPageContainer activePage " } else { "tabPageContainer" }
         }
     });
     view! {
