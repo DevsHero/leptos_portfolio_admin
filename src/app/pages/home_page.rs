@@ -15,7 +15,7 @@ pub fn HomePage() -> impl IntoView {
     );
     view! {
     <Suspense fallback = move || {
-        view! { <h1>"Fetching Data..."</h1> }
+        view! { <h1 style="margin: 1rem;">"Fetching Data..."</h1> }
     }>
     {
         move || {

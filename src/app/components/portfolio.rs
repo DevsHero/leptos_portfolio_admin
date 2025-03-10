@@ -27,6 +27,7 @@ pub fn Portfolio(
                 .map(|(index, portfolio)| {
                     view! {
                         {
+                            // select css design by device
                             if is_mobile.get() {
                                 view! {
                         <div class="portfolioContainerMobile"  >     
