@@ -1,6 +1,6 @@
 use crate::app::components::SkillChips;
 use crate::app::{
-    components::{ SelectTab, ThemeButton, HomeContacts },
+    components::{ SelectTab, ThemeButton, HomeContacts, Loading },
     server::api::get_profile,
     utils::calculate_age,
 };
@@ -15,7 +15,7 @@ pub fn HomePage() -> impl IntoView {
     );
     view! {
     <Suspense fallback = move || {
-        view! { <h1 style="margin: 1rem;">"Fetching Data..."</h1> }
+        view! { <Loading/> }
     }>
     {
         move || {

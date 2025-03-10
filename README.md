@@ -34,6 +34,7 @@ And anyone can learning from my scracth how to understand ssr and fullstack role
   you can checkout this link https://carloskiki.github.io/icondata/ for more icon)  
 
 - **Server:** Simple API support all connect method to surrealdb
+- **Responsive UI:** Support css both web and mobile
 - **Site Config:** 
   - site title - support now
   - meta tags -  on development

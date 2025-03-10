@@ -1528,6 +1528,11 @@ button:hover {
    width: 20rem;
   
 }
+.loading{
+  padding: 2rem;
+    justify-content: center;
+    align-items: center;
+}
 /* mobile css */
 @media (width <  768px) {
   .tabPage {

@@ -10,6 +10,7 @@ use crate::app::components::{
     SkillChips,
     TextAreaField,
     ThemeButton,
+    Loading,
 };
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
@@ -36,7 +37,7 @@ pub fn EditPage() -> impl IntoView {
     view! {
         
         <Suspense fallback=move || {
-            view! { <h1 style="margin: 1rem;">"Fetching Data..."</h1> }
+            view! { <Loading /> }
         }>
         {
             move || {     

@@ -26,3 +26,5 @@ pub mod dropdown_icon;
 pub use dropdown_icon::IconDropdown;
 pub mod edit_contact;
 pub use edit_contact::EditContacts;
+pub mod loading;
+pub use loading::Loading;
