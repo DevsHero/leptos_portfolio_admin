@@ -324,16 +324,16 @@ pub fn EditPage() -> impl IntoView {
                         <div class="edit-container ">
                         <h1>"Edit Profile"</h1>
                              <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
-                                <InputField  id="avatar" label="Avatar URL" set_field=set_avatar  get_value=avatar require=false />  
+                                <InputField input_type="text" id="avatar" label="Avatar URL" set_field=set_avatar  get_value=avatar require=false />  
                            
                             <div class="formRow" >
-                                <InputField  id="first_name" label="First Name" set_field=set_first_name  get_value=first_name require=true />
-                                <InputField  id="last_name" label="Last Name" set_field=set_last_name  get_value=last_name require=true />
+                                <InputField input_type="text" id="first_name" label="First Name" set_field=set_first_name  get_value=first_name require=true />
+                                <InputField input_type="text" id="last_name" label="Last Name" set_field=set_last_name  get_value=last_name require=true />
                             </div>
 
                             <div class="formRow">
-                            <InputField  id="nick_name" label="Nick Name" set_field=set_nick_name  get_value=nick_name require=false />
-                            <InputField  id="nationality" label="Nationality" set_field=set_nationality  get_value=nationality require=true />
+                            <InputField input_type="text" id="nick_name" label="Nick Name" set_field=set_nick_name  get_value=nick_name require=false />
+                            <InputField input_type="text" id="nationality" label="Nationality" set_field=set_nationality  get_value=nationality require=true />
                             </div>
 
                             <div class="formRow">
@@ -364,7 +364,7 @@ pub fn EditPage() -> impl IntoView {
                         />
                                 </div>
                             </div>
-                            <InputField  id="role" label="Job Role" set_field=set_role  get_value=role require=true />
+                            <InputField input_type="text" id="role" label="Job Role" set_field=set_role  get_value=role require=true />
                             <TextAreaField  id="about" label="About" set_field=set_about  get_value=about require=true />
                             </div>
                             </RenderTab>
@@ -372,7 +372,7 @@ pub fn EditPage() -> impl IntoView {
                         <div class="edit-container">
                         <h1>"Edit Skill"</h1>             
                         <div class="formRow">   
-                            <InputField  id="skill_name" label="Skill Name" set_field=set_skill_name  get_value=skill_name require=true />        
+                            <InputField input_type="text" id="skill_name" label="Skill Name" set_field=set_skill_name  get_value=skill_name require=true />        
                             <div class="formGroup">
                                 <label for="skill_level">"Level"</label>
                                 <select
@@ -406,11 +406,11 @@ pub fn EditPage() -> impl IntoView {
                         <RenderTab is_page=true no=3 active_page=select_tab>
                         <div class="edit-container">
                         <h1>"Edit Experience"</h1> 
-                        <InputField  id="company_name" label="Company Name" set_field=set_company_name  get_value=company_name require=true />
-                        <InputField  id="company_logo_url" label="Company Logo Url" set_field=set_company_logo_url  get_value=company_logo_url require=true />
-                        <InputField  id="position_name" label="Position Name" set_field=set_position_name  get_value=position_name require=true />
-                        <InputField  id="start_date" label="Start Date" set_field=set_start_date  get_value=start_date require=true />
-                        <InputField  id="end_date" label="End Date" set_field=set_end_date  get_value=end_date require=true /> 
+                        <InputField input_type="text" id="company_name" label="Company Name" set_field=set_company_name  get_value=company_name require=true />
+                        <InputField input_type="text" id="company_logo_url" label="Company Logo Url" set_field=set_company_logo_url  get_value=company_logo_url require=true />
+                        <InputField input_type="text" id="position_name" label="Position Name" set_field=set_position_name  get_value=position_name require=true />
+                        <InputField input_type="text" id="start_date" label="Start Date" set_field=set_start_date  get_value=start_date require=true />
+                        <InputField input_type="text" id="end_date" label="End Date" set_field=set_end_date  get_value=end_date require=true /> 
                     <TextAreaField  id="describe" label="Describe" set_field=set_describe  get_value=describe require=false />       
                                 <button
                                 type="button"
@@ -430,10 +430,10 @@ pub fn EditPage() -> impl IntoView {
                         <RenderTab is_page=true no=4 active_page=select_tab>
                         <div class="edit-container">
                         <h1>"Edit Portfolio"</h1>              
-                        <InputField  id="portfolio_name" label="Project Name" set_field=set_portfolio_name  get_value=portfolio_name require=true />
-                        <InputField  id="portfolio_detail" label="Project Detail" set_field=set_portfolio_detail  get_value=portfolio_detail require=true />
-                        <InputField  id="portfolio_link" label="Project Link Url" set_field=set_portfolio_link  get_value=portfolio_link require=false />
-                        <InputField  id="portfolio_icon_url" label="Project Icon Url" set_field=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />
+                        <InputField input_type="text" id="portfolio_name" label="Project Name" set_field=set_portfolio_name  get_value=portfolio_name require=true />
+                        <InputField input_type="text" id="portfolio_detail" label="Project Detail" set_field=set_portfolio_detail  get_value=portfolio_detail require=true />
+                        <InputField input_type="text" id="portfolio_link" label="Project Link Url" set_field=set_portfolio_link  get_value=portfolio_link require=false />
+                        <InputField input_type="text" id="portfolio_icon_url" label="Project Icon Url" set_field=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />
                         <InputArrayField  id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
                         <InputArrayField  id="stacks" label="Project Stack" set_fields=set_stacks  get_values=stacks require=false />
                                <button
@@ -456,7 +456,7 @@ pub fn EditPage() -> impl IntoView {
                       
                         <CheckBox id="is_href" label= "Use Href Link" set_field=set_is_href  get_value=is_href />
                         <IconDropdown label="Contact Icon"   set_field=set_contact_icon/ >
-                        <InputField  id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
+                        <InputField input_type="text" id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
                         <button
                                 type="button"
                                 class="addButton"
@@ -520,7 +520,7 @@ pub fn EditPage() -> impl IntoView {
                 {if use_password.get() {
                     view! {
                         <div style="margin-top: 30px;">
-                        <InputField  id="input_password" label="Admin Password" set_field=set_input_password  get_value=input_password require=true />
+                        <InputField input_type="password" id="input_password" label="Admin Password" set_field=set_input_password  get_value=input_password require=true />
                      <p style="color:red;">    {move || if is_incorrect.get() { "Incorrect Password" } else { "" }}</p>
                          <div class="formButton">
                         <button

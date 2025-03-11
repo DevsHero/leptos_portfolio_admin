@@ -10,7 +10,7 @@ async fn main() -> std::io::Result<()> {
     use leptos_actix::{ generate_route_list, LeptosRoutes };
     let env_result = dotenv();
     if env_result.is_err() {
-        logging::warn!("There is no corresponding .env file");
+        logging::warn!("There is no local development .env file");
     }
     let conf = get_configuration(None).await.unwrap();
     let addr = conf.leptos_options.site_addr;
