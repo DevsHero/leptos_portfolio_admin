@@ -1,0 +1,84 @@
+-- Define the database
+DEFINE DATABASE portfolio;
+
+-- defined database
+DEFINE NAMESPACE IF NOT EXISTS surreal;
+
+-- use namespace and database
+USE NS surreal;
+USE DB portfolio;
+
+-- create table
+DEFINE TABLE profile;
+DEFINE TABLE contact;
+DEFINE TABLE experience;
+DEFINE TABLE portfolio;
+DEFINE TABLE skill;
+
+-- Insert data into the profile table
+INSERT INTO profile {
+    about: "I am fullstack developer love to learn new thing",
+    avatar: "https://avatars.githubusercontent.com/u/7464728?v=4",
+    birth_date: "2000-01-01",
+    first_name: "Thanon",
+    gender: "Male",
+    last_name: "Aphithanawat",
+    nationality: "Thai",
+    nick_name: "Hero",
+    role: "Senior Fullstack Developer"
+};
+
+-- Insert data into the contact table
+INSERT INTO contact {
+    contact_icon: "AiFacebookOutlined",
+    contact_value: "https://www.facebook.com/KickAssHERO",
+    is_href: true
+};
+
+INSERT INTO contact {
+    contact_icon: "AiMailFilled",
+    contact_value: "mailto:someone@example.com",
+    is_href: true
+};
+
+-- Insert data into the experience table
+INSERT INTO experience {
+    company_logo_url: "https://seeklogo.com/images/A/avengers-logo-5B0A68AFB3-seeklogo.com.png",
+    company_name: "Avengers Team",
+    company_url: "https://en.wikipedia.org/wiki/List_of_Avengers_members",
+    describe: "Assisted in retrieving and securing dangerous alien technology (Captain America: Civil War).\nEngaged in high-stakes urban combat during Battle of New York (Infinity War).\nParticipated in intergalactic rescue missions; fought Thanos’ army on Titan.\nBlipped out of existence for five years, then returned to help in the final battle against Thanos (Endgame).\nProvided support in rebuilding efforts post-Blip, maintaining neighborhood security.",
+    end_date: "2004-01-01",
+    position_name: "Spider Man",
+    start_date: "2000-01-01"
+};
+
+-- Insert data into the portfolio table
+INSERT INTO portfolio {
+    is_private: false,
+    portfolio_detail: "Fullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin system",
+    portfolio_icon_url: "https://cdn-icons-png.flaticon.com/512/25/25231.png",
+    portfolio_link: "https://github.com/zelda2003/leptos_portfolio_admin",
+    portfolio_name: "Leptos Portfolio Admin",
+    screenshots_url: [
+        "https://149842033.v2.pressablecdn.com/wp-content/uploads/2019/03/breed2-free-portfolio-website-templates.jpg",
+        "https://themewagon.com/wp-content/uploads/2021/11/html.design.jpg"
+    ],
+    stacks: [
+        "Rust",
+        "Leptos",
+        "ActixWeb",
+        "Tailwind",
+        "SurrealDB"
+    ]
+};
+
+-- Insert data into the skill table
+INSERT INTO skill {
+    level: "Middle",
+    name: "Postgresql"
+};
+
+INSERT INTO skill {
+    level: "Middle",
+    name: "MongoDB"
+};

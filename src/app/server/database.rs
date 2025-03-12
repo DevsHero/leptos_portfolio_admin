@@ -53,26 +53,7 @@ cfg_if::cfg_if! {
                 Err(e) => Err(ServerFnError::from(e)),
             }
         }
-        // pub async fn fetch_profile_skills() -> Result<Option<ProfileWithSkills>, ServerFnError> {
-        //     let _ = open_db_connection().await;
-        //     let query = DB.query(
-        //         "RETURN {
-        //              profile: (SELECT * FROM profile LIMIT 1)[0],
-        //              skill: (SELECT * FROM skill)
-        //          }"
-        //     ).await;
-        //     let _ = DB.invalidate().await;
-        //     match query {
-        //         Ok(mut res) => {
-        //             let found = res.take(0);
-        //             match found {
-        //                 Ok(result) => Ok(result),
-        //                 Err(e) => Err(ServerFnError::from(e))
-        //             }
-        //         },
-        //         Err(e) => Err(ServerFnError::from(e))
-        //     }
-        // }
+
         pub async fn fetch_skill() -> Result<Option<Skill>, ServerFnError> {
             let _ = open_db_connection().await;
             let query = DB.query("SELECT * FROM skill;").await;

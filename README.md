@@ -1,106 +1,101 @@
 # Leptos Portfolio Admin
-### Fullstack ssr pure rust portfolio site with admin system 
+### Fullstack SSR Pure Rust Portfolio Site with Administration Panel
 
 ## **Overview**
 
-This is all in one portfolio project that can manage any data from admin system.
-My inspiration is anyone can update portfolio with dynamic data not just static data.
-And anyone can learning from my scracth how to understand ssr and fullstack role.
+An all-in-one portfolio solution with dynamic content management through an admin interface. Designed to enable users to update portfolio content dynamically rather than using static data. This project also serves as a learning resource for understanding SSR (Server-Side Rendering) and full-stack implementation in Rust.
 
 ## **Stack**
-- **Leptos**: rust frontend with ssr framework .
-- **Actix Web**: rust backend framework for API and other.
-- **SurrealDB**: for storing data in database.
-- **Tailwind**: css for ui.
+- **Leptos 6**: Rust frontend framework with SSR capabilities
+- **Actix Web**: Rust backend framework for API handling
+- **SurrealDB**: Database for data storage
+- **Tailwind**:  Utility-first CSS framework for UI design
 
 ## **Features**
 
-- **Portfolio page:** 
-  - Profile: name, age, nationality, gender ,job role
-  - About me: support rich html text **(On development)**
-  - Skills: multiple skill name with level
-  - Contact: multiple dynamic contact that can customize icon 
-  - Experiences: company logo , company name, position, work period, description
-  - Portfolio: project name, project photos, is opensource, description, stacks 
-- **Admin edit page:**
-  - Permission Mode: for edit page have 2 mode can access edit page 
-    - viewer mode can only view no password require.
-    - admin mode can update the data and require password (password in .env) 
-  - section Profile: edit profile, about me
-  - section Skill: add or remove add Skill 
-  - section Experience: add or remove Experience 
-  - section Portfolio: add or remove Portfolio 
-  - section Contact: add or remove Contact (The contact icon mapping from rust icondata now only have 7 icons if you need more just add in ICON_MAP utils 
-  you can checkout this link https://carloskiki.github.io/icondata/ for more icon)  
+- **Portfolio Page:**
+  - **Profile:** Displays the user's name, age, nationality, gender, job role.
+  - **About Me:** Supports rich HTML text (currently under development).
+  - **Skills:** Lists multiple skills with their respective levels.
+  - **Contact:** Allows for dynamic contact information customization with different icons.
+  - **Experiences:** Includes company logo, company name, position, work period, and description.
+  - **Portfolio:** Features project names, photos, open-source status, descriptions, and associated technology stacks.
 
-- **Server:** Simple API support all connect method to surrealdb
-- **Responsive UI:** Support css both web and mobile
-- **Site Config:** 
-  - site title - support now
-  - meta tags -  on development
-  - other seo tags - maybe
-- **Darkmode:** now support darkmode (but not permanent setup yet on progress to store config localstorage)
+- **Admin Edit Page:**
+  - **Permission Modes:** Offers two access modes for the edit page:
+    - **Viewer Mode:** Allows viewing without a password requirement.
+    - **Admin Mode:** Enables data updates with a required password (password stored in `.env`).
+  - **Sections:**
+    - **Profile:** Edit profile and about me information.
+    - **Skills:** Add or remove skills.
+    - **Experiences:** Add or remove experiences.
+    - **Portfolio:** Add or remove portfolio items.
+    - **Contact:** Add or remove contact details.
+      (Note: The current icon mapping is limited to 7 icons. For additional icons, you can expand the `ICON_MAP` in utils and refer to this link for more icons: [https://carloskiki.github.io/icondata/](https://carloskiki.github.io/icondata/) )
+
+
+- **Server:** Provides a simple API supporting all connection methods to SurrealDB.
+- **Responsive UI:** Supports both web and mobile layouts through Tailwind CSS.
+- **Site Config:**
+  - **Site Title:** Currently supported.
+  - **Meta Tags:** Under development.
+  - **Other SEO Tags:** Potential future additions.
+- **Dark Mode:** Now supports dark mode (currently under progress to store configuration in local storage).
+
 
 
 ## **How to run**
-
-1. Frontend (Leptos):
-
-- The user interface is built using Leptos components.
-- Includes SSR for fast initial load and CSR for dynamic interactions.
-
-2. Backend (Actix Web):
-
-- Handles API requests and communicates with the database.
-- Provides endpoints for authentication, data fetching, and updates.
-
-3. Database (SurrealDB):
-
-- Stores user data and Portfolio information.
-- Supports complex queries for multi-relational data.
-
----
-
-## **Getting Started**
-
-### **Prerequisites**
-
-- Install Rust and Cargo.
-- Install Leptos and its dependencies.
-  ```bash
-      -$ cargo install cargo-leptos
-      -$ rustup toolchain install nightly // set as default
-      -$ cargo install wasm32-unknown-unknown // WASM build pacakage
+- **Prerequisites:**
+   **Prepare .env:**
   ```
-- Make sure install SurrealDB installed.
+  mv .env-example .env
+  ```
+   **Setup Surrealdb:**
+  You have two ways to use SurrealDB for free—just choose one.
+   - [Local Surrealdb](https://surrealdb.com/install)
+   - [Cloud Surrealdb](https://surrealist.app/)
 
-### **Setup Instructions**
+   **Setup Database:**
+    
+- **Via Local Development:**
+  1. install rust
+  ```
+     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  ```  
+  2. install leptos
+  ```
+  rustup toolchain install nightly
+  rustup default nightly
+  rustup target add wasm32-unknown-unknown
+  cargo install cargo-leptos
+  ```
+  3. run letpos
+  ```
+  cargo leptos watch
+  ```
+  4. The site already served at localhost:3000
 
-1. **Clone the repository:**
-   ```bash
-       git clone https://github.com/dev-dhanushkumar/leptos_leptos_portfolio_admin.git
-   ```
-2. **Install dependencies:**
-   ```bash
-       cargo build
-   ```
-3. Start the SurrealDB instance:
-   In the Project Directory open terminal perform below command!
-   `bash
-    surreal start file:Portfolio.db --user root --pass root 
-    `
-4. Start project
-   ```bash
-       cargo leptos watch
-   ```
-5. Open the browser and navigate to `http://localhost:3000` to see the Portfolio.
+- **Via Docker:**
+  1. Build image (From macbook m4 cpu 12core 512gb the build time estimate 850 sec.)
+  ```
+  docker build --platform linux/amd64 -t leptos-portfolio-admin:lastest . 
+  ```
+  2. run image with .env file
+  ```
+  docker run -d -p 3000:3000 --platform linux/amd64 --env-file '.env' leptos-portfolio-admin:latest
+  ```
+  3. The site already served at localhost:3000
 
----
+## **Future Feature** 
+- **LLM Chat:**
+ About Portfolio: Integrate a language model (LLM) to provide chat-based interactions about the portfolio.
+- **Rich Text Editor:**
+ Implement a rich text editor for enhanced content creation in sections like "About Me."
+- **Export PDF Resume:**
+ Allow to export their portfolio data as a PDF resume.
 
-## **Learning Resources**
+- **One script setup:**
+ Shell script with all in one setup and ready to dev.
 
-- [Leptos Documentation](https://book.leptos.dev/)
-- [Actix Web Documentation](https://docs.rs/actix-web/latest/actix_web/)
-- [SurrealDB Documentation](https://surrealdb.com/docs/)
-
----
+## **Contributing**
+This project is my first open-source endeavor, and I am always looking for contributions to help improve it. If you encounter any bugs or have suggestions for new features, please don't hesitate to open an issue. This project has been tested on Linux and macOS environments, but I haven’t tested it on Windows yet, so stability on that platform is uncertain.

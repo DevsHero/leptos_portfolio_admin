@@ -7,6 +7,7 @@ use crate::app::{
 use leptos::*;
 use leptos_icons::Icon;
 use icondata as i;
+
 #[component]
 pub fn HomePage() -> impl IntoView {
     let get_profile_info = Resource::new(
@@ -14,7 +15,7 @@ pub fn HomePage() -> impl IntoView {
         move |_| async move { get_profile().await }
     );
     view! {
-    <Suspense fallback = move || {
+    <Suspense fallback=|| {
         view! { <Loading/> }
     }>
     {
@@ -23,7 +24,7 @@ pub fn HomePage() -> impl IntoView {
             let profile = profile_data.first().cloned().unwrap_or_default();
             let (skills, _set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new).clone());
             let (birth_date, set_birth_date) = create_signal(String::new());
-            Effect::new_isomorphic(move |_| {
+            create_effect(move |_| {
                 let age = calculate_age(&profile.birth_date);
                 set_birth_date.set(age.to_string());
             });

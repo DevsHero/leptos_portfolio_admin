@@ -36,7 +36,7 @@ pub fn EditPage() -> impl IntoView {
 
     view! {
         
-        <Suspense fallback=move || {
+        <Suspense fallback=|| {
             view! { <Loading /> }
         }>
         {
