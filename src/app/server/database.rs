@@ -7,7 +7,7 @@ cfg_if::cfg_if! {
         use surrealdb::opt::auth::Root;
         use surrealdb::{ Surreal, Error };
         use once_cell::sync::Lazy;
-
+        use surrealdb::sql::Thing;
         static DB: Lazy<Surreal<Any>> = Lazy::new(Surreal::init);
         pub async fn open_db_connection() -> Result<(), Error> {
             let host = env
@@ -27,47 +27,75 @@ cfg_if::cfg_if! {
 
             Ok(())
         }
+
         pub async fn fetch_profile() -> Result<Option<Profile>, ServerFnError> {
+            use serde::Deserialize; // Add this import
+
             let _ = open_db_connection().await;
             let query = DB.query(
                 "
-            SELECT *,
-                (SELECT * FROM skill  ) AS skills, 
-                (SELECT * FROM experience  ) AS experiences ,
-                (SELECT * FROM portfolio  ) AS portfolios ,
-                (SELECT * FROM contact  ) AS contacts 
-            FROM profile 
-            LIMIT 1;
-        "
+                SELECT *,
+                    (SELECT * FROM skill) AS skills, 
+                    (SELECT * FROM experience) AS experiences,
+                    (SELECT * FROM portfolio) AS portfolios,
+                    (SELECT * FROM contact) AS contacts 
+                FROM profile 
+                LIMIT 1;
+            "
             ).bind(("table", "profile")).await;
             let _ = DB.invalidate().await;
-            // println!("Query result: {:?}",query);
+
             match query {
                 Ok(mut res) => {
-                    let found = res.take(0);
+                    // Create a temporary struct with the proper derive
+                    #[derive(Debug, Deserialize)]
+                    struct TempProfile {
+                        pub first_name: String,
+                        pub last_name: String,
+                        pub nick_name: String,
+                        pub gender: String,
+                        pub birth_date: String,
+                        pub role: String,
+                        pub nationality: String,
+                        pub about: String,
+                        pub avatar: String,
+                        pub id: Thing, // Using Thing instead of String
+                        pub skills: Option<Vec<Skill>>,
+                        pub experiences: Option<Vec<Experience>>,
+                        pub portfolios: Option<Vec<Portfolio>>,
+                        pub contacts: Option<Vec<Contact>>,
+                    }
+
+                    // First deserialize to the temporary struct
+                    let found = res.take::<Option<TempProfile>>(0);
+
                     match found {
-                        Ok(result) => Ok(result),
+                        Ok(Some(temp_profile)) => {
+                            // Convert to the actual Profile type with String id
+                            let profile = Profile {
+                                first_name: temp_profile.first_name,
+                                last_name: temp_profile.last_name,
+                                nick_name: temp_profile.nick_name,
+                                gender: temp_profile.gender,
+                                birth_date: temp_profile.birth_date,
+                                role: temp_profile.role,
+                                nationality: temp_profile.nationality,
+                                about: temp_profile.about,
+                                avatar: temp_profile.avatar,
+                                id: temp_profile.id.id.to_string(), // Convert Thing to String
+                                skills: temp_profile.skills,
+                                experiences: temp_profile.experiences,
+                                portfolios: temp_profile.portfolios,
+                                contacts: temp_profile.contacts,
+                            };
+
+                            Ok(Some(profile))
+                        }
+                        Ok(None) => Ok(None),
                         Err(e) => Err(ServerFnError::from(e)),
                     }
                 }
                 Err(e) => Err(ServerFnError::from(e)),
-            }
-        }
-
-        pub async fn fetch_skill() -> Result<Option<Skill>, ServerFnError> {
-            let _ = open_db_connection().await;
-            let query = DB.query("SELECT * FROM skill;").await;
-            let _ = DB.invalidate().await;
-            println!("Query result: {:?}", query);
-            match query {
-                Ok(mut res) => {
-                    let found = res.take(0);
-                    match found {
-                        Ok(result) => Ok(result),
-                        Err(e) => Err(ServerFnError::Args(e.to_string())),
-                    }
-                }
-                Err(e) => Err(ServerFnError::Args(e.to_string())),
             }
         }
 
@@ -116,10 +144,11 @@ cfg_if::cfg_if! {
                 // println!("_contact_result: {:?}", _contact_result);
             }
             let updated_user: Result<Option<Profile>, Error> = DB.update((
-                profile.id.tb.clone(),
-                profile.id.id.to_string(),
+                "profile",
+                profile.id.to_string(),
             )).merge(update_data).await;
             let _ = DB.invalidate().await;
+            println!("updated_user: {:?}", updated_user);
             match updated_user {
                 Ok(returned_user) => Ok(returned_user),
                 Err(e) => Err(ServerFnError::from(e)),

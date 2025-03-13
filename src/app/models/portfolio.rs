@@ -1,5 +1,5 @@
 use serde::{ Deserialize, Serialize };
-use surrealdb::sql::Thing;
+
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Skill {
     pub name: String,
@@ -105,7 +105,7 @@ pub struct Profile {
     pub nationality: String,
     pub about: String,
     pub avatar: String,
-    pub id: Thing,
+    pub id: String,
     pub skills: Option<Vec<Skill>>,
     pub experiences: Option<Vec<Experience>>,
     pub portfolios: Option<Vec<Portfolio>>,
@@ -114,7 +114,7 @@ pub struct Profile {
 impl Default for Profile {
     fn default() -> Self {
         Self {
-            id: Thing::from(("profile", "0")),
+            id: String::from("portfolio_id"),
             first_name: String::from("John"),
             last_name: String::from("Doe"),
             gender: String::from("Male"),

@@ -5,7 +5,7 @@ use std::env;
 #[server(GetProfile, "/api")]
 pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
     let data = retrieve_profile_api().await;
-    println!("Query result: {:?}", data);
+    // println!("Query result: {:?}", data);
     match data {
         Ok(result) => Ok(result.into_iter().collect()),
         Err(e) => Err(ServerFnError::from(e)),
@@ -61,9 +61,7 @@ cfg_if::cfg_if! {
         pub async fn retrieve_profile_api() -> Result<Option<Profile>, ServerFnError> {
             database::fetch_profile().await
         }
-        pub async fn retrieve_skill_api() -> Result<Option<Skill>, ServerFnError> {
-            database::fetch_skill().await
-        }
+
         pub async fn update_portfolio_api(
             profile: Profile,
             _is_update_skill: bool,
