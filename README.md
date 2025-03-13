@@ -43,9 +43,8 @@ An all-in-one portfolio solution with dynamic content management through an admi
 - **Dark Mode:** Now supports dark mode (currently under progress to store configuration in local storage).
 
 
+## **Prerequisites**
 
-## **How to run**
-- **Prerequisites:**
    **Prepare .env:**
   ```
   mv .env-example .env
@@ -56,7 +55,9 @@ An all-in-one portfolio solution with dynamic content management through an admi
    - [Cloud Surrealdb](https://surrealist.app/)
 
    **Setup Database:**
-    
+   Open surrealdb sql console and copy all script from surreal/script to the console then  enter it's all done 
+
+## **How to run**
 - **Via Local Development:**
   1. install rust
   ```
@@ -75,10 +76,10 @@ An all-in-one portfolio solution with dynamic content management through an admi
   ```
   4. The site already served at localhost:3000
 
-- **Via Docker:**
+- **Via Local Docker:**
   1. Build image (From macbook m4 cpu 12core 512gb the build time estimate 850 sec.)
   ```
-  docker build --platform linux/amd64 -t leptos-portfolio-admin:lastest . 
+  docker build --platform linux/amd64 -t leptos-portfolio-admin:latest . 
   ```
   2. run image with .env file
   ```
@@ -86,7 +87,17 @@ An all-in-one portfolio solution with dynamic content management through an admi
   ```
   3. The site already served at localhost:3000
 
-## **Future Feature** 
+- **Via Docker Hub:**
+  1. Pull image from my repository
+  ```
+  docker pull --platform linux/x86_64 hero0ncloud/leptos-portfolio-admin:v6
+  ```
+  2. run image with .env file
+  ```
+  docker run -d -p 3000:3000 --platform linux/amd64 --env-file '.env' leptos-portfolio-admin:latest
+  ```
+  3. The site already served at localhost:3000
+## **Planning features** 
 - **LLM Chat:**
  About Portfolio: Integrate a language model (LLM) to provide chat-based interactions about the portfolio.
 - **Rich Text Editor:**
@@ -98,4 +109,7 @@ An all-in-one portfolio solution with dynamic content management through an admi
  Shell script with all in one setup and ready to dev.
 
 ## **Contributing**
-This project is my first open-source endeavor, and I am always looking for contributions to help improve it. If you encounter any bugs or have suggestions for new features, please don't hesitate to open an issue. This project has been tested on Linux and macOS environments, but I haven’t tested it on Windows yet, so stability on that platform is uncertain.
+This project is my first open-source endeavor, and I am always looking for contributions to help improve it. If you encounter any bugs or have suggestions for new features, please don't hesitate to open an issue. This project has been tested on Linux and macOS environments, but I haven’t tested it on Windows yet, so stability on that platform is uncertain. 
+
+## **Contact Me**
+Thanon Aphithanawat (Hero) :   **mail@thanon.dev**
