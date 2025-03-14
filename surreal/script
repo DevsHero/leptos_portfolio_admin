@@ -17,21 +17,22 @@ DEFINE TABLE skill;
 
 -- Insert data into the profile table
 INSERT INTO profile {
-    about: "I am fullstack developer love to learn new thing",
-    avatar: "https://avatars.githubusercontent.com/u/7464728?v=4",
+    about: "I am newbie developer",
+    avatar: "https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/github.png",
     birth_date: "2000-01-01",
-    first_name: "Thanon",
+    first_name: "John",
     gender: "Male",
-    last_name: "Aphithanawat",
-    nationality: "Thai",
-    nick_name: "Hero",
-    role: "Senior Fullstack Developer"
+    last_name: "Doe",
+    nationality: "US",
+    nick_name: "Mr.Robot",
+    address: "CA USA"
+    role: "Junior Developer"
 };
 
 -- Insert data into the contact table
 INSERT INTO contact {
     contact_icon: "AiFacebookOutlined",
-    contact_value: "https://www.facebook.com/KickAssHERO",
+    contact_value: "https://www.facebook.com/zuck/",
     is_href: true
 };
 
