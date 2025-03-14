@@ -15,7 +15,6 @@ use crate::app::components::{
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
 use crate::app::server::api::{ get_profile, update_portfolio, verify };
-use crate::app::utils::format_date_for_input;
 use leptos_icons::Icon;
 use icondata as i;
 use leptos::*;
@@ -33,17 +32,11 @@ pub fn EditPage() -> impl IntoView {
     let (use_password, set_use_password) = create_signal(bool::from(false));
     let (input_password, set_input_password) = create_signal(String::new());
     let (is_incorrect, set_is_incorrect) = create_signal(bool::from(false));
-
-    view! {
-        
-        <Suspense fallback=|| {
-            view! { <Loading /> }
-        }>
-        {
-            move || {     
-                             
-                let profile_data = get_profile_info.get().and_then(Result::ok).unwrap_or_default();
-                let profile = profile_data.first().cloned().unwrap_or_default();
+    view! {     
+        <Suspense fallback=Loading>
+        { move || {    
+            match get_profile_info.get() {
+                Some(Ok(profile)) => {                    
                 //Profile 
                 let (first_name, set_first_name) = create_signal(profile.first_name);
                 let (last_name, set_last_name) = create_signal(profile.last_name);
@@ -51,7 +44,7 @@ pub fn EditPage() -> impl IntoView {
                 let (nick_name, set_nick_name) = create_signal(profile.nick_name);
                 let (gender, set_gender) = create_signal(profile.gender);
                 let (role, set_role) = create_signal(profile.role);
-                let (birth_date, set_birth_date) = create_signal(format_date_for_input(&profile.birth_date));
+                let (birth_date, set_birth_date) = create_signal(profile.birth_date);
                 let (nationality, set_nationality) = create_signal(profile.nationality);
                 let (avatar, set_avatar) = create_signal(profile.avatar);
                 //Experience 
@@ -247,6 +240,8 @@ pub fn EditPage() -> impl IntoView {
                     });
                       set_is_update_contact(true)
                 };
+
+                
                 {if is_init.get() { 
                 view! {
                     <main class="tabPage"  >
@@ -256,9 +251,7 @@ pub fn EditPage() -> impl IntoView {
                                 href="/"
                                 target="_self"
                                 aria-label="Source code"
-                                  class="topbarButton"
-                            
-                            >
+                                  class="topbarButton" >
                                     <Icon icon={i::AiHomeOutlined} />
                                     </a>
                                     <button
@@ -272,31 +265,24 @@ pub fn EditPage() -> impl IntoView {
                             </section>
                         <div class="tabSectionSelector" >
                             <button
-                          
-                        
                                 class=move || {
                                     if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
                                 }
-                                on:click=move |_| set_select_tab(1)
-                            >
+                                on:click=move |_| set_select_tab(1)  >
                                Profile
                             </button>
                             <button
-                         
                                 class=move || {
                                     if select_tab() == 2 { "tabsTitle active" } else { "tabsTitle" }
                                 }
-                                on:click=move |_| set_select_tab(2)
-                            >
+                                on:click=move |_| set_select_tab(2)   >
                                 Skill
                             </button>
                             <button
-                          
-                            class=move || {
+                             class=move || {
                                 if select_tab() == 3 { "tabsTitle active" } else { "tabsTitle" }
                             }
-                            on:click=move |_| set_select_tab(3)
-                        >
+                            on:click=move |_| set_select_tab(3)  >
                             Experience
                         </button>
                         <button
@@ -304,8 +290,7 @@ pub fn EditPage() -> impl IntoView {
                         class=move || {
                             if select_tab() == 4 { "tabsTitle active" } else { "tabsTitle" }
                         }
-                        on:click=move |_| set_select_tab(4)
-                    >
+                        on:click=move |_| set_select_tab(4) >
                         Portfolio
                     </button>
                     <button
@@ -313,8 +298,7 @@ pub fn EditPage() -> impl IntoView {
                     class=move || {
                         if select_tab() == 5 { "tabsTitle active" } else { "tabsTitle" }
                     }
-                    on:click=move |_| set_select_tab(5)
-                >
+                    on:click=move |_| set_select_tab(5)  >
                     Contact
                 </button>
                         </div>
@@ -380,8 +364,7 @@ pub fn EditPage() -> impl IntoView {
                                     prop:value=skill_level
                                     on:change=move |ev| {
                                         set_skill_level(event_target_value(&ev));
-                                    }
-                                >
+                                    }>
                                     <option value="Basic">"Basic"</option>
                                     <option value="Middle">"Middle"</option>
                                     <option value="Expert">"Expert"</option>
@@ -389,8 +372,7 @@ pub fn EditPage() -> impl IntoView {
                                 <button
                                 type="button"
                                     class="addButton"
-                                on:click=add_skill
-                            >
+                                on:click=add_skill >
                                 "Add Skill"
                             </button>
                             </div>
@@ -399,8 +381,7 @@ pub fn EditPage() -> impl IntoView {
                         is_page=true
                         skills=skills
                         on_delete=Some(Callback::new(move |index| delete_skill(index)))
-                       use_delete=true
-                    />
+                       use_delete=true />
                     </div>
                         </RenderTab>
                         <RenderTab is_page=true no=3 active_page=select_tab>
@@ -410,13 +391,12 @@ pub fn EditPage() -> impl IntoView {
                         <InputField input_type="text" id="company_logo_url" label="Company Logo Url" set_field=set_company_logo_url  get_value=company_logo_url require=true />
                         <InputField input_type="text" id="position_name" label="Position Name" set_field=set_position_name  get_value=position_name require=true />
                         <InputField input_type="text" id="start_date" label="Start Date" set_field=set_start_date  get_value=start_date require=true />
-                        <InputField input_type="text" id="end_date" label="End Date" set_field=set_end_date  get_value=end_date require=true /> 
+                        <InputField input_type="text" id="end_date" label="End Date - (input now if current job)" set_field=set_end_date  get_value=end_date require=true /> 
                     <TextAreaField  id="describe" label="Describe" set_field=set_describe  get_value=describe require=false />       
                                 <button
                                 type="button"
                                 class="addButton"
-                                on:click=add_experience
-                            >
+                                on:click=add_experience  >
                                 "Add Experience"
                             </button>
                               <Experience  
@@ -439,8 +419,7 @@ pub fn EditPage() -> impl IntoView {
                                <button
                                 type="button"
                                 class="addButton"
-                                on:click=add_portfolio
-                            >
+                                on:click=add_portfolio >
                                 "Add Portfolio Project"
                             </button>
                           <Portfolio  
@@ -460,15 +439,13 @@ pub fn EditPage() -> impl IntoView {
                         <button
                                 type="button"
                                 class="addButton"
-                                on:click=add_contact
-                            >
+                                on:click=add_contact >
                                 "Add Contact"
                         </button>
                             <EditContacts  
                             contacts=contacts  
                             on_delete=Some(Callback::new(move |index| delete_contact(index)))
-                            use_delete=true
-                             / >
+                            use_delete=true/ >
                     </div>
                         </RenderTab>
                     
@@ -477,16 +454,14 @@ pub fn EditPage() -> impl IntoView {
                         <button
                             type="submit"
                             class="updateButton"
-                            disabled=is_saving
-                        >
+                            disabled=is_saving >
                             {move || if is_saving.get() { "Updating..." } else { "Update" }}
                         </button>
                         <button
                             type="button"
                             class="cancelButton"
                             disabled=is_saving
-                            on:click=reset_form  // Add the reset_form handler here
-                        >
+                            on:click=reset_form  >
                             "Cancel"
                         </button>
                     </div>
@@ -494,9 +469,7 @@ pub fn EditPage() -> impl IntoView {
                      else{
                         view! {
                                 <div> </div>
-                        }
-                     }
-                    }
+                        } }}
                         </form>
                     </main>
                 }
@@ -507,8 +480,7 @@ pub fn EditPage() -> impl IntoView {
              <b style="font-size: 18px;">Select Access Mode</b>
                 <button style="width: 20rem; height: 2.5rem; margin-top: 5rem; color:green;   border-width: 1px;  border-color: green;"
                 on:click=move |_| {
-                    set_is_init(true);
-                   
+                    set_is_init(true);     
                 }
                 >Viewer Mode "(can't update)"</button>
                 <button style="width: 20rem; height: 2.5rem;    border-width: 1px;  border-color: blue;"
@@ -528,26 +500,28 @@ pub fn EditPage() -> impl IntoView {
                             class="updateButton"
                             on:click=  move |_| {
                                 verify_action.dispatch(());
-                            } 
-                        >
+                            }>
                             {move || if is_saving.get() { "Verifying..." } else { "Verify" }}
-                        </button>
-                      
-                    </div>
-                        
+                        </button>   
+                    </div>  
                         </div>
-                }
-                }
+                } }
              else{
                 view! {
  <div></div>
-                }
-             }
-            }                       
+                }} }                       
                 </main>
-            }
-        }}}
-    }
+            } }}  },
+            Some(Err(e)) => view! { 
+                <main class="indexLayout">
+                    <div>"Error loading profile: "{e.to_string()}</div>
+                </main> 
+            },
+            None => view! { 
+                <main class="indexLayout">
+                    <div>"Loading..."</div>
+                </main> 
+            }} }}
         </Suspense>
     }
 }

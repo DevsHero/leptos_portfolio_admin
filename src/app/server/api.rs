@@ -3,15 +3,14 @@ use crate::app::models::{ Profile, SiteConfig, Skill };
 use std::env;
 
 #[server(GetProfile, "/api")]
-pub async fn get_profile() -> Result<Vec<Profile>, ServerFnError> {
+pub async fn get_profile() -> Result<Profile, ServerFnError> {
     let data = retrieve_profile_api().await;
-    // println!("Query result: {:?}", data);
     match data {
-        Ok(result) => Ok(result.into_iter().collect()),
+        Ok(Some(profile)) => Ok(profile),
+        Ok(None) => Err(ServerFnError::ServerError("No profile found".to_string())),
         Err(e) => Err(ServerFnError::from(e)),
     }
 }
-
 #[server(Verify, "/api")]
 pub async fn verify(password: String) -> Result<bool, ServerFnError> {
     let admin_password = std::env::var("ADMIN_MODE_PASSWORD").unwrap_or("admin".to_string());

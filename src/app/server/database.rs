@@ -29,7 +29,7 @@ cfg_if::cfg_if! {
         }
 
         pub async fn fetch_profile() -> Result<Option<Profile>, ServerFnError> {
-            use serde::Deserialize; // Add this import
+            use serde::Deserialize;
 
             let _ = open_db_connection().await;
             let query = DB.query(
@@ -143,17 +143,20 @@ cfg_if::cfg_if! {
                 ).await;
                 // println!("_contact_result: {:?}", _contact_result);
             }
-            let updated_user: Result<Option<Profile>, Error> = DB.update((
+
+            let res: Result<Option<Profile>, Error> = DB.update((
                 "profile",
-                profile.id.to_string(),
-            )).merge(update_data).await;
+                profile.id.clone(),
+            )).content(update_data.clone()).await;
             let _ = DB.invalidate().await;
-            println!("updated_user: {:?}", updated_user);
-            match updated_user {
-                Ok(returned_user) => Ok(returned_user),
+            println!("updated_user: {:?}", res);
+            match res {
+                Ok(user) => Ok(user),
+                // let _ = DB.invalidate().await;
                 Err(e) => Err(ServerFnError::from(e)),
             }
         }
+
         pub async fn update_skill(skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
             let _ = open_db_connection().await;
             let delete_all_records: Result<Vec<Skill>, Error> = DB.delete("skill").await;

@@ -44,7 +44,11 @@ An all-in-one portfolio solution with dynamic content management through an admi
 
 
 ## **Prerequisites**
-
+  **Clone Project:**
+  ```
+  git clone https://github.com/DevsHero/leptos_portfolio_admin.git
+  cd leptos_portfolio_admin
+  ```
    **Prepare .env:**
   ```
   mv .env-example .env
