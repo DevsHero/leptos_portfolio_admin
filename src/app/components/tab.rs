@@ -30,8 +30,7 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
                 </button>
             </div>
             <RenderTab is_page=false no=1 active_page=select_tab>
-            <Experience  
-            is_page = false 
+            <Experience   
             experiences=experiences
             on_delete=None
             use_delete=false

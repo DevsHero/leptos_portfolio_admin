@@ -47,6 +47,7 @@ pub fn EditPage() -> impl IntoView {
                 let (birth_date, set_birth_date) = create_signal(profile.birth_date);
                 let (nationality, set_nationality) = create_signal(profile.nationality);
                 let (avatar, set_avatar) = create_signal(profile.avatar);
+                let (address, set_address) = create_signal(profile.address);
                 //Experience 
                 let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
                 let (company_name, set_company_name) = create_signal(String::new());
@@ -131,6 +132,7 @@ pub fn EditPage() -> impl IntoView {
                     birth_date: birth_date.get(),
                     nationality: nationality.get(),
                     avatar: avatar.get(),
+                    address: address.get(),
                     skills:Some(skills.get()),
                     experiences :  Some(experiences.get()),
                     portfolios: Some(portfolios.get()),
@@ -348,7 +350,8 @@ pub fn EditPage() -> impl IntoView {
                         />
                                 </div>
                             </div>
-                            <InputField input_type="text" id="role" label="Job Role" set_field=set_role  get_value=role require=true />
+                            <InputField input_type="text" id="role" label="Job Title" set_field=set_role  get_value=role require=true />
+                            <InputField input_type="text" id="address" label="Address" set_field=set_address get_value=address require=true />
                             <TextAreaField  id="about" label="About" set_field=set_about  get_value=about require=true />
                             </div>
                             </RenderTab>
@@ -399,8 +402,7 @@ pub fn EditPage() -> impl IntoView {
                                 on:click=add_experience  >
                                 "Add Experience"
                             </button>
-                              <Experience  
-                              is_page = true 
+                              <Experience   
                               experiences=experiences
                               on_delete=Some(Callback::new(move |index| delete_experience(index)))
                               use_delete=true

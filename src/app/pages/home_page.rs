@@ -50,32 +50,36 @@ pub fn HomePage() -> impl IntoView {
                                     </div>
                                 </section>
                                 <section class="info">
-                                    <div class="aboutMe">
+                                    <div class="profile">
                                         <span class="avatar">
                                             <a href={profile.avatar.clone()} target="_blank">
+                                           
                                                 <span class="avatar">
-                                                    <img alt="avatar" src={profile.avatar.clone()} width="80" height="80" />
+                                                    <img alt="avatar" src={profile.avatar.clone()}   />
+                                               
                                                 </span>
+                                                <p  style="text-align: center; font-weight: bold">  {profile.nick_name.clone()}</p>
                                             </a>
                                             <div class="details">
-                                            <h1>{profile.first_name.clone()}" "{profile.last_name.clone()}" ("{profile.nick_name.clone()}")"</h1>
+                                            <h1>{profile.first_name.clone()}" "{profile.last_name.clone()}</h1>
                                       
-                                                <p>{profile.role.clone()}</p>
+                                                <p><b>Job Title: </b>{profile.role.clone()}</p>
                                                 <div class="info-row">
-                                                    <p>Age: {birth_date}</p>
-                                                    <p>Gender: {profile.gender.clone()}</p>
+                                                    <p><b>Age: </b> {birth_date}</p>
+                                                    <p><b>Gender: </b>{profile.gender.clone()}</p>
                                                 </div>
-                                                <p>Nationality: {profile.nationality.clone()}</p>
+                                                <p><b>Nationality: </b>{profile.nationality.clone()}</p>
+                                                <p><b>Address: </b>{profile.address.clone()}</p>
                                             </div>
                                         </span>
                                         <HomeContacts contacts={profile.contacts.clone().unwrap_or_default()} />
                                     </div>
-                                    <div class="description">
+                                    <div class="about">
                                         <h2>About me</h2>
-                                        <p>{profile.about.clone()}</p>
+                                        <p >{profile.about.clone()}</p>
                                     </div>
                                     <div class="skills">
-                                        <h3>Skills</h3>
+                                        <h2>Skills</h2>
                                         <div>
                                             <SkillChips
                                                 is_page=false

@@ -59,6 +59,7 @@ cfg_if::cfg_if! {
                         pub nationality: String,
                         pub about: String,
                         pub avatar: String,
+                        pub address: String,
                         pub id: Thing, // Using Thing instead of String
                         pub skills: Option<Vec<Skill>>,
                         pub experiences: Option<Vec<Experience>>,
@@ -82,6 +83,7 @@ cfg_if::cfg_if! {
                                 nationality: temp_profile.nationality,
                                 about: temp_profile.about,
                                 avatar: temp_profile.avatar,
+                                address: temp_profile.address,
                                 id: temp_profile.id.id.to_string(), // Convert Thing to String
                                 skills: temp_profile.skills,
                                 experiences: temp_profile.experiences,

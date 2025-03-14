@@ -6,7 +6,7 @@ use icondata as i;
 pub fn Experience(
     experiences: ReadSignal<Vec<Experience>>,
     on_delete: Option<Callback<usize>>,
-    is_page: bool,
+
     use_delete: bool
 ) -> impl IntoView {
     {
@@ -18,7 +18,7 @@ pub fn Experience(
                 .map(|(index, experience)| {
                     view! {
         
-               <div class=if is_page {"experiencePageContainer"} else {"experience-container"}>
+               <div class="experienceContainer">
                 <span class="experienceRow">
                 <a href=experience.company_url target="_blank" >
                 <span class="experienceRowFirstItem">
