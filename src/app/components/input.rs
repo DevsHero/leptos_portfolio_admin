@@ -1,5 +1,4 @@
 use leptos::*;
-use leptos::{ component, view, IntoView };
 
 #[component]
 pub fn InputField(
@@ -7,14 +6,39 @@ pub fn InputField(
     get_value: ReadSignal<String>,
     id: impl Into<String>,
     label: impl Into<String>,
+    input_type: impl Into<String>,
     require: bool,
-    input_type: impl Into<String>
+    #[prop(optional)] validation: Option<ReadSignal<bool>>
 ) -> impl IntoView {
     let id = id.into();
     let label = label.into();
     let input_type = input_type.into();
+    let error_label = label.clone();
     let label_for_input = label.clone();
     let (error, set_error) = create_signal(None::<String>);
+
+    // Create a function to validate the input
+    let validate = move || {
+        let value = get_value.get();
+        if require && value.trim().is_empty() {
+            set_error(Some(format!("{} is required.", error_label.clone())));
+            false
+        } else {
+            set_error(None);
+            true
+        }
+    };
+
+    // If a validation trigger is provided, create an effect to watch it
+    if let Some(trigger) = validation {
+        create_effect(move |_| {
+            // When the trigger changes to true, perform validation
+            if trigger.get() {
+                validate();
+            }
+        });
+    }
+
     view! {
         <div class="formGroup">
             <label for={id.clone()}>{label}</label>
@@ -26,7 +50,7 @@ pub fn InputField(
                     let value = event_target_value(&ev);
                     set_field(value.clone());
                     // Optionally perform live validation:
-                    if value.trim().is_empty() {
+                    if require && value.trim().is_empty() {
                         set_error(Some(format!("{} is required.", label_for_input.clone())));
                     } else {
                         set_error(None);
@@ -36,13 +60,9 @@ pub fn InputField(
             {
                 move || {
                     if let Some(msg) = error.get() {
-                        if require {  
-                            view! { <p class="errorInput">{msg}</p> }
-                        } else {
-                            view! { <p class="errorInput"></p> }
-                        }
+                        view! { <p class="errorInput">{msg}</p> }
                     } else {
-                        view! { <p class="errorInput"></p> }
+                        view! { <p ></p> }
                     }
                 }
             }

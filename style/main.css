@@ -783,6 +783,7 @@ body {
   flex-direction: row;
   align-items: flex-end;
   justify-content: flex-end;
+
 }
 .pill {
   display: flex;
@@ -811,10 +812,7 @@ body {
   transition-duration: 200ms;
   box-shadow: var(--shadow0);
 }
-.active {
-  border: 2px solid var(--surface0);
-  box-shadow: var(--shadow0);
-}
+
 .info {
   display: flex;
   height: 34.5rem;
@@ -980,6 +978,7 @@ body {
   border-radius: 9999px;
   box-shadow: var(--shadow0);
  
+ 
 }
 .tabSectionSelector > button {
   width: 50%;
@@ -990,13 +989,13 @@ body {
   transition-duration: 0.2s;
 }
 .tabSectionSelector > button:hover {
-  --btn-shadow: var(--shadow0);
+  background-color: var(--surface0);;
 }
 .tabSectionSelector > button.active {
-  border: none;
-  --btn-shadow: var(--shadow0);
+ border-width: 1;
+  border-color: var(--surface1);;
 }
-
+    
 .tabsTitle {
   text-align: center;
   font-size: 1.125rem;
@@ -1182,11 +1181,16 @@ label {
   color: var(--text);
 }
 input, select, textarea {
-  padding: 0.75rem;
+  height: 2.7rem;
+  padding: 0.5rem;
   border: 1px solid var(--border);
   border-radius: 4px;
-  color: var(--text);
+  color: var(--mantle);
+
 }
+ select {
+  -webkit-appearance: none;
+ }
 textarea {
   min-height: 100px;
   resize: vertical;
@@ -1194,8 +1198,8 @@ textarea {
 .formGroup {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
-  gap: 0.5rem;
+  margin-bottom: 12px;
+  gap: 0.25rem;
 }
 /* Add these new styles for avatar container */
 .avatar-container {
@@ -1347,16 +1351,26 @@ button:hover {
 
   color: rgb(255, 255, 255);
 }
-
+.toastFail {
+ font-weight: bold;
+ font-size: 16;
+  color: red;
+}
+.toastSuccess {
+  font-weight: bold;
+  font-size: 16;
+   color: #0088ff;
+ }
 .addButton {
   align-self: flex-end;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem  ;
+  font-weight: bold;
   background: hwb(125 3% 42%);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   margin-bottom: 1.5rem;
 }
 .addButton:hover {
@@ -1402,6 +1416,7 @@ button:hover {
   font-size: small;
   font-weight: bold;
   color: red;
+  margin-bottom: 10;
 }
 @keyframes pulse {
   0% { opacity: 1; }
@@ -1500,7 +1515,16 @@ button:hover {
 }
 
 .dropdown{
-  color:rgb(237, 98, 237);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 13;
+  font-weight: bold;
+  padding: 0.25rem;
+  border-radius: 5;
+  color: var(--background);
+  gap: 3;
+  background-color: var(--lavender);
 
 }
  

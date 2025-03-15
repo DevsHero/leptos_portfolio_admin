@@ -79,10 +79,10 @@ pub fn InputArrayField(
                                     if require {  
                                         view! { <p class="errorInput">{msg}</p> }
                                     } else {
-                                        view! { <p class="errorInput"></p> }
+                                        view! { <p ></p> }
                                     }
                                 } else {
-                                    view! { <p class="errorInput"></p> }
+                                    view! { <p></p> }
                                 }
                             }
                         }}

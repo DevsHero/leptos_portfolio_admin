@@ -35,12 +35,13 @@ icondata = "0.5.0"
 leptos_icons = "0.3.1"
 phf = { version = "0.11.3", features = ["macros"] }
 icondata_core = "0.1.0"
+leptos_toaster = { version = "0.1.7", features = ["builtin_toast"] }
 [dependencies.uuid]
 version = "1.15.1"
 features = ["v4", "rng-getrandom"]
 [features]
 csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate","leptos_toaster/hydrate"]
 ssr = [
   "dep:actix-files",
   "dep:actix-web",
@@ -49,6 +50,7 @@ ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",
+  "leptos_toaster/ssr"
 ]
 # Defines a size-optimized profile for the WASM bundle in release mode
 [profile.wasm-release]

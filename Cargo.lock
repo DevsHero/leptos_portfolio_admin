@@ -2651,6 +2651,7 @@ dependencies = [
  "leptos_icons",
  "leptos_meta",
  "leptos_router",
+ "leptos_toaster",
  "log",
  "num-format",
  "once_cell",
@@ -2888,6 +2889,19 @@ dependencies = [
  "server_fn",
  "thiserror 1.0.69",
  "tracing",
+]
+
+[[package]]
+name = "leptos_toaster"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "92987c03b0aadf6a12b4a6e8dddc6de9519a08ab19dafd03199ebf913b335141"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "leptos_meta",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]

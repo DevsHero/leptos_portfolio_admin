@@ -6,6 +6,7 @@ pub mod utils;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
+use leptos_toaster::Toaster;
 use pages::{ HomePage, EditPage };
 use server::api::site_config;
 #[component]
@@ -24,6 +25,11 @@ pub fn App() -> impl IntoView {
         <link data-trunk rel="icon" href="public/favicon.ico" />
         <Router>
             <main>
+            <Toaster 
+	    position=leptos_toaster::ToasterPosition::BottomCenter
+	>
+		// ...
+	
                 <Routes>
                     <Route path="/" view=move || {
                         view! {
@@ -40,6 +46,8 @@ pub fn App() -> impl IntoView {
                     }/>
                     <Route path="/*any" view=NotFound/>
                 </Routes>
+
+                </Toaster>
             </main>
         </Router>
     }

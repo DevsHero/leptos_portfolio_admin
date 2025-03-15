@@ -17,7 +17,7 @@ pub fn CheckBox(
         <div class="checkboxRow">
             <label for={id.clone()}>{label}</label>
             <input
-            style="margin-left : 20px;"
+            style="margin-left : 30px; border-width :1px;"
                 type="checkbox"
                 id={id.clone()}
                 prop:value=move || get_value.get()

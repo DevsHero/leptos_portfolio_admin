@@ -55,7 +55,7 @@ pub fn EditContacts(
                 </div>
                 <p>Title : {contact.contact_title} </p>    
                 <p>Value : {contact.contact_value} </p>
-                <p>Use Href : {contact.is_href} </p>        
+                <p>Use Link : {contact.is_href} </p>        
          </div>  }
                 })
                 .collect::<Vec<_>>()

@@ -1,6 +1,4 @@
-// dialog.rs
 use leptos::*;
-
 #[component]
 pub fn Dialog(title: String, detail: String, children: Children) -> impl IntoView {
     let (show_dialog, set_show_dialog) = create_signal(false);

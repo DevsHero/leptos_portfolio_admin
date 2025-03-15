@@ -5,12 +5,12 @@ use crate::app::components::{
     IconDropdown,
     InputArrayField,
     InputField,
+    Loading,
     Portfolio,
     RenderTab,
     SkillChips,
     TextAreaField,
     ThemeButton,
-    Loading,
 };
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
@@ -18,6 +18,16 @@ use crate::app::server::api::{ get_profile, update_portfolio, verify };
 use leptos_icons::Icon;
 use icondata as i;
 use leptos::*;
+use leptos_toaster::{
+    Theme,
+    Toast,
+    ToastId,
+    ToastOptions,
+    ToastVariant,
+    Toaster,
+    ToasterPosition,
+    Toasts,
+};
 use web_sys::SubmitEvent;
 
 #[component]
@@ -32,6 +42,31 @@ pub fn EditPage() -> impl IntoView {
     let (use_password, set_use_password) = create_signal(bool::from(false));
     let (input_password, set_input_password) = create_signal(String::new());
     let (is_incorrect, set_is_incorrect) = create_signal(bool::from(false));
+
+    let create_toast = move |title: View, detail: View, varaint: ToastVariant| {
+        let toast_id = ToastId::new();
+        let toast_context = expect_context::<Toasts>();
+
+        toast_context.toast(
+            view! {
+                <Toast
+                    toast_id
+                    variant=varaint
+                    theme=Theme::Dark
+                    invert=false
+                    rich_colors=false
+                    title=view! { {title} }.into_view()
+                    description=Some(view! {  {detail}}.into_view())
+                />
+            },
+            Some(toast_id),
+            Some(ToastOptions {
+                dismissible: true,
+                duration: Some(std::time::Duration::from_secs(5)),
+                position: Some(ToasterPosition::BottomLeft),
+            })
+        );
+    };
     view! {     
         <Suspense fallback=Loading>
         { move || {    
@@ -77,12 +112,12 @@ pub fn EditPage() -> impl IntoView {
                 let (contact_title, set_contact_title) = create_signal(String::new());
                 let (is_href, set_is_href) = create_signal(bool::from(false)); 
 
-
                 let (_is_update_skill, set_is_update_skill) = create_signal(false);
                 let (_is_update_experience, set_is_update_experience) = create_signal(false);
                 let (_is_update_portfolio, set_is_update_portfolio) = create_signal(false);
                 let (_is_update_contact, set_is_update_contact) = create_signal(false);
                 let (is_saving, set_is_saving) = create_signal(false);
+                let (validate_form, set_validate_form) = create_signal(false);
                 let verify_action = Action::new(move |_| {
                     async move { 
                         let result = verify(input_password.get()).await;
@@ -208,7 +243,14 @@ pub fn EditPage() -> impl IntoView {
                 };
 
                 let add_contact = move |_| {
-                    if !contact_value.get().is_empty() {
+                 
+                  
+                    set_validate_form.update(|v| *v = !*v);
+        
+                    // Check if all required fields have values
+                    let form_valid = !contact_value.get().trim().is_empty() && 
+                                     !contact_icon.get().trim().is_empty();
+                    if form_valid {
                         let new_contact = Contact {
                             contact_icon: contact_icon.get(),
                             contact_value: contact_value.get(),
@@ -219,9 +261,16 @@ pub fn EditPage() -> impl IntoView {
                         set_contact_icon.set(String::new());
                         set_contact_value.set(String::new());
                         set_is_href.set(bool::from(false));
+                  
+                set_is_update_contact(true);
+                set_validate_form.set(false);
+                create_toast({view! {<p class="toastSuccess">"Success" </p>}}.into_view(), "Contact Added.".into_view(), ToastVariant::Success);
                     }
-                set_is_update_contact(true)
+                    else{
+                        create_toast( {view! {<p class="toastFail">"Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                    }
                 };
+
                 let delete_skill = move |index: usize| {
                     set_skills.update(|skills| {
                         skills.remove(index);
@@ -330,7 +379,7 @@ pub fn EditPage() -> impl IntoView {
                                 <div class="formGroup" >
                                     <label for="gender">"Gender"</label>
                                     <select
-                                    style="height:3.2rem;"
+                                    class="selectDropdown"
                                         id="gender"
                                         prop:value=gender
                                         on:change=move |ev| {
@@ -342,17 +391,11 @@ pub fn EditPage() -> impl IntoView {
                                         <option value="Other">"Other"</option>
                                     </select>
                                 </div>
-                        <div class="formGroup">
-                        <label for="birth_date">"Birth Date"</label>
-                        <input
-                        type="date"
-                        id="birth_date"
-                        prop:value=birth_date
-                        on:input=move |ev| {
-                         set_birth_date(event_target_value(&ev));
-                                }
-                        />
-                                </div>
+                   
+                     
+                        <InputField input_type="date" id="birth_date" label="Birth Date" set_field=set_birth_date  get_value=birth_date require=true />
+                     
+                          
                             </div>
                             <InputField input_type="text" id="role" label="Job Title" set_field=set_role  get_value=role require=true />
                             <InputField input_type="text" id="address" label="Address" set_field=set_address get_value=address require=true />
@@ -367,6 +410,7 @@ pub fn EditPage() -> impl IntoView {
                             <div class="formGroup">
                                 <label for="skill_level">"Level"</label>
                                 <select
+                                class="selectDropdown"
                                     id="skill_level"
                                     prop:value=skill_level
                                     on:change=move |ev| {
@@ -397,9 +441,12 @@ pub fn EditPage() -> impl IntoView {
                         <InputField input_type="text" id="company_name" label="Company Name" set_field=set_company_name  get_value=company_name require=true />
                         <InputField input_type="text" id="company_logo_url" label="Company Logo Url" set_field=set_company_logo_url  get_value=company_logo_url require=true />
                         <InputField input_type="text" id="position_name" label="Position Name" set_field=set_position_name  get_value=position_name require=true />
-                        <InputField input_type="text" id="start_date" label="Start Date" set_field=set_start_date  get_value=start_date require=true />
-                        <InputField input_type="text" id="end_date" label="End Date - (input now if current job)" set_field=set_end_date  get_value=end_date require=true /> 
-                    <TextAreaField  id="describe" label="Describe" set_field=set_describe  get_value=describe require=false />       
+                       
+                        <div class="formRow">
+                        <InputField input_type="date" id="start_date" label="Start Date" set_field=set_start_date  get_value=start_date require=true />
+                        <InputField input_type="date" id="end_date" label="End Date" set_field=set_end_date  get_value=end_date require=true /> 
+                        </div>
+                       <TextAreaField  id="describe" label="Describe" set_field=set_describe  get_value=describe require=false />       
                                 <button
                                 type="button"
                                 class="addButton"
@@ -440,7 +487,7 @@ pub fn EditPage() -> impl IntoView {
                         <h1>"Edit Contact"</h1>
                       
                         <CheckBox id="is_href" label= "Use link (disable dialog)" set_field=set_is_href  get_value=is_href />
-                        <IconDropdown label="Contact Icon"   set_field=set_contact_icon/ >
+                        <IconDropdown validation=validate_form label="Contact Icon"  get_value=contact_icon  set_field=set_contact_icon require=true  / >
                         {move || {if !is_href.get() {
                             view! {
                                 <div>
@@ -450,7 +497,7 @@ pub fn EditPage() -> impl IntoView {
                         } else {
                             view! { <div></div> }
                         }}}
-                        <InputField input_type="text" id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
+                        <InputField validation=validate_form input_type="text" id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
                         
                         <button
                                 type="button"

@@ -24,11 +24,11 @@ pub fn convert_date_format(input: &String) -> String {
         let formats = ["%Y-%m-%d", "%m/%d/%Y", "%d-%m-%Y"];
         for fmt in formats {
             if let Ok(date) = NaiveDate::parse_from_str(input, fmt) {
-                return date.format("%d/%m/%Y").to_string();
+                return date.format("%m/%Y").to_string();
             }
         }
         // Fallback to default date
-        NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().format("%d/%m/%Y").to_string()
+        NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().format("%m/%Y").to_string()
     }
 }
 pub fn format_date_for_input(date_str: &str) -> String {
@@ -50,31 +50,30 @@ pub static ICON_MAP: phf::Map<
     &'static str,
     &'static icondata_core::IconData
 > = phf_map! {
-    "AiMailOutlined" => i::AiMailOutlined,
-    "AiFacebookOutlined" => i::AiFacebookOutlined,
-    "FaSquareXTwitterBrands" => i::FaSquareXTwitterBrands,
-    "AiLinkedinOutlined" => i::AiLinkedinOutlined,
-    "AiHomeOutlined" => i::AiHomeOutlined,
-    "MdiWeatherNight" => i::MdiWeatherNight,
-    "BiTiktok" => i::BiTiktok,
-    "BiPhoneCallSolid" => i::BiPhoneCallSolid,
-    "AiInstagramOutlined" => i::AiInstagramOutlined,
-    "BsWhatsapp" => i::BsWhatsapp,
-    "AiWechatOutlined" => i::AiWechatOutlined,
-    "FaLineBrands" => i::FaLineBrands,
-    "BiDiscordAlt" => i::BiDiscordAlt,
-    "BiTelegram" => i::BiTelegram,
-    "IoLogoSnapchat" => i::IoLogoSnapchat,
-    "AiWeiboOutlined" => i::AiWeiboOutlined,
-    "BiReddit" => i::BiReddit,
-    "BiGithub" => i::BiGithub,
-    "BiGitlab" => i::BiGitlab,
-    "IoLogoBitbucket" => i::IoLogoBitbucket,
-    "FaViberBrands" => i::FaViberBrands,
-    "AiSlackOutlined" => i::AiSlackOutlined,
-    "SiKakaotalk" => i::SiKakaotalk,
-    "SiKik" => i::SiKik,
-    "AiQqCircleFilled" => i::AiQqCircleFilled,
-    "BsSignal" => i::BsSignal,
+    "Mail" => i::AiMailOutlined,
+    "Facebook" => i::AiFacebookOutlined,
+    "Twitter" => i::FaSquareXTwitterBrands,
+    "Linkedin" => i::AiLinkedinOutlined,
+    "Home" => i::AiHomeOutlined,
+    "Tiktok" => i::BiTiktok,
+    "Phone" => i::BiPhoneCallSolid,
+    "Instagram" => i::AiInstagramOutlined,
+    "Whatsapp" => i::BsWhatsapp,
+    "Wechat" => i::AiWechatOutlined,
+    "Line" => i::FaLineBrands,
+    "Discord" => i::BiDiscordAlt,
+    "Telegram" => i::BiTelegram,
+    "Snapchat" => i::IoLogoSnapchat,
+    "Weibo" => i::AiWeiboOutlined,
+    "Reddit" => i::BiReddit,
+    "Github" => i::BiGithub,
+    "Gitlab" => i::BiGitlab,
+    "Bitbucket" => i::IoLogoBitbucket,
+    "Viber" => i::FaViberBrands,
+    "Slack" => i::AiSlackOutlined,
+    "Kakaotalk" => i::SiKakaotalk,
+    "Kik" => i::SiKik,
+    "QQ" => i::AiQqCircleFilled,
+    "Signal" => i::BsSignal,
 
 };
