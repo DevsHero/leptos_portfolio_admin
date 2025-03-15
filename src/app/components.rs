@@ -28,3 +28,5 @@ pub mod edit_contact;
 pub use edit_contact::EditContacts;
 pub mod loading;
 pub use loading::Loading;
+pub mod dialog;
+pub use dialog::Dialog;

@@ -18,6 +18,7 @@ pub struct Contact {
     pub contact_icon: String,
     pub is_href: bool,
     pub contact_value: String,
+    pub contact_title: Option<String>,
 }
 impl Default for Contact {
     fn default() -> Self {
@@ -25,6 +26,7 @@ impl Default for Contact {
             contact_icon: String::from("MdiEmail"),
             is_href: bool::from(true),
             contact_value: String::from("developer@portfolio.com"),
+            contact_title: None,
         }
     }
 }

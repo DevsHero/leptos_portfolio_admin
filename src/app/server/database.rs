@@ -120,6 +120,7 @@ cfg_if::cfg_if! {
             update_data.insert("role", profile.role);
             update_data.insert("nationality", profile.nationality);
             update_data.insert("about", profile.about);
+            update_data.insert("address", profile.address);
             update_data.insert("avatar", profile.avatar);
             if _is_update_skill {
                 let _skill_result = update_skill(profile.skills.clone().expect("REASON")).await;

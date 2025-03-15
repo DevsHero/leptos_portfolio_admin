@@ -74,9 +74,12 @@ pub fn EditPage() -> impl IntoView {
                 let (contacts, set_contacts) = create_signal(profile.contacts.unwrap_or_else(Vec::new));
                 let (contact_value, set_contact_value) = create_signal(String::new());
                 let (contact_icon, set_contact_icon) = create_signal(String::new());
+                let (contact_title, set_contact_title) = create_signal(String::new());
                 let (is_href, set_is_href) = create_signal(bool::from(false)); 
+
+
                 let (_is_update_skill, set_is_update_skill) = create_signal(false);
-                    let (_is_update_experience, set_is_update_experience) = create_signal(false);
+                let (_is_update_experience, set_is_update_experience) = create_signal(false);
                 let (_is_update_portfolio, set_is_update_portfolio) = create_signal(false);
                 let (_is_update_contact, set_is_update_contact) = create_signal(false);
                 let (is_saving, set_is_saving) = create_signal(false);
@@ -209,6 +212,7 @@ pub fn EditPage() -> impl IntoView {
                         let new_contact = Contact {
                             contact_icon: contact_icon.get(),
                             contact_value: contact_value.get(),
+                            contact_title: Some(contact_title.get()),
                             is_href: is_href.get()
                         };
                         set_contacts.update(|contact| contact.push(new_contact));
@@ -435,9 +439,19 @@ pub fn EditPage() -> impl IntoView {
                         <div class="edit-container">
                         <h1>"Edit Contact"</h1>
                       
-                        <CheckBox id="is_href" label= "Use Href Link" set_field=set_is_href  get_value=is_href />
+                        <CheckBox id="is_href" label= "Use link (disable dialog)" set_field=set_is_href  get_value=is_href />
                         <IconDropdown label="Contact Icon"   set_field=set_contact_icon/ >
+                        {move || {if !is_href.get() {
+                            view! {
+                                <div>
+                                <InputField input_type="text" id="contact_title" label="Contact Title (Show in dialog)" set_field=set_contact_title  get_value=contact_title require=true />
+                                </div>
+                            }
+                        } else {
+                            view! { <div></div> }
+                        }}}
                         <InputField input_type="text" id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
+                        
                         <button
                                 type="button"
                                 class="addButton"

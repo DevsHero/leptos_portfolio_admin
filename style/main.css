@@ -860,23 +860,21 @@ body {
   font-size: 13;
   color: var(--subtext0);
 }
-/* .profile > .contacts */
+ 
 .contacts {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  margin-top: 10px;
   justify-content: center;
-  padding: 0.2rem;
+ gap: 1rem;
 }
 .contacts > a {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  display: inline-block;
-  border-radius: 9999px;
-  padding: 0.1rem;
-  font-size: 1.5rem;
-  line-height: 2rem;
-  transition-duration: 150ms;
+  height: 2rem;
+
+  font-size: 30;
+  display: inline-flex;
+  align-items: center;
+  
 
 }
 .info-row {
@@ -1122,20 +1120,7 @@ body {
     grid-row: span 2 / span 2;
   }
 }
-@media only screen and (max-width: 900px) {
-  .contacts > a {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    display: inline-block;
-    padding: 0.375rem;
-    font-size: 1.5rem;
-    line-height: 2rem;
-    transition-duration: 150ms;
-    background-color: var(--background);
-    box-shadow: var(--shadow0);
-  }
-
-}
+ 
 .icon {
   display: flex;
   width: 2rem;
@@ -1503,9 +1488,9 @@ button:hover {
 
 .checkboxRow {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between; 
-  width: 10rem;
+  flex-direction: row; 
+  align-items: center;
+  width: 20rem;
 }
 .aLinkRow{
   display: flex;
@@ -1548,6 +1533,74 @@ button:hover {
     justify-content: center;
     align-items: center;
 }
+/* dialog css */
+.dialog-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dialog-trigger {
+ height: 2rem;
+  font-size: 30;
+
+  display: inline-flex;
+  align-items: center;
+}
+.dialog-trigger:hover { 
+  color:red
+}
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog-content {
+  background-color: var(--surface0);
+  border-radius: 4px;
+  padding: 20px;
+  max-width: 350px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.dialog-title {
+  
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.dialog-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.dialog-body {
+  margin-bottom: 15px;
+}
+
 /* mobile css */
 @media (width <  768px) {
   .tabPage {
