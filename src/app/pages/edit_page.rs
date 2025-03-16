@@ -18,16 +18,7 @@ use crate::app::server::api::{ get_profile, update_portfolio, verify };
 use leptos_icons::Icon;
 use icondata as i;
 use leptos::*;
-use leptos_toaster::{
-    Theme,
-    Toast,
-    ToastId,
-    ToastOptions,
-    ToastVariant,
-    Toaster,
-    ToasterPosition,
-    Toasts,
-};
+use leptos_toaster::{ Theme, Toast, ToastId, ToastOptions, ToastVariant, ToasterPosition, Toasts };
 use web_sys::SubmitEvent;
 
 #[component]
@@ -117,7 +108,12 @@ pub fn EditPage() -> impl IntoView {
                 let (_is_update_portfolio, set_is_update_portfolio) = create_signal(false);
                 let (_is_update_contact, set_is_update_contact) = create_signal(false);
                 let (is_saving, set_is_saving) = create_signal(false);
-                let (validate_form, set_validate_form) = create_signal(false);
+
+                let (validate_profile, set_validate_profile) = create_signal(false);
+                let (validate_skill, set_validate_skill) = create_signal(false);
+                let (validate_experience, set_validate_experience) = create_signal(false);
+                let (validate_portfolio, set_validate_portfolio) = create_signal(false);
+                let (validate_contact, set_validate_contact) = create_signal(false);
                 let verify_action = Action::new(move |_| {
                     async move { 
                         let result = verify(input_password.get()).await;
@@ -126,8 +122,12 @@ pub fn EditPage() -> impl IntoView {
                                 set_is_incorrect(false);
                                 set_is_verify(true);
                                 set_is_init(true);
+                                create_toast({view! {<p class="toastInfo">"Admin Mode" </p>}}.into_view(), "Welcome Admin user.".into_view(), ToastVariant::Info);
+                   
                             },
                             _ => {
+                                create_toast( {view! {<p class="toastFail">"Failed" </p>}}.into_view() , "Incorrect Password.".into_view(), ToastVariant::Error);
+             
                                 set_is_incorrect(true);
                             },
                         }
@@ -150,6 +150,8 @@ pub fn EditPage() -> impl IntoView {
                         set_is_update_experience(false);
                         set_is_update_portfolio(false);
                         set_is_update_contact(false);
+                        create_toast({view! {<p class="toastSuccess">"Update Success" </p>}}.into_view(), "All information has been updated.".into_view(), ToastVariant::Success);
+                     
                         result
                     }
                 });
@@ -159,6 +161,19 @@ pub fn EditPage() -> impl IntoView {
              let profile_id = profile.id.clone();
              let on_submit = move |ev: SubmitEvent| {
                 ev.prevent_default();
+                set_validate_profile.update(|v| *v = !*v);
+                let form_valid = !first_name.get().trim().is_empty() && 
+                                 !last_name.get().trim().is_empty()&& 
+                                 !about.get().trim().is_empty()&& 
+                                 !role.get().trim().is_empty()&& 
+                                 !birth_date.get().trim().is_empty()&& 
+                                 !nationality.get().trim().is_empty()&& 
+                                 !address.get().trim().is_empty();
+                if !form_valid {
+                    create_toast( {view! {<p class="toastFail">"Update Failed" </p>}}.into_view() , "Profile Missing required fields.".into_view(), ToastVariant::Error);
+                }else{
+
+           
                 let updated_profile = Profile {
                     id: profile_id.clone(),
                     first_name: first_name.get(),
@@ -177,6 +192,7 @@ pub fn EditPage() -> impl IntoView {
                     contacts: Some(contacts.get()),
                 };
                 update_profile_action.dispatch(updated_profile);
+            }
             };
             create_effect(move |_| {
                     if let Some(Ok(_)) = update_profile_action.value().get() {
@@ -185,7 +201,9 @@ pub fn EditPage() -> impl IntoView {
                     }
                 });
                 let add_skill = move |_| {
-                    if !skill_name.get().is_empty() {
+                    set_validate_skill.update(|v| *v = !*v);
+                    let form_valid = !skill_name.get().trim().is_empty();
+                    if form_valid {
                         let new_skill = Skill {
                             name: skill_name.get(),
                             level: skill_level.get(),
@@ -193,12 +211,23 @@ pub fn EditPage() -> impl IntoView {
                         set_skills.update(|skills| skills.push(new_skill));
                         set_skill_name.set(String::new());
                         set_skill_level.set(String::from("Basic"));
+                 
+                    set_is_update_skill(true);
+                    set_validate_skill.set(false);
+                    create_toast({view! {<p class="toastSuccess">"Add Skill Success" </p>}}.into_view(), "Skill Added.".into_view(), ToastVariant::Success);
                     }
-                    set_is_update_skill(true)
+                    else{
+                        create_toast( {view! {<p class="toastFail">"Add Skill Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                    }
                 };
                 let add_experience = move |_| {
-              
-                    if !company_name.get().is_empty() {
+                    set_validate_experience.update(|v| *v = !*v);
+                    let form_valid = !company_name.get().trim().is_empty() && 
+                                     !position_name.get().trim().is_empty()&& 
+                                     !describe.get().trim().is_empty()&& 
+                                     !start_date.get().trim().is_empty()&& 
+                                     !end_date.get().trim().is_empty();
+                    if form_valid {
                         let new_experience = Experience {
                             company_name: company_name.get(),
                             company_url: company_url.get(),
@@ -216,11 +245,20 @@ pub fn EditPage() -> impl IntoView {
                         set_start_date.set(String::new()); 
                         set_end_date.set(String::new()); 
                         set_describe.set(String::new()); 
+                    
+                    set_is_update_experience(true);
+                    set_validate_experience.set(false);
+                    create_toast({view! {<p class="toastSuccess">"Add Experience Success" </p>}}.into_view(), "Experience Added.".into_view(), ToastVariant::Success);
                     }
-                    set_is_update_experience(true)
+                    else{
+                        create_toast( {view! {<p class="toastFail">"Add Experience Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                    }
                 };
                 let add_portfolio = move |_| {
-                    if !portfolio_name.get().is_empty() {
+                    set_validate_portfolio.update(|v| *v = !*v);
+                    let form_valid = !portfolio_name.get().trim().is_empty() && 
+                                    !portfolio_detail.get().trim().is_empty();
+                    if form_valid {
                         let new_portfolio = Portfolio {
                             portfolio_name: portfolio_name.get(),
                             portfolio_detail: portfolio_detail.get(),
@@ -238,16 +276,18 @@ pub fn EditPage() -> impl IntoView {
                         set_is_private.set(bool::from(false));
                         set_screenshots_url.set(vec!["".to_string()]);
                         set_stacks.set(vec!["".to_string()]);
+                  
+                    set_is_update_portfolio(true);
+                    set_validate_portfolio.set(false);
+                    create_toast({view! {<p class="toastSuccess">"Add Portfolio Success" </p>}}.into_view(), "Portfolio Added.".into_view(), ToastVariant::Success);
                     }
-                    set_is_update_portfolio(true)
+                    else{
+                        create_toast( {view! {<p class="toastFail">"Add Portfolio Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                    }
                 };
 
                 let add_contact = move |_| {
-                 
-                  
-                    set_validate_form.update(|v| *v = !*v);
-        
-                    // Check if all required fields have values
+                    set_validate_contact.update(|v| *v = !*v);
                     let form_valid = !contact_value.get().trim().is_empty() && 
                                      !contact_icon.get().trim().is_empty();
                     if form_valid {
@@ -260,14 +300,15 @@ pub fn EditPage() -> impl IntoView {
                         set_contacts.update(|contact| contact.push(new_contact));
                         set_contact_icon.set(String::new());
                         set_contact_value.set(String::new());
+                        set_contact_title.set(String::new());
                         set_is_href.set(bool::from(false));
                   
                 set_is_update_contact(true);
-                set_validate_form.set(false);
-                create_toast({view! {<p class="toastSuccess">"Success" </p>}}.into_view(), "Contact Added.".into_view(), ToastVariant::Success);
+                set_validate_contact.set(false);
+                create_toast({view! {<p class="toastSuccess">"Add Contact Success" </p>}}.into_view(), "Contact Added.".into_view(), ToastVariant::Success);
                     }
                     else{
-                        create_toast( {view! {<p class="toastFail">"Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                        create_toast( {view! {<p class="toastFail">"Add Contact Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
                     }
                 };
 
@@ -366,13 +407,13 @@ pub fn EditPage() -> impl IntoView {
                                 <InputField input_type="text" id="avatar" label="Avatar URL" set_field=set_avatar  get_value=avatar require=false />  
                            
                             <div class="formRow" >
-                                <InputField input_type="text" id="first_name" label="First Name" set_field=set_first_name  get_value=first_name require=true />
-                                <InputField input_type="text" id="last_name" label="Last Name" set_field=set_last_name  get_value=last_name require=true />
+                                <InputField input_type="text" id="first_name" label="First Name" set_field=set_first_name validation=validate_profile  get_value=first_name require=true />
+                                <InputField input_type="text" id="last_name" label="Last Name" set_field=set_last_name validation=validate_profile get_value=last_name require=true />
                             </div>
 
                             <div class="formRow">
                             <InputField input_type="text" id="nick_name" label="Nick Name" set_field=set_nick_name  get_value=nick_name require=false />
-                            <InputField input_type="text" id="nationality" label="Nationality" set_field=set_nationality  get_value=nationality require=true />
+                            <InputField input_type="text" id="nationality" label="Nationality" validation=validate_profile set_field=set_nationality  get_value=nationality require=true />
                             </div>
 
                             <div class="formRow">
@@ -393,20 +434,20 @@ pub fn EditPage() -> impl IntoView {
                                 </div>
                    
                      
-                        <InputField input_type="date" id="birth_date" label="Birth Date" set_field=set_birth_date  get_value=birth_date require=true />
+                        <InputField input_type="date" id="birth_date" label="Birth Date" set_field=set_birth_date validation=validate_profile get_value=birth_date require=true />
                      
                           
                             </div>
-                            <InputField input_type="text" id="role" label="Job Title" set_field=set_role  get_value=role require=true />
-                            <InputField input_type="text" id="address" label="Address" set_field=set_address get_value=address require=true />
-                            <TextAreaField  id="about" label="About" set_field=set_about  get_value=about require=true />
+                            <InputField input_type="text" id="role" label="Job Title" set_field=set_role validation=validate_profile get_value=role require=true />
+                            <InputField input_type="text" id="address" label="Address" set_field=set_address validation=validate_profile get_value=address require=true />
+                            <TextAreaField  id="about" label="About" set_field=set_about validation=validate_profile get_value=about require=true />
                             </div>
                             </RenderTab>
                         <RenderTab is_page=true no=2 active_page=select_tab>    
                         <div class="edit-container">
                         <h1>"Edit Skill"</h1>             
                         <div class="formRow">   
-                            <InputField input_type="text" id="skill_name" label="Skill Name" set_field=set_skill_name  get_value=skill_name require=true />        
+                            <InputField input_type="text" id="skill_name" validation=validate_skill label="Skill Name" set_field=set_skill_name  get_value=skill_name require=true />        
                             <div class="formGroup">
                                 <label for="skill_level">"Level"</label>
                                 <select
@@ -438,15 +479,15 @@ pub fn EditPage() -> impl IntoView {
                         <RenderTab is_page=true no=3 active_page=select_tab>
                         <div class="edit-container">
                         <h1>"Edit Experience"</h1> 
-                        <InputField input_type="text" id="company_name" label="Company Name" set_field=set_company_name  get_value=company_name require=true />
+                        <InputField input_type="text" id="company_name" label="Company Name" validation=validate_experience set_field=set_company_name  get_value=company_name require=true />
                         <InputField input_type="text" id="company_logo_url" label="Company Logo Url" set_field=set_company_logo_url  get_value=company_logo_url require=true />
-                        <InputField input_type="text" id="position_name" label="Position Name" set_field=set_position_name  get_value=position_name require=true />
+                        <InputField input_type="text" id="position_name" label="Position Name" validation=validate_experience set_field=set_position_name  get_value=position_name require=true />
                        
                         <div class="formRow">
-                        <InputField input_type="date" id="start_date" label="Start Date" set_field=set_start_date  get_value=start_date require=true />
-                        <InputField input_type="date" id="end_date" label="End Date" set_field=set_end_date  get_value=end_date require=true /> 
+                        <InputField input_type="date" id="start_date" label="Start Date" validation=validate_experience set_field=set_start_date  get_value=start_date require=true />
+                        <InputField input_type="date" id="end_date" label="End Date" validation=validate_experience set_field=set_end_date  get_value=end_date require=true /> 
                         </div>
-                       <TextAreaField  id="describe" label="Describe" set_field=set_describe  get_value=describe require=false />       
+                       <TextAreaField  id="describe" label="Describe" validation=validate_experience  set_field=set_describe  get_value=describe require=true />       
                                 <button
                                 type="button"
                                 class="addButton"
@@ -463,10 +504,11 @@ pub fn EditPage() -> impl IntoView {
                         <RenderTab is_page=true no=4 active_page=select_tab>
                         <div class="edit-container">
                         <h1>"Edit Portfolio"</h1>              
-                        <InputField input_type="text" id="portfolio_name" label="Project Name" set_field=set_portfolio_name  get_value=portfolio_name require=true />
-                        <InputField input_type="text" id="portfolio_detail" label="Project Detail" set_field=set_portfolio_detail  get_value=portfolio_detail require=true />
+                        <InputField input_type="text" id="portfolio_name" label="Project Name" validation=validate_portfolio set_field=set_portfolio_name  get_value=portfolio_name require=true />
                         <InputField input_type="text" id="portfolio_link" label="Project Link Url" set_field=set_portfolio_link  get_value=portfolio_link require=false />
                         <InputField input_type="text" id="portfolio_icon_url" label="Project Icon Url" set_field=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />
+                        <TextAreaField  id="portfolio_detail" label="Project Detail" validation=validate_portfolio set_field=set_portfolio_detail  get_value=portfolio_detail require=true />
+                        
                         <InputArrayField  id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
                         <InputArrayField  id="stacks" label="Project Stack" set_fields=set_stacks  get_values=stacks require=false />
                                <button
@@ -487,7 +529,7 @@ pub fn EditPage() -> impl IntoView {
                         <h1>"Edit Contact"</h1>
                       
                         <CheckBox id="is_href" label= "Use link (disable dialog)" set_field=set_is_href  get_value=is_href />
-                        <IconDropdown validation=validate_form label="Contact Icon"  get_value=contact_icon  set_field=set_contact_icon require=true  / >
+                        <IconDropdown validation=validate_contact label="Contact Icon"  get_value=contact_icon  set_field=set_contact_icon require=true  / >
                         {move || {if !is_href.get() {
                             view! {
                                 <div>
@@ -497,7 +539,7 @@ pub fn EditPage() -> impl IntoView {
                         } else {
                             view! { <div></div> }
                         }}}
-                        <InputField validation=validate_form input_type="text" id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
+                        <InputField validation=validate_contact input_type="text" id="contact_value" label="Contact Value" set_field=set_contact_value  get_value=contact_value require=true />
                         
                         <button
                                 type="button"
@@ -543,12 +585,14 @@ pub fn EditPage() -> impl IntoView {
              <b style="font-size: 18px;">Select Access Mode</b>
                 <button style="width: 20rem; height: 2.5rem; margin-top: 5rem; color:green;   border-width: 1px;  border-color: green;"
                 on:click=move |_| {
+                    create_toast({view! {<p class="toastInfo">"Viewer Mode" </p>}}.into_view(), "Welcome Viewer user.".into_view(), ToastVariant::Info);
+                  
                     set_is_init(true);     
                 }
                 >Viewer Mode "(can't update)"</button>
                 <button style="width: 20rem; height: 2.5rem;    border-width: 1px;  border-color: blue;"
                 on:click=move |_| {
-                    set_use_password(true);
+                     set_use_password(true);
                 }
                 >Admin Mode "(can update)"</button>
                 </div>

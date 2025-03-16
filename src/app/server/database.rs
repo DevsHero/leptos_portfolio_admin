@@ -152,7 +152,7 @@ cfg_if::cfg_if! {
                 profile.id.clone(),
             )).content(update_data.clone()).await;
             let _ = DB.invalidate().await;
-            println!("updated_user: {:?}", res);
+            // println!("updated_user: {:?}", res);
             match res {
                 Ok(user) => Ok(user),
                 // let _ = DB.invalidate().await;

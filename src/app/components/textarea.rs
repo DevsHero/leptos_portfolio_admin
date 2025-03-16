@@ -7,12 +7,35 @@ pub fn TextAreaField(
     get_value: ReadSignal<String>,
     id: impl Into<String>,
     label: impl Into<String>,
-    require: bool
+    require: bool,
+    #[prop(optional)] validation: Option<ReadSignal<bool>>
 ) -> impl IntoView {
     let id = id.into();
     let label = label.into();
+    let error_label = label.clone();
     let label_for_input = label.clone();
     let (error, set_error) = create_signal(None::<String>);
+    // Create a function to validate the input
+    let validate = move || {
+        let value = get_value.get();
+        if require && value.trim().is_empty() {
+            set_error(Some(format!("{} is required.", error_label.clone())));
+            false
+        } else {
+            set_error(None);
+            true
+        }
+    };
+
+    // If a validation trigger is provided, create an effect to watch it
+    if let Some(trigger) = validation {
+        create_effect(move |_| {
+            // When the trigger changes to true, perform validation
+            if trigger.get() {
+                validate();
+            }
+        });
+    }
     view! {
         <div class="formGroup">
             <label for={id.clone()}>{label}</label>
@@ -34,11 +57,7 @@ pub fn TextAreaField(
             {
                 move || {
                     if let Some(msg) = error.get() {
-                        if require {  
-                            view! { <p class="errorInput">{msg}</p> }
-                        } else {
-                            view! { <p></p> }
-                        }
+                        view! { <p class="errorInput">{msg}</p> }
                     } else {
                         view! { <p ></p> }
                     }

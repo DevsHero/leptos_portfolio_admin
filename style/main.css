@@ -1356,6 +1356,11 @@ button:hover {
  font-size: 16;
   color: red;
 }
+.toastInfo {
+  font-weight: bold;
+  font-size: 16;
+   color: #03e412;
+ }
 .toastSuccess {
   font-weight: bold;
   font-size: 16;
