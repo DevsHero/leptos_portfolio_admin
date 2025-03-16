@@ -11,6 +11,7 @@ use crate::app::components::{
     SkillChips,
     TextAreaField,
     ThemeButton,
+    TextEditor,
 };
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
@@ -59,6 +60,7 @@ pub fn EditPage() -> impl IntoView {
         );
     };
     view! {     
+     
         <Suspense fallback=Loading>
         { move || {    
             match get_profile_info.get() {
@@ -158,8 +160,8 @@ pub fn EditPage() -> impl IntoView {
                 let reset_form = move |_: web_sys::MouseEvent| {  // Add type annotation here
                     get_profile_info.refetch();
                 };
-             let profile_id = profile.id.clone();
-             let on_submit = move |ev: SubmitEvent| {
+                let profile_id = profile.id.clone();
+                let on_submit = move |ev: SubmitEvent| {
                 ev.prevent_default();
                 set_validate_profile.update(|v| *v = !*v);
                 let form_valid = !first_name.get().trim().is_empty() && 
@@ -172,8 +174,6 @@ pub fn EditPage() -> impl IntoView {
                 if !form_valid {
                     create_toast( {view! {<p class="toastFail">"Update Failed" </p>}}.into_view() , "Profile Missing required fields.".into_view(), ToastVariant::Error);
                 }else{
-
-           
                 let updated_profile = Profile {
                     id: profile_id.clone(),
                     first_name: first_name.get(),
@@ -337,7 +337,8 @@ pub fn EditPage() -> impl IntoView {
                       set_is_update_contact(true)
                 };
 
-                
+                let (value, set_value) = create_signal(r#"<h1>This is a simple <em><s>paragraph</s></em> ... <strong>H1</strong>!</h1><p style="text-align: center"><strong>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, <mark>sed diam nonumy</mark> eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</strong></p><p style="text-align: justify">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>"#.to_owned());
+
                 {if is_init.get() { 
                 view! {
                     <main class="tabPage"  >
@@ -415,7 +416,13 @@ pub fn EditPage() -> impl IntoView {
                             <InputField input_type="text" id="nick_name" label="Nick Name" set_field=set_nick_name  get_value=nick_name require=false />
                             <InputField input_type="text" id="nationality" label="Nationality" validation=validate_profile set_field=set_nationality  get_value=nationality require=true />
                             </div>
-
+                            <TextEditor
+                            class="textEditor".to_string()
+                            id="editor-about".to_string()
+                            disabled=false
+                            value=value
+                            set_value=set_value
+                        />
                             <div class="formRow">
                                 <div class="formGroup" >
                                     <label for="gender">"Gender"</label>

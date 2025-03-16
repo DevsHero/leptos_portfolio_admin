@@ -891,6 +891,9 @@ body {
  
   box-shadow: var(--shadow0);
 }
+.textEditor{
+ color:red
+}
 .about > h2 {
   margin-left: 0.5rem;
   text-align: left;
@@ -1359,7 +1362,7 @@ button:hover {
 .toastInfo {
   font-weight: bold;
   font-size: 16;
-   color: #03e412;
+   color: hsl(124, 99%, 48%);
  }
 .toastSuccess {
   font-weight: bold;

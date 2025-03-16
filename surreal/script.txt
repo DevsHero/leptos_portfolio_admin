@@ -31,15 +31,16 @@ INSERT INTO profile {
 
 -- Insert data into the contact table
 INSERT INTO contact {
-    contact_icon: "AiFacebookOutlined",
+    contact_icon: "Facebook",
     contact_value: "https://www.facebook.com/zuck/",
     is_href: true
 };
 
 INSERT INTO contact {
-    contact_icon: "AiMailFilled",
-    contact_value: "mailto:someone@example.com",
-    is_href: true
+    contact_title: "My Email",
+    contact_icon: "Mail",
+    contact_value: "my@email.com",
+    is_href: false
 };
 
 -- Insert data into the experience table

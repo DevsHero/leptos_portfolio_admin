@@ -30,3 +30,5 @@ pub mod loading;
 pub use loading::Loading;
 pub mod dialog;
 pub use dialog::Dialog;
+pub mod text_editor;
+pub use text_editor::TextEditor;
