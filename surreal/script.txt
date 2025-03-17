@@ -33,14 +33,14 @@ INSERT INTO profile {
 INSERT INTO contact {
     contact_icon: "Facebook",
     contact_value: "https://www.facebook.com/zuck/",
-    is_href: true
+    use_link: true
 };
 
 INSERT INTO contact {
     contact_title: "My Email",
     contact_icon: "Mail",
     contact_value: "my@email.com",
-    is_href: false
+    use_link: false
 };
 
 -- Insert data into the experience table

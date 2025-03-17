@@ -5,14 +5,14 @@ use crate::app::utils::ICON_MAP;
 #[component]
 pub fn IconDropdown(
     label: impl Into<String>,
-    set_field: WriteSignal<String>,
+    set_value: WriteSignal<String>,
     get_value: ReadSignal<String>,
 
     require: bool,
     #[prop(optional)] validation: Option<ReadSignal<bool>>
 ) -> impl IntoView {
-    let label_text = label.into();
-    let label_for_error = label_text.clone();
+    let label = label.into();
+    let label_for_error = label.clone();
     // Store the selected icon as a String instead of &'static str
     let (selected_icon, set_selected_icon) = create_signal(String::new());
     let (is_open, set_is_open) = create_signal(false);
@@ -49,12 +49,12 @@ pub fn IconDropdown(
             }
         });
     }
-
+    let renderLabel = if require { format!("{}*", label) } else { format!("{}", label) };
     view! { 
         <>
         <div  style="display: flex;flex-direction: row;">
  
-            <label style="margin-right: 52px; margin-bottom: 15px;" >{label_text}</label>    
+            <label style="margin-right: 52px; margin-bottom: 15px;" >{renderLabel}</label>    
                 <div style="position: relative;">
                     <button     
                         type="button"
@@ -64,7 +64,7 @@ pub fn IconDropdown(
                         {
                             move || {
                                 let icon_name = selected_icon.get();
-                                if !icon_name.is_empty() {
+                                if !get_value.get().is_empty()   && !icon_name.is_empty() {
                                     // Look up the icon using the string name
                                     if let Some(&icon) = ICON_MAP.get(icon_name.as_str()) {
                                         view! { 
@@ -95,7 +95,7 @@ pub fn IconDropdown(
                                             on:click=move |_| {
                                                 set_selected_icon.set(name_string.clone());
                                                 set_is_open.set(false);
-                                                set_field.set(name_string.clone());
+                                                set_value.set(name_string.clone());
                                                 // Clear error if a value is selected
                                                 set_error.set(None);
                                             }

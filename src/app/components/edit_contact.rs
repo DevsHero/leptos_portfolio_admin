@@ -6,8 +6,9 @@ use crate::app::models::portfolio::Contact;
 #[component]
 pub fn EditContacts(
     contacts: ReadSignal<Vec<Contact>>,
-    on_delete: Option<Callback<usize>>,
-    use_delete: bool
+    #[prop(optional)] on_delete: Option<Callback<usize>>,
+    #[prop(optional)] on_edit: Option<Callback<usize>>,
+    is_edit: bool
 ) -> impl IntoView {
     {
         move ||
@@ -21,8 +22,7 @@ pub fn EditContacts(
                     <div class="editContactContainer">
             
                     <div  class="editContactRow" >
-                    <div style="  display: flex;
-  flex-direction: row;   align-items: center;">
+                    <div style="  display: flex; flex-direction: row;   align-items: center;">
                     <p style="margin-right: 5px;">Icon : </p>
                 <Icon style="margin-right: 5px;" icon={get_icon.unwrap_or(i::BiErrorSolid)} />
                 <p>{contact.contact_icon }</p>
@@ -31,19 +31,30 @@ pub fn EditContacts(
       
                     view! {
                         <>
-                            {if use_delete {
+                            {if is_edit {
                                 view! {
-                                    <div>
+                                    <div class="inputArrayRow">
                                         <button
-                                            class="deleteButton"
+                                            class="editButton"
+                                            style="margin-right:10px;"
                                             on:click=move |_| {
-                                                if let Some(ref callback) = on_delete {
+                                                if let Some(ref callback) = on_edit {
                                                     leptos::Callable::call(callback, index);
                                                 }
                                             }
                                         >
-                                        <Icon icon={i::BsTrash} />
+                                        <Icon icon={i::BiEditRegular} />
                                         </button>
+                                        <button
+                                        class="deleteButton"
+                                        on:click=move |_| {
+                                            if let Some(ref callback) = on_delete {
+                                                leptos::Callable::call(callback, index);
+                                            }
+                                        }
+                                    >
+                                    <Icon icon={i::BsTrash} />
+                                    </button>
                                     </div>
                                 }
                             } else {
@@ -55,7 +66,7 @@ pub fn EditContacts(
                 </div>
                 <p>Title : {contact.contact_title} </p>    
                 <p>Value : {contact.contact_value} </p>
-                <p>Use Link : {contact.is_href} </p>        
+                <p>Use Link : {contact.use_link} </p>        
          </div>  }
                 })
                 .collect::<Vec<_>>()

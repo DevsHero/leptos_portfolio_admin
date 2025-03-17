@@ -5,9 +5,10 @@ use icondata as i;
 #[component]
 pub fn SkillChips(
     skills: ReadSignal<Vec<Skill>>,
-    on_delete: Option<Callback<usize>>,
+    #[prop(optional)] on_delete: Option<Callback<usize>>,
+    #[prop(optional)] on_edit: Option<Callback<usize>>,
     is_page: bool,
-    use_delete: bool
+    is_edit: bool
 ) -> impl IntoView {
     view! {
         <div class=if is_page {"skillPageList"} else {"skillList"}>
@@ -23,20 +24,31 @@ pub fn SkillChips(
 
                             view! {
                                 <>
-                                    {if use_delete {
+                                    {if is_edit {
                                         view! {
-                                            <div>
-                                                <button
-                                                    class="deleteButton"
-                                                    on:click=move |_| {
-                                                        if let Some(ref callback) = on_delete {
-                                                            leptos::Callable::call(callback, index);
-                                                        }
-                                                    }
-                                                >
-                                                <Icon icon={i::BsTrash} />
-                                                </button>
-                                            </div>
+                                            <div class="inputArrayRow">
+                                        <button
+                                            class="editButton"
+                                            style="margin-right:10px;"
+                                            on:click=move |_| {
+                                                if let Some(ref callback) = on_edit {
+                                                    leptos::Callable::call(callback, index);
+                                                }
+                                            }
+                                        >
+                                        <Icon icon={i::BiEditRegular} />
+                                        </button>
+                                        <button
+                                        class="deleteButton"
+                                        on:click=move |_| {
+                                            if let Some(ref callback) = on_delete {
+                                                leptos::Callable::call(callback, index);
+                                            }
+                                        }
+                                    >
+                                    <Icon icon={i::BsTrash} />
+                                    </button>
+                                    </div>
                                         }
                                     } else {
                                         view! { <div></div> }

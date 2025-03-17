@@ -32,15 +32,15 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
             <RenderTab is_page=false no=1 active_page=select_tab>
             <Experience   
             experiences=experiences
-            on_delete=None
-            use_delete=false
+           
+            is_edit=false
             />    
             </RenderTab>
             <RenderTab is_page=false no=2 active_page=select_tab>
             <Portfolio  
             portfolios=portfolios
-            on_delete=None
-            use_delete=false
+         
+            is_edit=false
             />  
             </RenderTab>
         </section>

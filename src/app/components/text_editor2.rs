@@ -18,7 +18,8 @@ extern "C" {
 }
 
 #[component]
-pub fn TextEditor(
+pub fn TextEditor2(
+    #[prop(optional)] class: Option<impl Into<String>>,
     #[prop(optional)] disabled: Option<bool>,
     #[prop(into)] get_value: Signal<String>,
     #[prop(into)] set_value: WriteSignal<String>,
@@ -29,6 +30,7 @@ pub fn TextEditor(
 ) -> impl IntoView {
     let editor_id = id.into();
     let label = label.into();
+    let class = class.unwrap();
     let error_label = label.clone();
     let error2_label = label.clone();
     let (error, set_error) = create_signal(None::<String>);
@@ -55,7 +57,6 @@ pub fn TextEditor(
     let initial_content = get_value.get();
     let editor_id_clone = editor_id.clone();
     let editor_id_for_cleanup = editor_id.clone();
-    let editor_id_for_cleanup2 = editor_id.clone();
     let on_change = {
         let closure = Closure::wrap(
             Box::new(move |content: String| {
@@ -74,21 +75,41 @@ pub fn TextEditor(
     };
 
     create_effect(move |_| {
-        // Initialize editor with timeout to ensure DOM is ready
         let window = web_sys::window().expect("no global window exists");
+        let document = window.document().expect("no document exists");
+
+        // Check if our style is already added
+        if document.query_selector(".tinymce-no-promotion-style").ok().flatten().is_none() {
+            if let Ok(Some(head)) = document.query_selector("head") {
+                if let Ok(style_element) = document.create_element("style") {
+                    let _ = style_element.set_attribute("class", "tinymce-no-promotion-style");
+                    let _ = style_element.set_attribute("type", "text/css");
+                    style_element.set_text_content(
+                        Some(".tox-promotion { display: none !important; }")
+                    );
+                    let _ = head.append_child(&style_element);
+                }
+            }
+        }
+
+        // This is important for editor initialization
+        let window_clone = window.clone();
         let editor_selector = editor_selector.clone();
         let initial_content = initial_content.clone();
         let on_change = on_change.clone();
 
+        // Use a slightly longer timeout to ensure DOM is fully ready
         let callback = Closure::wrap(
             Box::new(move || {
                 init_tiny_mce(&editor_selector, &initial_content, &on_change);
             }) as Box<dyn FnMut()>
         );
-        let _ = window.set_timeout_with_callback_and_timeout_and_arguments_0(
+
+        let _ = window_clone.set_timeout_with_callback_and_timeout_and_arguments_0(
             callback.as_ref().unchecked_ref(),
-            100
+            250 // Slightly longer delay for better initialization
         );
+
         callback.forget();
     });
     create_effect(move |_| {
@@ -109,11 +130,11 @@ pub fn TextEditor(
             let _ = head.append_child(&style_element);
         }
     }
-    let renderLabel = if require { format!("{}*", label) } else { format!("{}", label) };
+
     view! {
         <div class="formGroup">
-        <label  >{renderLabel}</label>
-        <div for={editor_id_for_cleanup2} id=editor_id_for_cleanup>
+        <label  >{label}</label>
+        <div class=class.into() id=editor_id_for_cleanup>
             <textarea 
                 style="visibility: hidden; display: none;" 
                 disabled=disabled.unwrap_or(false)

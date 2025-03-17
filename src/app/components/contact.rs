@@ -14,7 +14,7 @@ pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
                 .into_iter()
                 .map(|contact| {
                     let get_icon = get_icon_by_name(&contact.contact_icon);
-                    if contact.is_href {
+                    if contact.use_link {
                         view! {
                             <>
                         <a 

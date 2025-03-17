@@ -75,8 +75,8 @@ pub fn HomePage() -> impl IntoView {
                                         <HomeContacts contacts={profile.contacts.clone().unwrap_or_default()} />
                                     </div>
                                     <div class="about">
-                                        <h2>About me</h2>
-                                        <p >{profile.about.clone()}</p>
+                                        <h2>About Me</h2>
+                                      <div class="aboutDetail" inner_html={profile.about.clone() }>  </div>
                                     </div>
                                     <div class="skills">
                                         <h2>Skills</h2>
@@ -84,8 +84,8 @@ pub fn HomePage() -> impl IntoView {
                                             <SkillChips
                                                 is_page=false
                                                 skills=skills
-                                                on_delete=None
-                                                use_delete=false
+                                       
+                                                is_edit=false
                                             />
                                         </div>
                                     </div>

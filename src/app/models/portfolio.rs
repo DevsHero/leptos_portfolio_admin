@@ -16,7 +16,7 @@ impl Default for Skill {
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Contact {
     pub contact_icon: String,
-    pub is_href: bool,
+    pub use_link: bool,
     pub contact_value: String,
     pub contact_title: Option<String>,
 }
@@ -24,7 +24,7 @@ impl Default for Contact {
     fn default() -> Self {
         Self {
             contact_icon: String::from("MdiEmail"),
-            is_href: bool::from(true),
+            use_link: bool::from(true),
             contact_value: String::from("developer@portfolio.com"),
             contact_title: None,
         }

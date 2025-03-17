@@ -3,7 +3,7 @@ use leptos::{ component, view, IntoView };
 
 #[component]
 pub fn TextAreaField(
-    set_field: WriteSignal<String>,
+    set_value: WriteSignal<String>,
     get_value: ReadSignal<String>,
     id: impl Into<String>,
     label: impl Into<String>,
@@ -36,16 +36,17 @@ pub fn TextAreaField(
             }
         });
     }
+    let renderLabel = if require { format!("{}*", label) } else { format!("{}", label) };
     view! {
         <div class="formGroup">
-            <label for={id.clone()}>{label}</label>
+            <label for={id.clone()}>{renderLabel}</label>
             <textarea
                 type="text"
                 id={id.clone()}
                 prop:value=move || get_value.get()
                 on:input=move |ev| {
                     let value = event_target_value(&ev);
-                    set_field(value.clone());
+                    set_value(value.clone());
                     // Optionally perform live validation:
                     if value.trim().is_empty() {
                         set_error(Some(format!("{} is required.", label_for_input.clone())));

@@ -1,9 +1,8 @@
 use leptos::*;
-use leptos::{ component, view, IntoView };
 
 #[component]
 pub fn CheckBox(
-    set_field: WriteSignal<bool>,
+    set_value: WriteSignal<bool>,
     get_value: ReadSignal<bool>,
     id: impl Into<String>,
     label: impl Into<String>
@@ -12,22 +11,20 @@ pub fn CheckBox(
     let label = label.into();
 
     view! {
-     
         <div class="formGroup">
-        <div class="checkboxRow">
-            <label for={id.clone()}>{label}</label>
-            <input
-            style="margin-left : 30px; border-width :1px;"
-                type="checkbox"
-                id={id.clone()}
-                prop:value=move || get_value.get()
-                on:input=move |_ev| {
-                    let checkValue = get_value.clone();
-                    set_field(!checkValue.get()); 
-                }
-            />
-           
-        </div>
+            <div class="checkboxRow">
+                <label for={id.clone()}>{label}</label>
+                <input
+                    style="margin-left: 30px; border-width: 1px;"
+                    type="checkbox"
+                    id={id}
+                    prop:checked=move || get_value.get()
+                    on:change=move |ev| {
+                        let checked = event_target_checked(&ev);
+                        set_value(checked);
+                    }
+                />
+            </div>
         </div>
     }
 }

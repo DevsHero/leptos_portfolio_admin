@@ -884,15 +884,14 @@ body {
 .contacts > a:hover {
   color:red
 }
+
+ 
 .about {
   margin-top: 0.375rem;
   border-radius: 1.5rem;
   padding: 0.75rem;
  
   box-shadow: var(--shadow0);
-}
-.textEditor{
- color:red
 }
 .about > h2 {
   margin-left: 0.5rem;
@@ -901,7 +900,7 @@ body {
   line-height: 1.75rem;
   font-weight: 600;
 }
-.about > p {
+.aboutDetail {
   text-wrap: pretty;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -1354,6 +1353,17 @@ button:hover {
 
   color: rgb(255, 255, 255);
 }
+.editButton {
+  color: #0070c6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ font-size: 16;
+}
+.editButton:hover {
+
+  color: rgb(255, 255, 255);
+}
 .toastFail {
  font-weight: bold;
  font-size: 16;
@@ -1362,7 +1372,7 @@ button:hover {
 .toastInfo {
   font-weight: bold;
   font-size: 16;
-   color: hsl(124, 99%, 48%);
+   color: hwb(135 4% 3%);
  }
 .toastSuccess {
   font-weight: bold;
