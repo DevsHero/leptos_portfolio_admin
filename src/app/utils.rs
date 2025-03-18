@@ -1,6 +1,7 @@
 use chrono::{ DateTime, Datelike, NaiveDate, NaiveDateTime, TimeZone, Utc };
 use phf::phf_map;
 use icondata as i;
+use wasm_bindgen::prelude::*;
 pub fn calculate_age(birth_date: &str) -> i64 {
     let parsed_date = NaiveDate::parse_from_str(birth_date, "%Y-%m-%d").unwrap();
     let datetime_utc = Utc.with_ymd_and_hms(
@@ -77,3 +78,10 @@ pub static ICON_MAP: phf::Map<
     "Signal" => i::BsSignal,
 
 };
+
+#[wasm_bindgen(module = "/assets/localstorage.js")]
+extern "C" {
+    pub fn setLocalStorage(key: &str, value: &str) -> JsValue;
+    pub fn getLocalStorage(key: &str) -> JsValue;
+    pub fn removeLocalStorage(key: &str);
+}

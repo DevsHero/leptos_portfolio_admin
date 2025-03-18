@@ -1,6 +1,5 @@
 use leptos::*;
 use wasm_bindgen::prelude::*;
-use web_sys::js_sys;
 
 #[wasm_bindgen]
 extern "C" {
