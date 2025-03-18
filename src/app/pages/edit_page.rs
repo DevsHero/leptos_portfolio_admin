@@ -392,7 +392,7 @@ pub fn EditPage() -> impl IntoView {
                 };
                 {if is_init.get() { 
                 view! {
-                    <main class="tabPage"  >
+                    <main class="editPage"  >
                     <section class="topbar"  >
                                 <div class="pill">
                                 <a
@@ -456,8 +456,8 @@ pub fn EditPage() -> impl IntoView {
                         </div>
                         <form on:submit=on_submit >
               
-                        <RenderTab is_page=true no=1 active_page=select_tab > 
-                        <div class="edit-container ">
+                        <RenderTab  no=1 active_page=select_tab > 
+                        <div class="editContainer ">
                         <h1>"Edit Profile"</h1>
                              <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
                                 <InputField input_type="text" id="avatar" label="Avatar URL" set_value=set_avatar  get_value=avatar require=false />  
@@ -508,8 +508,8 @@ pub fn EditPage() -> impl IntoView {
                         />
                             </div>
                             </RenderTab>
-                        <RenderTab is_page=true no=2 active_page=select_tab>    
-                        <div class="edit-container">
+                        <RenderTab  no=2 active_page=select_tab>    
+                        <div class="editContainer">
                         <h1>"Edit Skill"</h1>             
                         <div class="formRow">   
                             <InputField input_type="text" id="skill_name" validation=validate_skill label="Skill Name" set_value=set_skill_name  get_value=skill_name require=true />        
@@ -541,8 +541,8 @@ pub fn EditPage() -> impl IntoView {
                        is_edit=true />
                     </div>
                         </RenderTab>
-                        <RenderTab is_page=true no=3 active_page=select_tab>
-                        <div class="edit-container">
+                        <RenderTab  no=3 active_page=select_tab>
+                        <div class="editContainer">
                         <h1>"Edit Experience"</h1> 
                         <InputField input_type="text" id="company_name" label="Company Name" validation=validate_experience set_value=set_company_name  get_value=company_name require=true />
                         <InputField input_type="text" id="company_logo_url" label="Company Logo Url" set_value=set_company_logo_url  get_value=company_logo_url require=true />
@@ -585,8 +585,8 @@ pub fn EditPage() -> impl IntoView {
                               />                      
                     </div>
                         </RenderTab>
-                        <RenderTab is_page=true no=4 active_page=select_tab>
-                        <div class="edit-container">
+                        <RenderTab  no=4 active_page=select_tab>
+                        <div class="editContainer">
                         <h1>"Edit Portfolio"</h1>              
                         <InputField input_type="text" id="portfolio_name" label="Project Name" validation=validate_portfolio set_value=set_portfolio_name  get_value=portfolio_name require=true />
                         <InputField input_type="text" id="portfolio_link" label="Project Link Url" set_value=set_portfolio_link  get_value=portfolio_link require=false />
@@ -629,8 +629,8 @@ pub fn EditPage() -> impl IntoView {
                           />
                     </div>
                         </RenderTab>
-                        <RenderTab is_page=true no=5 active_page=select_tab>
-                        <div class="edit-container">
+                        <RenderTab  no=5 active_page=select_tab>
+                        <div class="editContainer">
                         <h1>"Edit Contact"</h1>
                       
                         {move ||view! { <CheckBox id="use_link"  label= "Use link (disable dialog)" set_value=set_use_link  get_value=use_link />}}

@@ -755,9 +755,7 @@ body {
  
 }
 @media (min-width: 768px) {
-  body {
-    overflow-y: hidden;
-  }
+  
 }
 body {
   background-color: var(--background);
@@ -891,8 +889,8 @@ body {
   margin-top: 0.375rem;
   border-radius: 1.5rem;
   padding: 0.5rem;
- 
   box-shadow: var(--shadow0);
+
 }
 .about > h2 {
   
@@ -904,11 +902,13 @@ body {
   text-wrap: pretty;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  height: 8.5rem;
+  height: 9rem;
   overflow-y: scroll;
   padding: 0.5rem;
   border-radius: 0.5rem;
   background-color: var(--surface0);
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: rgb(150, 150, 150) transparent; /* Custom color */
 }
 .skills {
   margin-top: 0.375rem;
@@ -962,7 +962,7 @@ body {
   flex-direction: column;
   margin-left : 1rem;
 }
-.tabPage {
+.editPage {
   display: flex;
   flex-direction: column;
  width: 45rem;
@@ -1002,22 +1002,22 @@ body {
   text-align: center;
   font-size: 1.125rem;
   line-height: 1.75rem;
+ 
 }
 :root {
   /* Example of a typical outer shadow */
   --shadow0: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 .tabContainer {
+  margin-top: 15;
   position: relative;
-  margin-top: 0.375rem;
+  box-shadow: var(--shadow0);
+  border-radius: 1.5rem;
+  padding: 1rem;
   display: none;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
-  flex-wrap: wrap;
-  border-radius: 1.5rem;
-  padding: 1rem;
   overflow-y: scroll;
-  box-shadow: var(--shadow0);
 
 }
 
@@ -1027,15 +1027,7 @@ body {
   }
 }
  
-.tabPageContainer {
-  position: relative;
-  margin-top: 0.375rem;
-  display: none;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-  overflow-y: scroll;
  
-}
 
 
 .tabContainer > p {
@@ -1047,7 +1039,7 @@ body {
   justify-content: center;
 }
 .activePage {
-  display: flex;
+  display: inline; 
 }
 .project {
   height: -moz-min-content;
@@ -1075,6 +1067,7 @@ body {
   border-radius: 0.375rem;
 }
 .experienceRowFirstItemText {
+ 
   margin-left: 0.75rem;
   margin-right: 0.75rem;
 }
@@ -1161,7 +1154,7 @@ body {
   outline-offset: 2px;
 }
 
-.edit-container {
+.editContainer {
   background: var(--background);
  
   width: 100%;
@@ -1214,11 +1207,7 @@ textarea {
   border-radius: 50%;
   border: 2px solid var(--border);
 }
-/* Style for the avatar URL input */
-.avatar-input {
-  width: 100%;
-  max-width: 400px;
-}
+
 .formButton {
   display: flex;
   justify-content: center;
@@ -1259,7 +1248,7 @@ textarea {
 button:hover {
   opacity: 0.9;
 }
-.edit-container h1 {
+.editContainer h1 {
   font-size: 1.5rem;  /* Makes the font size larger */
   font-weight: 700;   /* Makes the font extra bold */
    /* Adds space below the heading */
@@ -1267,7 +1256,7 @@ button:hover {
   text-align: center;  /* Centers the text */
 }
 /* Optional: Add a decorative underline */
-.edit-container h1::after {
+.editContainer h1::after {
   content: '';
   display: block;
   width: 60px;
@@ -1292,10 +1281,12 @@ button:hover {
   gap: 0.4rem;
   flex-wrap: wrap;
   overflow-y: scroll; 
-  height: 8.5rem;
+  height: 8.6rem;
   padding: 0.1rem;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: rgb(150, 150, 150) transparent; /* Custom color */
 }
-
+ 
 .skillChip {
   display: flex;
   align-items: center;
@@ -1404,6 +1395,8 @@ button:hover {
  
   flex-grow: 1; /* Allow description to take up remaining space */
   overflow-y: scroll; /* Enable scrolling within the description */
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: rgb(150, 150, 150) transparent; 
 }
 .errorInput{
   font-size: small;
@@ -1419,11 +1412,11 @@ button:hover {
 .imageSlideContainer{
   position: relative; 
   overflow: hidden;
-  
+ width:17rem;
 }
 .imageSlideItem{
- width: 20rem;
- height: 10rem;
+width: 100%;
+ height: 12rem;
  object-fit: cover;
  border-radius: 10px;
 }
@@ -1438,38 +1431,37 @@ button:hover {
 .portfolioContainer {
   gap: 1rem;
   padding: 0.5rem;
-  height: 14rem;
+  
   background-color: var(--surface0);
   margin-bottom: 20px;
   border-radius: 8px;
 }
-.portfolioContainerMobile {
-  gap: 1rem;
-  padding: 0.5rem;
-  height: 24.2rem;
-  background-color: var(--surface0);
-  margin-bottom: 20px;
-  border-radius: 8px;
-}
+
 .portfolioColumn {
-  max-width: 60%;
+  width: 65%;
+  margin-right: 5px;
+
 }
 .portfolioHeader {
+
   display: flex; 
   flex-direction: row; 
   
 }
 .portfolioHeader > img {
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: cover;
   border-radius: 0.375rem;
 }
 .portfolioDescriptions {
+ 
   font-size: 13;
   height: 8rem;
-  margin-top: 5px;
+  margin-top: 10px;
  
- 
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: rgb(150, 150, 150) transparent; /* Custom color */
   overflow-y: scroll; /* Enable scrolling within the description */
 }
 .imageSlideButton{
@@ -1478,11 +1470,7 @@ button:hover {
   flex-direction: row;
   
 }
-@media (min-width: 768px) {
-  .tabPageContainer {
-    height: 32rem;
-  }
-}
+ 
 .stackRow {
   display: flex;
   flex-direction: row; 
@@ -1630,8 +1618,13 @@ button:hover {
 
 /* mobile css */
 @media (width <  768px) {
-  .tabPage {
-    width: 19rem;
+  .editPage {
+  width: 95vw;
+    
+  }
+  .indexLayout{
+ width: 100%;
+ 
   }
   .tabsTitle {
     font-size:14px;
@@ -1667,11 +1660,30 @@ button:hover {
     padding-right: 1rem;
    
   }
+  /* .imageSlideItem{
+    height: 12rem;
+  } */
+  .stackRow {
+    width: 87vw;
+  }
+  .tabContainer {
+    padding: 0.75rem;
+  }
   .tabSection {
   margin-top: 1rem;
     margin-left : 0;
   }
+  .tabsTitle {
+    margin-top: 10px;
+  }
   .profile{
     margin-top: 0.5rem;
   }
+  .portfolioDescriptions{
+    width: 87vw;
+  }
+   .imageSlideContainer{
+    width: 100%;
+    margin-top: 5px;
+   }
 }

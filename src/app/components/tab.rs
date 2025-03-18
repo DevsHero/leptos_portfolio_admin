@@ -29,14 +29,14 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
                     Portfolios
                 </button>
             </div>
-            <RenderTab is_page=false no=1 active_page=select_tab>
+            <RenderTab  no=1 active_page=select_tab>
             <Experience   
             experiences=experiences
            
             is_edit=false
             />    
             </RenderTab>
-            <RenderTab is_page=false no=2 active_page=select_tab>
+            <RenderTab  no=2 active_page=select_tab>
             <Portfolio  
             portfolios=portfolios
          

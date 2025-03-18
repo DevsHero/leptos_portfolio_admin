@@ -31,7 +31,7 @@ pub fn Portfolio(
                             // select css design by device
                             if is_mobile.get() {
                                 view! {
-                        <div class="portfolioContainerMobile"  >     
+                        <div class="portfolioContainer"  >     
                       
                         {
           
@@ -78,19 +78,17 @@ pub fn Portfolio(
                              </div>
                          </div>
                          </a>
-                         <div class="portfolioDescriptions" style={"height: 5rem"} inner_html=portfolio.portfolio_detail ></div>    
-                   
-                         
+                         <div class="portfolioDescriptions"   inner_html=portfolio.portfolio_detail ></div>    
                          <ImageSlider images=portfolio.screenshots_url/>
                
-                <div class="editContactRow">
+         
                 <div class="stackRow">
                 <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
                     move || stacks.iter().enumerate().map(|(index, stack)| {
                         view! { <p style="margin-left:5px" >{index +1}.{stack} </p> }
                     }).collect::<Vec<_>>()}
                      
-                    </div>
+                
                     </div> 
             </div>
                         }
