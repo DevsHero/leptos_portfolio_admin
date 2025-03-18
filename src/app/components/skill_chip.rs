@@ -7,11 +7,10 @@ pub fn SkillChips(
     skills: ReadSignal<Vec<Skill>>,
     #[prop(optional)] on_delete: Option<Callback<usize>>,
     #[prop(optional)] on_edit: Option<Callback<usize>>,
-    is_page: bool,
     is_edit: bool
 ) -> impl IntoView {
     view! {
-        <div class=if is_page {"skillPageList"} else {"skillList"}>
+        <div class="skillList">
             {move || skills.get().into_iter().enumerate().map(|(index, skill)| {
                 let level_class = skill.level.to_lowercase();
                 view! {

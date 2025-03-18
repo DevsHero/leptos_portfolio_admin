@@ -8,6 +8,8 @@ use crate::app::components::Dialog;
 pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
     view! {
         <div class="contacts">
+ 
+    
         {
        
             contacts
@@ -17,22 +19,24 @@ pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
                     if contact.use_link {
                         view! {
                             <>
-                        <a 
-                            href=contact.contact_value 
-                            target="_blank"   
-                        >
+                        <a  href=contact.contact_value 
+                            target="_blank"    >
+                        <div class="contactIcon">
                         <Icon icon={get_icon.unwrap_or(i::BiErrorSolid)} />
-                        </a>
+                        </div>
+                        </a>  
                         </>
                     }
                     } else {
                         view! {
-                            <>
-                    <Dialog detail=contact.contact_value title=contact.contact_title.unwrap_or("".to_string())   >
+                            <>  
+                    <Dialog children_only=false detail=contact.contact_value title=contact.contact_title.unwrap_or("".to_string())   >
+                    <div class="contactIcon">
                     <Icon icon={get_icon.unwrap_or(i::BiErrorSolid)} />
+                    </div>
                    </Dialog>
-             
-                      </>
+             </>
+                    
                     }
                     }
                 })

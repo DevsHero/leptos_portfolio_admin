@@ -15,7 +15,6 @@ use crate::app::components::{
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
 use crate::app::server::api::{ get_profile, update_portfolio, verify };
-use leptos::svg::view;
 use leptos_icons::Icon;
 use icondata as i;
 use leptos::*;
@@ -536,7 +535,6 @@ pub fn EditPage() -> impl IntoView {
                             </div>
                         </div>
                         <SkillChips
-                        is_page=true
                         skills=skills
                         on_delete=Callback::new(move |index| delete_skill(index))
                         on_edit=Callback::new(move |index| edit_skill(index))

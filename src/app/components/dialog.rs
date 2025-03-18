@@ -1,6 +1,11 @@
 use leptos::*;
 #[component]
-pub fn Dialog(title: String, detail: String, children: Children) -> impl IntoView {
+pub fn Dialog(
+    #[prop(optional)] title: Option<String>,
+    #[prop(optional)] detail: Option<String>,
+    children: Children,
+    children_only: bool
+) -> impl IntoView {
     let (show_dialog, set_show_dialog) = create_signal(false);
 
     let toggle_dialog = move |_|
@@ -9,7 +14,7 @@ pub fn Dialog(title: String, detail: String, children: Children) -> impl IntoVie
         });
 
     view! {
-        <div class="dialog-container">
+        <div class={if children_only {"dialogChildren"} else {"dialogContainer"}}>
             <button 
                 type="button" 
                 class="dialog-trigger" 
@@ -17,8 +22,11 @@ pub fn Dialog(title: String, detail: String, children: Children) -> impl IntoVie
             >
                 {children()}
             </button>
-            
-            {move || show_dialog.get().then(|| view! {
+            {if !children_only  
+                {
+                    view! {   
+                        <div> 
+                        {    move || show_dialog.get().then(|| view! {
                 <div class="dialog-overlay" on:click=toggle_dialog>
             
                     <div 
@@ -46,6 +54,8 @@ pub fn Dialog(title: String, detail: String, children: Children) -> impl IntoVie
                     </div>
                 </div>
             })}
+            </div> }} else {view! {<div></div>}}}
+           
         </div>
     }
 }

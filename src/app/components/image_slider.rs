@@ -2,11 +2,13 @@ use leptos::*;
 use leptos::IntoView;
 use leptos_icons::Icon;
 use icondata as i;
+use crate::app::components::Dialog;
 #[component]
 pub fn ImageSlider(images: Vec<String>) -> impl IntoView {
     // Signal to keep track of the current slide index.
     let (current_index, set_current_index) = create_signal(0);
-    let images2 = images.clone();
+    let images_preview = images.clone();
+
     // Function to go to the next slide.
     let next_image = {
         let images = images.clone();
@@ -27,43 +29,58 @@ pub fn ImageSlider(images: Vec<String>) -> impl IntoView {
         }
     };
     let preview_image = move || {
-        view! { <img src=images[current_index.get()].clone() class="imageSlideItem"  /> }
+        view! { <img src=images_preview[current_index.get()].clone() class="imageSlideItem"  /> }
     };
-    let open_image = move |_| {
-        if let Some(window) = web_sys::window() {
-            let _ = window.open_with_url_and_target(&images2[current_index.get()], "_blank");
-        }
-    };
+
+    let (open_dialog, set_open_dialog) = create_signal(false);
     view! { 
-        <div class="imageSlideContainer">
-       
-            <div 
-                class="flex transition-transform duration-500 ease-in-out"
-                style=move || format!("transform: translateX(-{}%);", current_index.get() * 100)
-            >
-                
-            </div>
-                   {preview_image}
-           <div class="imageSlideButton"> 
-           <button
-           on:click=prev_image
-           class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 opacity-75 hover:opacity-100"
-       >
-       <Icon icon={i::BiLeftArrowSolid} />
-       </button>
-       <button
-       on:click=open_image
-       class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 opacity-75 hover:opacity-100"
-   >
-   <Icon icon={i::FiExternalLink} />
-   </button>
-       <button
-           on:click=next_image
-           class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 opacity-75 hover:opacity-100"
-       >
-       <Icon icon={i::BiRightArrowSolid} />
-       </button>
+       <div> 
+       { move || { 
+        if open_dialog.get() { 
+            let clone_images = images.clone();
+            let dialog_image =  clone_images[current_index.get()].clone();
+            view!  {<div  on:click=move |_| {
+            set_open_dialog.set(!open_dialog.get()); }>
+            <Dialog children_only=true >
+            <img alt="avatar" src={dialog_image.clone()} />
+        </Dialog>
+            </div>}}
+        else {
+            view! {<div></div>}
+        } 
+       }  }
+       <div class="imageSlideContainer">
+  
+           <div 
+               class="flex transition-transform duration-500 ease-in-out"
+               style=move || format!("transform: translateX(-{}%);", current_index.get() * 100)
+           >
+               
+           </div>
+                  {preview_image}
+          <div class="imageSlideButton"> 
+          <button
+          on:click=prev_image
+          class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 opacity-75 hover:opacity-100"
+      >
+      <Icon icon={i::BiLeftArrowSolid} />
+      </button>
+      <button
+      on:click=move |_| {
+        set_open_dialog.set(!open_dialog.get());   }
+ 
+      class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 opacity-75 hover:opacity-100"
+  >
+  <Icon icon={i::BsArrowsFullscreen} />
+  </button>
+      <button
+          on:click=next_image
+          class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 opacity-75 hover:opacity-100"
+      >
+      <Icon icon={i::BiRightArrowSolid} />
+      </button>
+      </div>
        </div>
-        </div>
+       </div>
     }
 }
