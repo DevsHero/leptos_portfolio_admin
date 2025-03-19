@@ -74,6 +74,7 @@ pub struct Experience {
     pub end_date: String,
     pub describe: String,
     pub company_url: String,
+    pub company_address: String,
 }
 impl Default for Experience {
     fn default() -> Self {
@@ -86,6 +87,7 @@ impl Default for Experience {
             company_url: String::from("https://en.wikipedia.org/wiki/List_of_Avengers_members"),
             start_date: String::from("2000-01-01"),
             end_date: String::from("Now"),
+            company_address: String::from("Hollywood USA"),
             describe: String::from(
                 "Assisted in retrieving and securing dangerous alien technology (Captain America: Civil War).
 Engaged in high-stakes urban combat during Battle of New York (Infinity War).

@@ -114,6 +114,7 @@ pub fn TextEditor(
         <label  >{renderLabel}</label>
         <div for={editor_id_for_cleanup2} id=editor_id_for_cleanup>
             <textarea 
+            class="textEditor"
                 style="visibility: hidden; display: none;" 
                 disabled=disabled.unwrap_or(false)
             >

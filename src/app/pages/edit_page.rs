@@ -9,14 +9,13 @@ use crate::app::components::{
     Portfolio,
     RenderTab,
     SkillChips,
-    ThemeButton,
     TextEditor,
+    Topbar,
 };
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
 use crate::app::server::api::{ get_profile, update_portfolio, verify };
-use leptos_icons::Icon;
-use icondata as i;
+
 use leptos::*;
 use leptos_toaster::{ Theme, Toast, ToastId, ToastOptions, ToastVariant, ToasterPosition, Toasts };
 use web_sys::SubmitEvent;
@@ -59,7 +58,8 @@ pub fn EditPage() -> impl IntoView {
         );
     };
     view! {     
-     
+        <main class="editPage"  >
+        <Topbar/>
         <Suspense fallback=Loading>
         { move || {    
             match get_profile_info.get() {
@@ -78,6 +78,7 @@ pub fn EditPage() -> impl IntoView {
                 //Experience 
                 let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
                 let (company_name, set_company_name) = create_signal(String::new());
+                let (company_address, set_company_address) = create_signal(String::new());
                 let (company_url, set_company_url) = create_signal(String::new());
                 let (company_logo_url, set_company_logo_url) = create_signal(String::new());
                 let (position_name, set_position_name) = create_signal(String::new());
@@ -236,6 +237,7 @@ pub fn EditPage() -> impl IntoView {
                             start_date: start_date.get(),
                             end_date: end_date.get(),
                             describe: describe.get(),
+                            company_address: company_address.get()
                         };
                         set_experiences.update(|experiences| experiences.push(new_experience));
                         set_validate_experience.set(false);
@@ -245,6 +247,7 @@ pub fn EditPage() -> impl IntoView {
                         set_position_name.set(String::new()); 
                         set_start_date.set(String::new()); 
                         set_end_date.set(String::new()); 
+                        set_company_address.set(String::new()); 
                         set_describe.set(String::new()); 
                     
                     set_is_update_experience(true);
@@ -358,6 +361,7 @@ pub fn EditPage() -> impl IntoView {
                         set_start_date.set(experience.start_date);
                         set_end_date.set(experience.end_date);
                         set_describe.set(experience.describe);
+                        set_company_address.set(experience.company_address);
                         set_company_url.set(experience.company_url);
                         delete_experience(index);        
                     }  
@@ -392,301 +396,285 @@ pub fn EditPage() -> impl IntoView {
                 };
                 {if is_init.get() { 
                 view! {
-                    <main class="editPage"  >
-                    <section class="topbar"  >
-                                <div class="pill">
-                                <a
-                                href="/"
-                                target="_self"
-                                aria-label="Source code"
-                                  class="topbarButton" >
-                                    <Icon icon={i::AiHomeOutlined} />
-                                    </a>
-                                    <button
-                                    type="button"
-                                     class="topbarButton active"
-                                    disabled
-                                    >
-                                    <Icon icon={i::OcGearSm} />
-                                    </button>
-                                    <ThemeButton />
-                                </div>
-                            </section>
-                        <div class="tabSectionSelector" >
-                            <button
-                            type="button"
-                                class=move || {
-                                    if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
-                                }
-                                on:click=move |_| set_select_tab(1)  >
-                               Profile
-                            </button>
-                            <button
-                            type="button"
-                                class=move || {
-                                    if select_tab() == 2 { "tabsTitle active" } else { "tabsTitle" }
-                                }
-                                on:click=move |_| set_select_tab(2)   >
-                                Skill
-                            </button>
-                            <button
-                            type="button"
-                             class=move || {
-                                if select_tab() == 3 { "tabsTitle active" } else { "tabsTitle" }
-                            }
-                            on:click=move |_| set_select_tab(3)  >
-                            Experience
-                        </button>
-                        <button
-                        type="button"
-                        class=move || {
-                            if select_tab() == 4 { "tabsTitle active" } else { "tabsTitle" }
-                        }
-                        on:click=move |_| set_select_tab(4) >
-                        Portfolio
-                    </button>
-                    <button
-                    type="button"
-                    class=move || {
-                        if select_tab() == 5 { "tabsTitle active" } else { "tabsTitle" }
-                    }
-                    on:click=move |_| set_select_tab(5)  >
-                    Contact
-                </button>
-                        </div>
-                        <form on:submit=on_submit >
-              
-                        <RenderTab  no=1 active_page=select_tab > 
-                        <div class="editContainer ">
-                        <h1>"Edit Profile"</h1>
-                             <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
-                                <InputField input_type="text" id="avatar" label="Avatar URL" set_value=set_avatar  get_value=avatar require=false />  
-                           
-                            <div class="formRow" >
-                                <InputField input_type="text" id="first_name" label="First Name" set_value=set_first_name validation=validate_profile  get_value=first_name require=true />
-                                <InputField input_type="text" id="last_name" label="Last Name" set_value=set_last_name validation=validate_profile get_value=last_name require=true />
-                            </div>
+                  <div> 
+                
+                  <div class="tabSectionSelector" >
+                      <button
+                      type="button"
+                          class=move || {
+                              if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
+                          }
+                          on:click=move |_| set_select_tab(1)  >
+                         Profile
+                      </button>
+                      <button
+                      type="button"
+                          class=move || {
+                              if select_tab() == 2 { "tabsTitle active" } else { "tabsTitle" }
+                          }
+                          on:click=move |_| set_select_tab(2)   >
+                          Skill
+                      </button>
+                      <button
+                      type="button"
+                       class=move || {
+                          if select_tab() == 3 { "tabsTitle active" } else { "tabsTitle" }
+                      }
+                      on:click=move |_| set_select_tab(3)  >
+                      Experience
+                  </button>
+                  <button
+                  type="button"
+                  class=move || {
+                      if select_tab() == 4 { "tabsTitle active" } else { "tabsTitle" }
+                  }
+                  on:click=move |_| set_select_tab(4) >
+                  Portfolio
+              </button>
+              <button
+              type="button"
+              class=move || {
+                  if select_tab() == 5 { "tabsTitle active" } else { "tabsTitle" }
+              }
+              on:click=move |_| set_select_tab(5)  >
+              Contact
+          </button>
+                  </div>
+                  <form on:submit=on_submit >
+        
+                  <RenderTab  no=1 active_page=select_tab > 
+                  <div class="editContainer ">
+                  <h1>"Edit Profile"</h1>
+                       <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
+                          <InputField input_type="text" id="avatar" label="Avatar URL" set_value=set_avatar  get_value=avatar require=false />  
+                     
+                      <div class="formRow" >
+                          <InputField input_type="text" id="first_name" label="First Name" set_value=set_first_name validation=validate_profile  get_value=first_name require=true />
+                          <InputField input_type="text" id="last_name" label="Last Name" set_value=set_last_name validation=validate_profile get_value=last_name require=true />
+                      </div>
 
-                            <div class="formRow">
-                            <InputField input_type="text" id="nick_name" label="Nick Name" set_value=set_nick_name  get_value=nick_name require=false />
-                            <InputField input_type="text" id="nationality" label="Nationality" validation=validate_profile set_value=set_nationality  get_value=nationality require=true />
-                            </div>
-                          
-                            <div class="formRow">
-                                <div class="formGroup" >
-                                    <label for="gender">"Gender"</label>
-                                    <select
-                                    class="selectDropdown"
-                                        id="gender"
-                                        prop:value=gender
-                                        on:change=move |ev| {
-                                            set_gender(event_target_value(&ev));
-                                        }
-                                    >
-                                        <option value="Male">"Male"</option>
-                                        <option value="Female">"Female"</option>
-                                        <option value="Other">"Other"</option>
-                                    </select>
-                                </div>
-                   
-                     
-                        <InputField input_type="date" id="birth_date" label="Birth Date" set_value=set_birth_date validation=validate_profile get_value=birth_date require=true />
-                     
-                          
-                            </div>
-                            <InputField input_type="text" id="role" label="Job Title" set_value=set_role validation=validate_profile get_value=role require=true />
-                            <InputField input_type="text" id="address" label="Address" set_value=set_address validation=validate_profile get_value=address require=true />
-                            <TextEditor
-                            label="About Me"
-                        
-                            id="about"
-                            validation=validate_profile
-                            disabled=false
-                            require=true
-                            get_value=about
-                            set_value=set_about
-                        />
-                            </div>
-                            </RenderTab>
-                        <RenderTab  no=2 active_page=select_tab>    
-                        <div class="editContainer">
-                        <h1>"Edit Skill"</h1>             
-                        <div class="formRow">   
-                            <InputField input_type="text" id="skill_name" validation=validate_skill label="Skill Name" set_value=set_skill_name  get_value=skill_name require=true />        
-                            <div class="formGroup">
-                                <label for="skill_level">"Level"</label>
-                                <select
-                                class="selectDropdown"
-                                    id="skill_level"
-                                    prop:value=skill_level
-                                    on:change=move |ev| {
-                                        set_skill_level(event_target_value(&ev));
-                                    }>
-                                    <option value="Basic">"Basic"</option>
-                                    <option value="Middle">"Middle"</option>
-                                    <option value="Expert">"Expert"</option>
-                                </select>
-                                <button
-                                type="button"
-                                    class="addButton"
-                                on:click=add_skill >
-                                "Add Skill"
-                            </button>
-                            </div>
-                        </div>
-                        <SkillChips
-                        skills=skills
-                        on_delete=Callback::new(move |index| delete_skill(index))
-                        on_edit=Callback::new(move |index| edit_skill(index))
-                       is_edit=true />
-                    </div>
-                        </RenderTab>
-                        <RenderTab  no=3 active_page=select_tab>
-                        <div class="editContainer">
-                        <h1>"Edit Experience"</h1> 
-                        <InputField input_type="text" id="company_name" label="Company Name" validation=validate_experience set_value=set_company_name  get_value=company_name require=true />
-                        <InputField input_type="text" id="company_logo_url" label="Company Logo Url" set_value=set_company_logo_url  get_value=company_logo_url require=true />
-                        <InputField input_type="text" id="position_name" label="Position Name" validation=validate_experience set_value=set_position_name  get_value=position_name require=true />
-                       
-                        <div class="formRow">
-                        <InputField input_type="date" id="start_date" label="Start Date" validation=validate_experience set_value=set_start_date  get_value=start_date require=true />
-                        <InputField input_type="date" id="end_date" label="End Date" validation=validate_experience set_value=set_end_date  get_value=end_date require=true /> 
-                        </div>
-                    { move ||
-                        if select_tab() == 3  {
-                      view!{
-                        <div>  <TextEditor
-                        label="Job Describe"
-                        id="describe"
-                        validation=validate_experience
-                        disabled=false
-                        require=true
-                        get_value=describe
-                        set_value=set_describe
-                    />
-                    </div>
-                        }
-                        }else{
-                            view!{ <div></div> }
-                        }
-                    }
-                         
-                                <button
-                                type="button"
-                                class="addButton"
-                                on:click=add_experience  >
-                                "Add Experience"
-                            </button>
-                              <Experience   
-                              experiences=experiences
-                              on_delete=Callback::new(move |index| delete_experience(index))
-                              on_edit=Callback::new(move |index| edit_experience(index))
-                              is_edit=true
-                              />                      
-                    </div>
-                        </RenderTab>
-                        <RenderTab  no=4 active_page=select_tab>
-                        <div class="editContainer">
-                        <h1>"Edit Portfolio"</h1>              
-                        <InputField input_type="text" id="portfolio_name" label="Project Name" validation=validate_portfolio set_value=set_portfolio_name  get_value=portfolio_name require=true />
-                        <InputField input_type="text" id="portfolio_link" label="Project Link Url" set_value=set_portfolio_link  get_value=portfolio_link require=false />
-                        <InputField input_type="text" id="portfolio_icon_url" label="Project Icon Url" set_value=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />
-                      
-                        { move ||
-                            if select_tab() == 4  {
-                          view!{
-                            <div>         
-                            <TextEditor
-                            label="Project Detail"
-                            id="portfolio_detail"
-                            validation=validate_portfolio
-                            disabled=false
-                            require=true
-                            get_value=portfolio_detail
-                            set_value=set_portfolio_detail
-                            />
-                        </div>
-                            }
-                            }else{
-                                view!{ <div></div> }
-                            }
-                        }
-                           
-                 
-                        <InputArrayField  id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
-                        <InputArrayField  id="stacks" label="Project Stack" set_fields=set_stacks  get_values=stacks require=false />
-                               <button
-                                type="button"
-                                class="addButton"
-                                on:click=add_portfolio >
-                                "Add Portfolio Project"
-                            </button>
-                          <Portfolio  
-                          portfolios=portfolios
-                          is_edit=true
-                          on_delete=Callback::new(move |index| delete_portfolio(index))
-                          on_edit=Callback::new(move |index| edit_portfolio(index))
-                          />
-                    </div>
-                        </RenderTab>
-                        <RenderTab  no=5 active_page=select_tab>
-                        <div class="editContainer">
-                        <h1>"Edit Contact"</h1>
-                      
-                        {move ||view! { <CheckBox id="use_link"  label= "Use link (disable dialog)" set_value=set_use_link  get_value=use_link />}}
-                        <IconDropdown validation=validate_contact label="Contact Icon"  get_value=contact_icon  set_value=set_contact_icon require=true  / >
-                        {move || {if !use_link.get() {
-                            view! {
-                                <div>
-                                <InputField input_type="text" id="contact_title" label="Contact Title (Show in dialog)" set_value=set_contact_title  get_value=contact_title require=true />
-                                </div>
-                            }
-                        } else {
-                            view! { <div></div> }
-                        }}}
-                        <InputField validation=validate_contact input_type="text" id="contact_value" label="Contact Value" set_value=set_contact_value  get_value=contact_value require=true />
-                        
-                        <button
-                                type="button"
-                                class="addButton"
-                                on:click=add_contact >
-                                "Add Contact"
-                        </button>
-                            <EditContacts  
-                            contacts=contacts  
-                            on_delete=Callback::new(move |index| delete_contact(index))
-                            on_edit=Callback::new(move |index| edit_contact(index))
-                            is_edit=true/ >
-                    </div>
-                        </RenderTab>
+                      <div class="formRow">
+                      <InputField input_type="text" id="nick_name" label="Nick Name" set_value=set_nick_name  get_value=nick_name require=false />
+                      <InputField input_type="text" id="nationality" label="Nationality" validation=validate_profile set_value=set_nationality  get_value=nationality require=true />
+                      </div>
                     
-                        {if is_verify.get()  {
-                            view! {   <div class="formButton">
-                        <button
-                            type="submit"
-                            class="updateButton"
-                            disabled=is_saving >
-                            {move || if is_saving.get() { "Updating..." } else { "Update" }}
-                        </button>
-                        <button
-                            type="button"
-                            class="cancelButton"
-                            disabled=is_saving
-                            on:click=reset_form  >
-                            "Cancel"
-                        </button>
-                    </div>
-                             } }
-                     else{
-                        view! {
-                                <div> </div>
-                        } }}
-                        </form>
-                    </main>
+                      <div class="formRow">
+                          <div class="formGroup" >
+                              <label for="gender">"Gender"</label>
+                              <select
+                              class="selectDropdown"
+                                  id="gender"
+                                  prop:value=gender
+                                  on:change=move |ev| {
+                                      set_gender(event_target_value(&ev));
+                                  }
+                              >
+                                  <option value="Male">"Male"</option>
+                                  <option value="Female">"Female"</option>
+                                  <option value="Other">"Other"</option>
+                              </select>
+                          </div>
+             
+               
+                  <InputField input_type="date" id="birth_date" label="Birth Date" set_value=set_birth_date validation=validate_profile get_value=birth_date require=true />
+               
+                    
+                      </div>
+                      <InputField input_type="text" id="role" label="Job Title" set_value=set_role validation=validate_profile get_value=role require=true />
+                      <InputField input_type="text" id="address" label="Address" set_value=set_address validation=validate_profile get_value=address require=true />
+                      <TextEditor
+                      label="About Me"
+                  
+                      id="about"
+                      validation=validate_profile
+                      disabled=false
+                      require=true
+                      get_value=about
+                      set_value=set_about
+                  />
+                      </div>
+                      </RenderTab>
+                  <RenderTab  no=2 active_page=select_tab>    
+                  <div class="editContainer">
+                  <h1>"Edit Skill"</h1>             
+                  <div class="formRow">   
+                      <InputField input_type="text" id="skill_name" validation=validate_skill label="Skill Name" set_value=set_skill_name  get_value=skill_name require=true />        
+                      <div class="formGroup">
+                          <label for="skill_level">"Level"</label>
+                          <select
+                          class="selectDropdown"
+                              id="skill_level"
+                              prop:value=skill_level
+                              on:change=move |ev| {
+                                  set_skill_level(event_target_value(&ev));
+                              }>
+                              <option value="Basic">"Basic"</option>
+                              <option value="Middle">"Middle"</option>
+                              <option value="Expert">"Expert"</option>
+                          </select>
+                          <button
+                          type="button"
+                              class="addButton"
+                          on:click=add_skill >
+                          "Add Skill"
+                      </button>
+                      </div>
+                  </div>
+                  <SkillChips
+                  skills=skills
+                  on_delete=Callback::new(move |index| delete_skill(index))
+                  on_edit=Callback::new(move |index| edit_skill(index))
+                 is_edit=true />
+              </div>
+                  </RenderTab>
+                  <RenderTab  no=3 active_page=select_tab>
+                  <div class="editContainer">
+                  <h1>"Edit Experience"</h1> 
+                  <InputField input_type="text" id="company_name" label="Company Name" validation=validate_experience set_value=set_company_name  get_value=company_name require=true />
+                  <InputField input_type="text" id="company_logo_url" label="Company Logo Url" set_value=set_company_logo_url  get_value=company_logo_url require=true />
+                  <InputField input_type="text" id="position_name" label="Position Name" validation=validate_experience set_value=set_position_name  get_value=position_name require=true />
+                  <InputField input_type="text" id="company_url" label="Company Page Url" set_value=set_company_url  get_value=company_url require=false />
+                  <InputField input_type="text" id="company_address" label="Company Address" set_value=set_company_address  get_value=company_address require=false />
+                  
+                  
+                  <div class="formRow">
+                  <InputField input_type="date" id="start_date" label="Start Date" validation=validate_experience set_value=set_start_date  get_value=start_date require=true />
+                  <InputField input_type="date" id="end_date" label="End Date" validation=validate_experience set_value=set_end_date  get_value=end_date require=true /> 
+                  </div>
+              { move ||
+                  if select_tab() == 3  {
+                view!{
+                  <div>  <TextEditor
+                  label="Job Describe"
+                  id="describe"
+                  validation=validate_experience
+                  disabled=false
+                  require=true
+                  get_value=describe
+                  set_value=set_describe
+              />
+              </div>
+                  }
+                  }else{
+                      view!{ <div></div> }
+                  }
+              }
+                   
+                          <button
+                          type="button"
+                          class="addButton"
+                          on:click=add_experience  >
+                          "Add Experience"
+                      </button>
+                        <Experience   
+                        experiences=experiences
+                        on_delete=Callback::new(move |index| delete_experience(index))
+                        on_edit=Callback::new(move |index| edit_experience(index))
+                        is_edit=true
+                        />                      
+              </div>
+                  </RenderTab>
+                  <RenderTab  no=4 active_page=select_tab>
+                  <div class="editContainer">
+                  <h1>"Edit Portfolio"</h1>              
+                  <InputField input_type="text" id="portfolio_name" label="Project Name" validation=validate_portfolio set_value=set_portfolio_name  get_value=portfolio_name require=true />
+                  <InputField input_type="text" id="portfolio_link" label="Project Link Url" set_value=set_portfolio_link  get_value=portfolio_link require=false />
+                  <InputField input_type="text" id="portfolio_icon_url" label="Project Icon Url" set_value=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />
+                
+                  { move ||
+                      if select_tab() == 4  {
+                    view!{
+                      <div>         
+                      <TextEditor
+                      label="Project Detail"
+                      id="portfolio_detail"
+                      validation=validate_portfolio
+                      disabled=false
+                      require=true
+                      get_value=portfolio_detail
+                      set_value=set_portfolio_detail
+                      />
+                  </div>
+                      }
+                      }else{
+                          view!{ <div></div> }
+                      }
+                  }
+                     
+           
+                  <InputArrayField  id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
+                  <InputArrayField  id="stacks" label="Project Stack" set_fields=set_stacks  get_values=stacks require=false />
+                         <button
+                          type="button"
+                          class="addButton"
+                          on:click=add_portfolio >
+                          "Add Portfolio Project"
+                      </button>
+                    <Portfolio  
+                    portfolios=portfolios
+                    is_edit=true
+                    on_delete=Callback::new(move |index| delete_portfolio(index))
+                    on_edit=Callback::new(move |index| edit_portfolio(index))
+                    />
+              </div>
+                  </RenderTab>
+                  <RenderTab  no=5 active_page=select_tab>
+                  <div class="editContainer">
+                  <h1>"Edit Contact"</h1>
+                
+                  {move ||view! { <CheckBox id="use_link"  label= "Use link (disable dialog)" set_value=set_use_link  get_value=use_link />}}
+                  <IconDropdown validation=validate_contact label="Contact Icon"  get_value=contact_icon  set_value=set_contact_icon require=true  / >
+                  {move || {if !use_link.get() {
+                      view! {
+                          <div>
+                          <InputField input_type="text" id="contact_title" label="Contact Title (Show in dialog)" set_value=set_contact_title  get_value=contact_title require=true />
+                          </div>
+                      }
+                  } else {
+                      view! { <div></div> }
+                  }}}
+                  <InputField validation=validate_contact input_type="text" id="contact_value" label="Contact Value" set_value=set_contact_value  get_value=contact_value require=true />
+                  
+                  <button
+                          type="button"
+                          class="addButton"
+                          on:click=add_contact >
+                          "Add Contact"
+                  </button>
+                      <EditContacts  
+                      contacts=contacts  
+                      on_delete=Callback::new(move |index| delete_contact(index))
+                      on_edit=Callback::new(move |index| edit_contact(index))
+                      is_edit=true/ >
+              </div>
+                  </RenderTab>
+              
+                  {if is_verify.get()  {
+                      view! {   <div class="formButton">
+                  <button
+                      type="submit"
+                      class="updateButton"
+                      disabled=is_saving >
+                      {move || if is_saving.get() { "Updating..." } else { "Update" }}
+                  </button>
+                  <button
+                      type="button"
+                      class="cancelButton"
+                      disabled=is_saving
+                      on:click=reset_form  >
+                      "Cancel"
+                  </button>
+              </div>
+                       } }
+               else{
+                  view! {
+                          <div> </div>
+                  } }}
+                  </form></div>
                 }
-        }   else{
+            }   else{
             view! {
-                <main class="selectMode" > <b><h1 style="font-size: 1.5rem;">"Edit Page"</h1></b>
+                <div class="selectMode" > <b><h1 style="font-size: 1.5rem;">"Edit Page"</h1></b>
             <div style="display: flex; flex-direction: column; margin-top: 15px; gap: 1rem">
              <b style="font-size: 18px;">Select Access Mode</b>
                 <button 
@@ -722,23 +710,25 @@ pub fn EditPage() -> impl IntoView {
                         </button>   
                     </div>  
                         </div>
+                       
                 } }
              else{
                 view! {
  <div></div>
                 }} }                       
-                </main>
+                </div>
             } }}  },
             Some(Err(e)) => view! { 
-                <main class="indexLayout">
-                    <div>"Error loading profile: "{e.to_string()}</div>
-                </main> 
+                <div class="indexLayout">
+                    <p>"Error loading profile: "{e.to_string()}</p>
+                </div> 
             },
             None => view! { 
-                <main class="indexLayout">
-                    <div>"Loading..."</div>
-                </main> 
+                <div class="indexLayout">
+                    <p>"Loading..."</p>
+                </div> 
             }} }}
         </Suspense>
+        </main>
     }
 }

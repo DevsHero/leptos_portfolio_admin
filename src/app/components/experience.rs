@@ -31,7 +31,10 @@ pub fn Experience(
                     <div class= "experienceRowFirstItemText" >
                     <h4 class="experienceH4" ><b>Company</b>: {experience.company_name}</h4> 
                     <h4 class="experienceH4" ><b>Position</b>: {experience.position_name}</h4>
-                    <p>{convert_date_format(&experience.start_date) } - {convert_date_format(&experience.end_date) }</p>
+                   
+                    <h4 class="experienceH4" ><b>Address</b>: {experience.company_address}</h4>
+                    <h4 class="experienceH4" ><b>Employment Period</b>: {convert_date_format(&experience.start_date) } - {convert_date_format(&experience.end_date) }</h4>
+                
                     </div>
                     </span>
                     </a>

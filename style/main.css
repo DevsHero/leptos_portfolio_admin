@@ -695,6 +695,30 @@ video {
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Fix tinymce output css
+vvvvvv */
+ul {
+  list-style: disc;  /* or your preferred marker style */
+  margin-left: 1.5rem;
+}
+li pre {
+  display: inline;  
+}
+ 
+code {
+  font-family: "Courier New", Courier, monospace;
+  color: hsl(107, 100%, 50%);
+  display: block;
+  padding: 1rem;
+  margin: 1rem 0;
+  background: hsl(0, 0%, 0%);      /* Light background for code */
+  overflow-x: auto;         /* Horizontal scroll if needed */
+  white-space: pre-wrap; 
+}
+/* ^^^^^
+Fix tinymce output css */
+
 :root {
   /* Catppuccin mocha colorscheme */
   /* Main colors */
@@ -805,6 +829,7 @@ body {
   vertical-align: middle;
   transition-duration: 200ms;
 }
+ 
 .pill > button:hover,
 .pill > a:hover {
   transition-duration: 200ms;
@@ -835,6 +860,7 @@ body {
  
 }
 .avatar > img {
+  margin: auto;
   width: 7.5rem;
   height: 7.5rem;
   display: inline-block;
@@ -978,7 +1004,7 @@ body {
   justify-content: center;
   border-radius: 9999px;
   box-shadow: var(--shadow0);
- 
+  margin-top:  20;
  
  
 }
@@ -1011,7 +1037,7 @@ body {
 .tabContainer {
   margin-top: 15;
   position: relative;
-  box-shadow: var(--shadow0);
+ 
   border-radius: 1.5rem;
   padding: 1rem;
   display: none;
@@ -1056,14 +1082,21 @@ body {
   display: flex;
   flex-direction: row;
 }
+.rowItem {
+  display: flex;
+  flex-direction: row;
+}
 .experienceRow {
   display: flex;
   justify-content: space-between;
   flex-direction: row;
+  margin-bottom: 5;
 }
 .experienceRowFirstItem > img {
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 5.2rem;
+  height:5.2rem;
+  
+  object-fit: scale-down;
   border-radius: 0.375rem;
 }
 .experienceRowFirstItemText {
@@ -1177,6 +1210,7 @@ input, select, textarea {
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--mantle);
+ 
 
 }
  select {
@@ -1380,7 +1414,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   height: 14rem;
-  gap: 1rem;
+ 
   padding: 0.5rem;
   margin-bottom: 20px;
   border-radius: 8px;
@@ -1392,12 +1426,14 @@ button:hover {
 /* Apply this to the description element to prevent it from expanding beyond its container */
 .descriptions {
   font-size: 13;
- 
+  width: 53vw;
+  color:  var(--subtext1);
   flex-grow: 1; /* Allow description to take up remaining space */
   overflow-y: scroll; /* Enable scrolling within the description */
   scrollbar-width: thin; /* For Firefox */
   scrollbar-color: rgb(150, 150, 150) transparent; 
 }
+
 .errorInput{
   font-size: small;
   font-weight: bold;
@@ -1451,11 +1487,11 @@ width: 100%;
 .portfolioHeader > img {
   width: 3.5rem;
   height: 3.5rem;
-  object-fit: cover;
+  object-fit: scale-down;
   border-radius: 0.375rem;
 }
 .portfolioDescriptions {
- 
+   
   font-size: 13;
   height: 8rem;
   margin-top: 10px;
@@ -1530,11 +1566,11 @@ width: 100%;
   justify-content: space-between;  
 }
 .experienceH4{
-  font-size: 16px;
+  font-size: 14px;
 }
 .selectMode{
-  margin-top: 1rem;
-   width: 20rem;
+      
+  margin: 0 auto;
   
 }
 .loading{
@@ -1548,11 +1584,11 @@ width: 100%;
   display: inline-block;
 }
 .dialogChildren {
-  position: absolute;
+  position: fixed; /* Keeps the element fixed relative to the viewport */
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
+  transform: translate(-50%, -50%); /* Centers the element */
+  z-index: 1000; /* Ensures it appears above other content */
 }
 .dialog-trigger {
  height: 2rem;
@@ -1619,8 +1655,8 @@ width: 100%;
 /* mobile css */
 @media (width <  768px) {
   .editPage {
-  width: 95vw;
-    
+  width: 90vw;
+   
   }
   .indexLayout{
  width: 100%;
@@ -1650,8 +1686,9 @@ width: 100%;
     width:100%; 
   }
   .avatar > img {
-    width: 5.5rem;
-    height: 5.5rem;
+   
+    width: 6.5rem;
+    height: 6.5rem;
    
   }
   .tabSectionSelector {
@@ -1680,10 +1717,18 @@ width: 100%;
     margin-top: 0.5rem;
   }
   .portfolioDescriptions{
-    width: 87vw;
+    width: 85vw;
   }
    .imageSlideContainer{
     width: 100%;
     margin-top: 5px;
    }
+   .descriptions {
+    width: 85vw;
+   }
+   .experienceRowFirstItem > img {
+    width: 4.5rem;
+    height:4.5rem;
+    
+  }
 }

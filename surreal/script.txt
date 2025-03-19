@@ -51,6 +51,7 @@ INSERT INTO experience {
     describe: "Assisted in retrieving and securing dangerous alien technology (Captain America: Civil War).\nEngaged in high-stakes urban combat during Battle of New York (Infinity War).\nParticipated in intergalactic rescue missions; fought Thanos’ army on Titan.\nBlipped out of existence for five years, then returned to help in the final battle against Thanos (Endgame).\nProvided support in rebuilding efforts post-Blip, maintaining neighborhood security.",
     end_date: "2004-01-01",
     position_name: "Spider Man",
+    company_address:"Hollywood USA",
     start_date: "2000-01-01"
 };
 

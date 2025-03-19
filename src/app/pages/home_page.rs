@@ -1,11 +1,9 @@
 use crate::app::{
-    components::{ SelectTab, ThemeButton, HomeContacts, Loading, Dialog, SkillChips },
+    components::{ Dialog, HomeContacts, Loading, SelectTab, SkillChips, Topbar },
     server::api::get_profile,
     utils::calculate_age,
 };
 use leptos::*;
-use leptos_icons::Icon;
-use icondata as i;
 
 #[component]
 pub fn HomePage() -> impl IntoView {
@@ -48,24 +46,7 @@ pub fn HomePage() -> impl IntoView {
                                 view! {<div></div>}
                             } 
                            }  }
-                                <section class="topbar">
-                                    <div class="pill">
-                                        <button 
-                                            disabled
-                                            class="topbarButton active">
-                                            <Icon icon={i::AiHomeOutlined} />
-                                        </button>
-                                        <a
-                                            href="/edit"
-                                            target="_self"
-                                            aria-label="Source code"
-                                            class="topbarButton"
-                                        >
-                                            <Icon icon={i::OcGearSm} />
-                                        </a>
-                                        <ThemeButton />
-                                    </div>
-                                </section>
+                               <Topbar/>
                                 <section class="info">
                                     <div class="profile">
                                         <span class="avatar">
