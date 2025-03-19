@@ -1085,6 +1085,7 @@ body {
 .rowItem {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 .experienceRow {
   display: flex;
@@ -1101,8 +1102,7 @@ body {
 }
 .experienceRowFirstItemText {
  
-  margin-left: 0.75rem;
-  margin-right: 0.75rem;
+  margin-left: 0.5rem; 
 }
 .experienceRowFirstItemText > h3 {
   font-size: 1.125rem;
@@ -1726,9 +1726,12 @@ width: 100%;
    .descriptions {
     width: 85vw;
    }
+   .experienceContainer {
+    padding: 0.3rem;
+   }
+   
    .experienceRowFirstItem > img {
-    width: 4.5rem;
-    height:4.5rem;
-    
+    width: 4rem;
+    height:4rem;
   }
 }

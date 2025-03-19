@@ -26,6 +26,13 @@ pub fn Portfolio(
                 .into_iter()
                 .enumerate()
                 .map(|(index, portfolio)| {
+                    let aLink = if portfolio.portfolio_link.is_empty() {
+                        view! { <div></div> }
+                    } else {
+                        view! { <div style=" margin-top:2px;  align-items: end; color:blue;"> <a href=portfolio.portfolio_link target="_blank" >  
+                        <Icon  icon={i::TbWorldWww} /> 
+                        </a></div> }
+                    };
                     view! {
                         {
                             // select css design by device
@@ -69,15 +76,16 @@ pub fn Portfolio(
                                 </>
                             }
                         }
-                         <a href=portfolio.portfolio_link target="_blank" >
+                      
                          <div class="portfolioHeader">
                              <img src=portfolio.portfolio_icon_url alt="Project Icon" />
                              <div class="experienceRowFirstItemText">
                              <h4 style={"font-size: 13px"}><b>Name</b>: {portfolio.portfolio_name}</h4>  
                              <h4 style={"font-size: 13px"}><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h4> 
+                             {aLink}
                              </div>
                          </div>
-                         </a>
+                       
                          <div class="portfolioDescriptions"   inner_html=portfolio.portfolio_detail ></div>    
                          <ImageSlider images=portfolio.screenshots_url/>
                
@@ -97,7 +105,7 @@ pub fn Portfolio(
                        <div class="portfolioContainer">     
                         <div class="portfolioRow">    
                         <div class="portfolioColumn">
-                         <a href=portfolio.portfolio_link target="_blank" >
+                    
                          <div class="portfolioHeader">
                              <img src=portfolio.portfolio_icon_url alt="Project Icon" />
                              <div class="experienceRowFirstItemText">
@@ -105,7 +113,7 @@ pub fn Portfolio(
                              <h4><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h4> 
                              </div>
                          </div>
-                         </a>
+                       
                          <div class="portfolioDescriptions" inner_html=portfolio.portfolio_detail></div>    
                          </div>
                          
