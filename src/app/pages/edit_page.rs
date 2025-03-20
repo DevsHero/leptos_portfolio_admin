@@ -333,9 +333,14 @@ pub fn EditPage() -> impl IntoView {
                       set_is_update_experience(true)
                 };
                  let delete_portfolio= move |index: usize| {
+                   
                     set_portfolios.update(|portfolios| {
                         portfolios.remove(index);
+                        for i in (index)..( portfolios.len()) {
+                            portfolios[i].index = (i+1) as u8;
+                        }
                     });
+
                       set_is_update_portfolio(true)
                 };
                  let delete_contact= move |index: usize| {

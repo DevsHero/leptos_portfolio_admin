@@ -16,7 +16,6 @@ pub fn Portfolio(
         create_effect(move |_| {
             if let Some(window) = web_sys::window() {
                 if let Ok(width) = window.inner_width().map(|w| w.as_f64().unwrap_or(0.0)) {
-                    // Here 768 is an example breakpoint; adjust as needed.
                     set_is_mobile(width < 768.0);
                 }
             }
@@ -49,7 +48,6 @@ pub fn Portfolio(
                        >
                            <Icon icon={i::BiChevronUpCircleRegular} />
                        </button>
-                       
                        <button
                        type="button"
                            class="moveButton"
@@ -68,11 +66,9 @@ pub fn Portfolio(
                        >
                            <Icon icon={i::BiChevronDownCircleRegular} />
                        </button>
-                       
                            <button
                            type="button"
                                class="editButton"
-                         
                                on:click=move |_| {
                                    if let Some(ref callback) = on_edit {
                                        leptos::Callable::call(callback, index);
@@ -121,8 +117,9 @@ pub fn Portfolio(
                              <div class="experienceRowFirstItemText">
                              { if is_mobile.get() { edit_menu.clone()} else{view! {<div></div>}}}
                              <h3><b>Name</b>: {portfolio.portfolio_name}</h3>  
-                             <h3><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h3> 
+                             <h3><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} } {aLink}</h3> 
                              </div>
+                             
                          </div>
                        
                          <div class="portfolioDescriptions" inner_html=portfolio.portfolio_detail></div>    
