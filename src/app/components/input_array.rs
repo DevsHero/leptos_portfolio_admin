@@ -1,7 +1,8 @@
 use leptos::*;
-use leptos::{ component, view, IntoView };
+use leptos::{ component, view, IntoView, For };
 use leptos_icons::Icon;
 use icondata as i;
+
 #[component]
 pub fn InputArrayField(
     set_fields: WriteSignal<Vec<String>>,
@@ -12,83 +13,64 @@ pub fn InputArrayField(
 ) -> impl IntoView {
     let id = id.into();
     let label = label.into();
+
     view! {
-                    <div class="formGroup">
-                    <div class="experienceRow">
-                        <label for={id.clone()}>{label}</label>
-                        <button
-                        type="button"
-                        class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4  opacity-75 hover:opacity-100"   
-                        on:click=move |_ev| { 
-                            set_fields.update(|field| field.push("".to_string()));
-                        }
-                    >
+        <div class="formGroup">
+            <div class="experienceRow">
+                <label for={id.clone()}>{label}</label>
+                <button
+                    type="button"
+                    class="btn-add"
+                    on:click=move |_| {
+                        set_fields.update(|fields| fields.push("".into()));
+                    }
+                >
                     <Icon icon={i::CgAdd} />
-                    </button>
-                    </div>
-                        {move ||
-                            get_values
-                                .get()
-                                .into_iter()
-                                .enumerate()
-                                .map(|(index, get_value)| {
-                         let (error, set_error) = create_signal(None::<String>);
-                         
-                                    view! {  
-                                        <div class="inputArrayRow">
-                                        <button
-                        type="button"
-                       class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4  opacity-75 hover:opacity-100"
-                       disabled={get_values.get().len() == 1}
-                        on:click=move |_ev| { 
-                            set_fields.update(|values| {
-                                if index < values.len() {
-                                    values.remove(index);
-                                }
-                            });
-                        }
-                    >
-                    <Icon class="deleteButton" icon={i::CgRemove} />
-                    </button>
-                           <input
-                           class="w-full"
+                </button>
+            </div>
+            
+            <For
+            each=move || get_values.get().into_iter().enumerate()
+            key=|(idx, _)| *idx
+            children=move |(index, _)| {
+                let input_id = format!("{}-{}", id, index);
+                view! {
+                    <div class="inputArrayRow" key={index}>
+                        <button
+                            type="button"
+                            class="btn-remove"
+                            disabled={get_values.get().len() == 1}
+                            on:click=move |_| {
+                                set_fields.update(|fields| { fields.remove(index); });
+                            }
+                        >
+                            <Icon icon={i::CgRemove} />
+                        </button>
+                        <input
                             type="text"
-                            id={id.clone()}
-                            prop:value=move || get_value.clone()
-                      
+                            id={input_id}
+                            class="w-full"
+                            prop:value=move || get_values.get().get(index).cloned().unwrap_or_default()
                             on:input=move |ev| {
-                                let value = event_target_value(&ev);
+                                let val = event_target_value(&ev);
                                 set_fields.update(|fields| {
                                     if let Some(field) = fields.get_mut(index) {
-                                        *field = value.clone();
+                                        *field = val;
                                     }
                                 });
-                            
-                                if value.trim().is_empty() {
-                                    set_error(Some(format!("is required.")));
-                                } else {
-                                    set_error(None);
-                                }
                             }
-                        /> 
-                        
-                    </div>
-                        {
-                            move || {
-                                if let Some(msg) = error.get() {
-                                    if require {  
-                                        view! { <p class="errorInput">{msg}</p> }
-                                    } else {
-                                        view! { <p ></p> }
-                                    }
-                                } else {
-                                    view! { <p></p> }
-                                }
-                            }
-                        }}
-                    })
-                    .collect::<Vec<_>>()
-            }
+                        />
+                        {move || require.then(|| {
+                            let is_empty = get_values.get()
+                                .get(index)
+                                .map(|v| v.trim().is_empty())
+                                .unwrap_or(true);
+                            is_empty.then(|| view! { <p class="errorInput">"Required"</p> })
+                        })}
                     </div>
                 }
+            }
+        />
+        </div>
+    }
 }
