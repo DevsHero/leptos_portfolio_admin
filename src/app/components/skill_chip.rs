@@ -27,6 +27,7 @@ pub fn SkillChips(
                                         view! {
                                             <div class="inputArrayRow">
                                         <button
+                                        type="button" 
                                             class="editButton"
                                             style="margin-right:10px;"
                                             on:click=move |_| {
@@ -38,6 +39,7 @@ pub fn SkillChips(
                                         <Icon icon={i::BiEditRegular} />
                                         </button>
                                         <button
+                                        type="button" 
                                         class="deleteButton"
                                         on:click=move |_| {
                                             if let Some(ref callback) = on_delete {

@@ -57,6 +57,7 @@ INSERT INTO experience {
 
 -- Insert data into the portfolio table
 INSERT INTO portfolio {
+    index:1,
     is_private: false,
     portfolio_detail: "Fullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin system",
     portfolio_icon_url: "https://cdn-icons-png.flaticon.com/512/25/25231.png",

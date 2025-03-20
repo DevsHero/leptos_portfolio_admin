@@ -40,10 +40,12 @@ pub struct Portfolio {
     pub portfolio_icon_url: String,
     pub stacks: Vec<String>,
     pub screenshots_url: Vec<String>,
+    pub index: u8,
 }
 impl Default for Portfolio {
     fn default() -> Self {
         Self {
+            index: u8::from(1),
             portfolio_name: String::from("Leptos Portfolio Admin"),
             portfolio_link: String::from("https://github.com/zelda2003/leptos_portfolio_admin"),
             is_private: bool::from(false),

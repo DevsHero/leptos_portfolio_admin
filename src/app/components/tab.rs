@@ -13,6 +13,7 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
         <section class="tabSection">
             <div class="tabSectionSelector">
                 <button
+                type="button" 
                     class=move || {
                         if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
                     }
@@ -21,6 +22,7 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
                    Experiences
                 </button>
                 <button
+                type="button" 
                     class=move || {
                         if select_tab() == 2 { "tabsTitle active" } else { "tabsTitle" }
                     }

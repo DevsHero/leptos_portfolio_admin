@@ -42,6 +42,7 @@ pub fn Dialog(
                                 <h3  class="dialog-title">  {title.clone()} </h3>
                             </div>
                             <button 
+                            type="button" 
                                 class="dialog-close" 
                                 on:click=toggle_dialog
                             >

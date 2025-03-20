@@ -16,8 +16,6 @@
   
     function initEditor(selector, content, onChangeCallback) {
       const editorId = selector.substring(1); 
-      console.log(selector)
-      console.log(editorId)
       tinymce.init({
         selector: selector,
         plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',

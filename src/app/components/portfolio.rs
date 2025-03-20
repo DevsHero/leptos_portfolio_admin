@@ -7,6 +7,8 @@ pub fn Portfolio(
     portfolios: ReadSignal<Vec<Portfolio>>,
     #[prop(optional)] on_delete: Option<Callback<usize>>,
     #[prop(optional)] on_edit: Option<Callback<usize>>,
+    #[prop(optional)] set_portfolios: Option<WriteSignal<Vec<Portfolio>>>,
+    #[prop(optional)] set_is_update: Option<WriteSignal<bool>>,
     is_edit: bool
 ) -> impl IntoView {
     {
@@ -19,154 +21,136 @@ pub fn Portfolio(
                 }
             }
         });
-
         move ||
             portfolios
                 .get()
                 .into_iter()
                 .enumerate()
                 .map(|(index, portfolio)| {
-                    let aLink = if portfolio.portfolio_link.is_empty() {
+                    let edit_menu = {
+                        if is_edit {
+                            view! {
+                           <div class="iconRow">
+                           <button
+                           type="button"
+                           class="moveButton"
+                           on:click=move |_| {
+                               if let Some(ref set_portfolios) = set_portfolios {
+                                   set_portfolios.update(|list| {
+                                       if index > 0 {
+                                           list.swap(index, index - 1);
+                                           list[index].index = index as u8;
+                                           list[index - 1].index = (index - 1) as u8;
+                                           set_is_update.unwrap()(true);
+                                       }
+                                   });
+                               }
+                           }
+                       >
+                           <Icon icon={i::BiChevronUpCircleRegular} />
+                       </button>
+                       
+                       <button
+                       type="button"
+                           class="moveButton"
+                           on:click=move |_| {
+                               if let Some(ref set_portfolios) = set_portfolios {
+                                   set_portfolios.update(|list| {
+                                       if index < list.len() - 1 {
+                                           list.swap(index, index + 1);
+                                           list[index].index = index as u8;
+                                           list[index + 1].index = (index + 1) as u8;
+                                           set_is_update.unwrap()(true);
+                                       }
+                                   });
+                               }
+                           }
+                       >
+                           <Icon icon={i::BiChevronDownCircleRegular} />
+                       </button>
+                       
+                           <button
+                           type="button"
+                               class="editButton"
+                         
+                               on:click=move |_| {
+                                   if let Some(ref callback) = on_edit {
+                                       leptos::Callable::call(callback, index);
+                                   }
+                               }
+                           >
+                               <Icon icon={i::BiEditRegular} />
+                           </button>
+                           <button
+                           type="button"
+                               class="deleteButton"
+                               on:click=move |_| {
+                                   if let Some(ref callback) = on_delete {
+                                       leptos::Callable::call(callback, index);
+                                   }
+                               }
+                           >
+                               <Icon icon={i::BsTrash} />
+                           </button>
+                       </div>
+                        }
+                        } else {
+                            view! { <div></div> }
+                        }
+                    };
+                    let edit_menu_clone = edit_menu.clone();
+                    let aLink: HtmlElement<html::Div> = if portfolio.portfolio_link.is_empty() {
                         view! { <div></div> }
                     } else {
                         view! { <div style=" margin-top:2px;  align-items: end; color:blue;"> <a href=portfolio.portfolio_link target="_blank" >  
                         <Icon  icon={i::TbWorldWww} /> 
                         </a></div> }
                     };
+                    let url = if portfolio.portfolio_icon_url.is_empty() {
+                        "https://cdn-icons-png.flaticon.com/512/7867/7867852.png".to_string()
+                    } else {
+                        portfolio.portfolio_icon_url.clone()
+                    };
                     view! {
-                        {
-                            // select css design by device
-                            if is_mobile.get() {
-                                view! {
-                        <div class="portfolioContainer"  >     
-                      
-                        {
-          
-                            view! {
-                                <>
-                                    {if is_edit {
-                                        view! {
-                                            <div class="inputArrayRow">
-                                            <button
-                                                class="editButton"
-                                                style="margin-right:10px;"
-                                                on:click=move |_| {
-                                                    if let Some(ref callback) = on_edit {
-                                                        leptos::Callable::call(callback, index);
-                                                    }
-                                                }
-                                            >
-                                            <Icon icon={i::BiEditRegular} />
-                                            </button>
-                                            <button
-                                            class="deleteButton"
-                                            on:click=move |_| {
-                                                if let Some(ref callback) = on_delete {
-                                                    leptos::Callable::call(callback, index);
-                                                }
-                                            }
-                                        >
-                                        <Icon icon={i::BsTrash} />
-                                        </button>
-                                        </div>
-                                        }
-                                    } else {
-                                        view! { <div></div> }
-                                    }}
-                                </>
-                            }
-                        }
-                      
-                         <div class="portfolioHeader">
-                             <img src=portfolio.portfolio_icon_url alt="Project Icon" />
-                             <div class="experienceRowFirstItemText">
-                             <h4 style={"font-size: 13px"}><b>Name</b>: {portfolio.portfolio_name}</h4>  
-                             <h4 style={"font-size: 13px"}><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h4> 
-                             {aLink}
-                             </div>
-                         </div>
-                       
-                         <div class="portfolioDescriptions"   inner_html=portfolio.portfolio_detail ></div>    
-                         <ImageSlider images=portfolio.screenshots_url/>
-               
-         
-                <div class="stackRow">
-                <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
-                    move || stacks.iter().enumerate().map(|(index, stack)| {
-                        view! { <p style="margin-left:5px" >{index +1}.{stack} </p> }
-                    }).collect::<Vec<_>>()}
-                     
-                
-                    </div> 
-            </div>
-                        }
-                            } else {
-                                view! {
                        <div class="portfolioContainer">     
                         <div class="portfolioRow">    
                         <div class="portfolioColumn">
                     
                          <div class="portfolioHeader">
-                             <img src=portfolio.portfolio_icon_url alt="Project Icon" />
+                             <img src=url alt="Portfolio Icon" />
                              <div class="experienceRowFirstItemText">
-                             <h4><b>Name</b>: {portfolio.portfolio_name}</h4>  
-                             <h4><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h4> 
+                             { if is_mobile.get() { edit_menu.clone()} else{view! {<div></div>}}}
+                             <h3><b>Name</b>: {portfolio.portfolio_name}</h3>  
+                             <h3><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} }</h3> 
                              </div>
                          </div>
                        
                          <div class="portfolioDescriptions" inner_html=portfolio.portfolio_detail></div>    
                          </div>
-                         
-            <ImageSlider images=portfolio.screenshots_url/>
+                       <div  >  
+                    { if !is_mobile.get() { edit_menu_clone.clone()} else{view! {<div></div>}}}
+                <ImageSlider images=portfolio.screenshots_url/>
+                </div>
                 </div>
                 <div class="editContactRow">
                 <div class="stackRow">
-                <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
-                    move || stacks.iter().enumerate().map(|(index, stack)| {
-                        view! { <p style="margin-left:5px"  >{index +1}.{stack} </p> }
-                    }).collect::<Vec<_>>()}
-                       {
-          
-                     view! {
-                         <>
-                             {if is_edit {
-                                 view! {
-                                    <div class="inputArrayRow">
-                                    <button
-                                        class="editButton"
-                                        style="margin-right:10px;"
-                                        on:click=move |_| {
-                                            if let Some(ref callback) = on_edit {
-                                                leptos::Callable::call(callback, index);
-                                            }
-                                        }
-                                    >
-                                    <Icon icon={i::BiEditRegular} />
-                                    </button>
-                                    <button
-                                    class="deleteButton"
-                                    on:click=move |_| {
-                                        if let Some(ref callback) = on_delete {
-                                            leptos::Callable::call(callback, index);
-                                        }
-                                    }
-                                >
-                                <Icon icon={i::BsTrash} />
-                                </button>
-                                </div>
-                                 }
-                             } else {
-                                 view! { <div></div> }
-                             }}
-                         </>
-                     }
-                 }
+                {if portfolio.stacks.len() > 1 {
+                 view!{
+                  
+                    <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
+                        move || stacks.iter().enumerate().map(|(index, stack)| {
+                            view! { <p style="margin-left:5px"  >{index +1}.{stack} </p> }
+                        }).collect::<Vec<_>>()}
+                }} else { 
+                 view!{
+                    <b></b> <></>
+                }} }
+              
+                       
+                 
                     </div>
                     </div> 
             </div>}
-                            }
-                        }
-                    }
                 })
                 .collect::<Vec<_>>()
     }

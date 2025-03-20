@@ -35,10 +35,10 @@ cfg_if::cfg_if! {
             let query = DB.query(
                 "
                 SELECT *,
-                    (SELECT * FROM skill) AS skills, 
-                    (SELECT * FROM experience) AS experiences,
-                    (SELECT * FROM portfolio) AS portfolios,
-                    (SELECT * FROM contact) AS contacts 
+                    (SELECT * FROM skill ORDER BY name ASC) AS skills, 
+                    (SELECT * FROM experience ORDER BY start_date DESC) AS experiences,
+                    (SELECT * FROM portfolio ORDER BY index ASC ) AS portfolios,
+                    (SELECT * FROM contact ORDER BY contact_icon ASC ) AS contacts 
                 FROM profile 
                 LIMIT 1;
             "

@@ -991,7 +991,7 @@ body {
 .editPage {
   display: flex;
   flex-direction: column;
- width: 45rem;
+  width: 55vw;
  
 }
 
@@ -1105,8 +1105,11 @@ body {
   margin-left: 0.5rem; 
 }
 .experienceRowFirstItemText > h3 {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
+  font-size: 14px;
+ 
+}
+.experienceh3{
+  font-size: 14px;
 }
 .experienceRowFirstItemText > p {
   font-size: 0.875rem;
@@ -1124,6 +1127,16 @@ body {
   border-radius: 0.75rem;
   padding: 0.125rem;
   box-shadow: var(--shadow0);
+}
+
+.transition-all {
+  transition-property: all;
+}
+.duration-200 {
+  transition-duration: 200ms;
+}
+.cursor-move {
+  cursor: move;
 }
 @media only screen and (max-width: 600px) {
   .indexLayout {
@@ -1248,22 +1261,38 @@ textarea {
   gap: 5rem;
   margin-top: 0.5rem;
 }
+.bottomForm {
+  
+  position: fixed; 
+  bottom: 0;
+   
+  background-color: var(--background);
+  height: 3.5rem;
+  width: 100%;
+  z-index: 1000; 
+  display: flex;
+ 
+  gap: 3rem;
+  padding: 0.5rem;
+
+}
 .updateButton, .cancelButton {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.5rem ;
+  width: 100px;
+  border-radius: 99;
   border: none;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
 }
 .updateButton {
-  background: var(--blue); /* Using your theme's blue color */
+  background:  #0057c0; /* Using your theme's blue color */
   color: white;
   position: relative;
   min-width: 100px;
 }
 .updateButton:hover {
-  background: #0057c0;  /* Darker blue on hover */
+  background: hsl(213, 100%, 67%);  /* Darker blue on hover */
 }
 .updateButton:disabled {
   animation: pulse 1.5s infinite;
@@ -1273,11 +1302,11 @@ textarea {
   cursor: not-allowed;
 }
 .cancelButton {
-  background: #ef4444; /* Tailwind's red-500 */
+  background: #c50b0b;/* Tailwind's red-500 */
   color: white;
 }
 .cancelButton:hover {
-  background: #c50b0b; /* Tailwind's red-600 - darker red on hover */
+  background: hsl(0, 100%, 71%); /* Tailwind's red-600 - darker red on hover */
 }
 button:hover {
   opacity: 0.9;
@@ -1479,10 +1508,8 @@ width: 100%;
 
 }
 .portfolioHeader {
-
   display: flex; 
   flex-direction: row; 
-  
 }
 .portfolioHeader > img {
   width: 3.5rem;
@@ -1493,7 +1520,7 @@ width: 100%;
 .portfolioDescriptions {
    
   font-size: 13;
-  height: 8rem;
+  height: 10rem;
   margin-top: 10px;
  
   scrollbar-width: thin; /* For Firefox */
@@ -1504,7 +1531,8 @@ width: 100%;
     display: flex;
   justify-content: space-between;
   flex-direction: row;
-  
+  margin-top: 7;
+  margin-bottom: 2;
 }
  
 .stackRow {
@@ -1513,7 +1541,7 @@ width: 100%;
   font-size: 12;
   width: 100%;
   color:rgb(237, 98, 237);
-  justify-content: space-between;
+  gap: 5;
   overflow-y: scroll;
 }
 
@@ -1521,7 +1549,13 @@ width: 100%;
   display: flex;
   flex-direction: row;
 }
-
+.iconRow {
+  gap: 5;
+  margin-bottom: 5px; /* Add 'px' to properly apply margin */
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end; /* Align items to the right */
+}
 .checkboxRow {
   display: flex;
   flex-direction: row; 
@@ -1651,7 +1685,7 @@ width: 100%;
 .dialog-body {
   margin-bottom: 15px;
 }
-
+ 
 /* mobile css */
 @media (width <  768px) {
   .editPage {
@@ -1665,7 +1699,12 @@ width: 100%;
   .tabsTitle {
     font-size:14px;
   }
- 
+ .portfolioRow{
+  flex-direction: column;  
+ }
+ .portfolioColumn{
+  width: 100%;
+ }
   .formRow {
     display: inline;
     grid-template-columns: 1fr 1fr;
@@ -1718,6 +1757,7 @@ width: 100%;
   }
   .portfolioDescriptions{
     width: 85vw;
+    height: 8rem;
   }
    .imageSlideContainer{
     width: 100%;
@@ -1734,4 +1774,21 @@ width: 100%;
     width: 4rem;
     height:4rem;
   }
+  .iconRow {
+    margin-bottom: 0;
+    justify-content: flex-start;
+}
+.experienceRowFirstItemText > h3 {
+  font-size:13;
+  line-height: 16px;
+}
+.experienceh3{
+  font-size: 13px;
+  line-height: 16px;
+}
+.portfolioHeader > img {
+  width: 3rem;
+  height: 3rem;
+ 
+}
 }

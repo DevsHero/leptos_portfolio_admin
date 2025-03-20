@@ -76,7 +76,7 @@ pub fn EditPage() -> impl IntoView {
                 let (avatar, set_avatar) = create_signal(profile.avatar);
                 let (address, set_address) = create_signal(profile.address);
                 //Experience 
-                let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
+                    let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
                 let (company_name, set_company_name) = create_signal(String::new());
                 let (company_address, set_company_address) = create_signal(String::new());
                 let (company_url, set_company_url) = create_signal(String::new());
@@ -91,6 +91,7 @@ pub fn EditPage() -> impl IntoView {
                 let (skill_level, set_skill_level) = create_signal(String::from("Basic"));
                 //Portfolio
                 let (portfolios, set_portfolios) = create_signal(profile.portfolios.unwrap_or_else(Vec::new));   
+                let (portfolio_index, set_portfolio_index) = create_signal(u8::from(1));
                 let (portfolio_name, set_portfolio_name) = create_signal(String::new());
                 let (portfolio_link, set_portfolio_link) = create_signal(String::new());
                 let (is_private, set_is_private) = create_signal(false);
@@ -264,6 +265,7 @@ pub fn EditPage() -> impl IntoView {
                                     !portfolio_detail.get().trim().is_empty();
                     if form_valid {
                         let new_portfolio = Portfolio {
+                            index: (portfolios.get().len()  +1 )as u8,
                             portfolio_name: portfolio_name.get(),
                             portfolio_detail: portfolio_detail.get(),
                             portfolio_icon_url: portfolio_icon_url.get(),
@@ -382,6 +384,7 @@ pub fn EditPage() -> impl IntoView {
                     }  
                 
                 };
+             
                 let edit_contact = move |index: usize| {
                     let list = contacts.get();
                     if let Some(contact) = list.iter().enumerate().find(|(i, _)| *i == index) {
@@ -535,7 +538,7 @@ pub fn EditPage() -> impl IntoView {
                   <InputField input_type="text" id="position_name" label="Position Name" validation=validate_experience set_value=set_position_name  get_value=position_name require=true />
                   <InputField input_type="text" id="company_url" label="Company Page Url" set_value=set_company_url  get_value=company_url require=false />
                   <InputField input_type="text" id="company_address" label="Company Address" set_value=set_company_address  get_value=company_address require=false />
-                  
+                    
                   
                   <div class="formRow">
                   <InputField input_type="date" id="start_date" label="Start Date" validation=validate_experience set_value=set_start_date  get_value=start_date require=true />
@@ -571,7 +574,7 @@ pub fn EditPage() -> impl IntoView {
                         on_delete=Callback::new(move |index| delete_experience(index))
                         on_edit=Callback::new(move |index| edit_experience(index))
                         is_edit=true
-                        />                      
+                            />                      
               </div>
                   </RenderTab>
                   <RenderTab  no=4 active_page=select_tab>
@@ -613,6 +616,8 @@ pub fn EditPage() -> impl IntoView {
                     <Portfolio  
                     portfolios=portfolios
                     is_edit=true
+                    set_is_update=set_is_update_portfolio
+                    set_portfolios=set_portfolios
                     on_delete=Callback::new(move |index| delete_portfolio(index))
                     on_edit=Callback::new(move |index| edit_portfolio(index))
                     />
@@ -650,7 +655,7 @@ pub fn EditPage() -> impl IntoView {
                   </RenderTab>
               
                   {if is_verify.get()  {
-                      view! {   <div class="formButton">
+                      view! {   <div class="bottomForm">
                   <button
                       type="submit"
                       class="updateButton"
@@ -709,8 +714,7 @@ pub fn EditPage() -> impl IntoView {
                             {move || if is_saving.get() { "Verifying..." } else { "Verify" }}
                         </button>   
                     </div>  
-                        </div>
-                       
+                        </div>         
                 } }
              else{
                 view! {

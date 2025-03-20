@@ -36,31 +36,28 @@ pub fn ImageSlider(images: Vec<String>) -> impl IntoView {
     };
     view! { 
         <div class="imageSlideContainer">
-       
             <div 
                 class="flex transition-transform duration-500 ease-in-out"
                 style=move || format!("transform: translateX(-{}%);", current_index.get() * 100)
-            >
-                
+            >    
             </div>
                    {preview_image}
            <div class="imageSlideButton"> 
            <button
-           on:click=prev_image
-           class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 opacity-75 hover:opacity-100"
-       >
+           type="button"
+           on:click=prev_image >
        <Icon icon={i::BiLeftArrowSolid} />
        </button>
        <button
-       on:click=open_image
-       class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 opacity-75 hover:opacity-100"
-   >
+         type="button"
+       on:click=open_image >
+    
    <Icon icon={i::FiExternalLink} />
    </button>
        <button
+       type="button"
            on:click=next_image
-           class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 opacity-75 hover:opacity-100"
-       >
+          >
        <Icon icon={i::BiRightArrowSolid} />
        </button>
        </div>
