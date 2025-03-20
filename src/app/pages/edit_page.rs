@@ -502,7 +502,11 @@ pub fn EditPage() -> impl IntoView {
                   />
                       </div>
                       </RenderTab>
+                   
                   <RenderTab  no=2 active_page=select_tab>    
+                  <Show when=move || select_tab() == 2>
+                  <Suspense fallback=move || view! { <p>"Loading..."</p> }> 
+              
                   <div class="editContainer">
                   <h1>"Edit Skill"</h1>             
                   <div class="formRow">   
@@ -534,8 +538,12 @@ pub fn EditPage() -> impl IntoView {
                   on_edit=Callback::new(move |index| edit_skill(index))
                  is_edit=true />
               </div>
+              </Suspense>
+              </Show>
                   </RenderTab>
                   <RenderTab  no=3 active_page=select_tab>
+                  <Show when=move || select_tab() == 3>
+                  <Suspense fallback=move || view! { <p>"Loading..."</p> }> 
                   <div class="editContainer">
                   <h1>"Edit Experience"</h1> 
                   <InputField input_type="text" id="company_name" label="Company Name" validation=validate_experience set_value=set_company_name  get_value=company_name require=true />
@@ -581,8 +589,12 @@ pub fn EditPage() -> impl IntoView {
                         is_edit=true
                             />                      
               </div>
+              </Suspense>
+              </Show>
                   </RenderTab>
                   <RenderTab  no=4 active_page=select_tab>
+                  <Show when=move || select_tab() == 4>
+                  <Suspense fallback=move || view! { <p>"Loading..."</p> }>
                   <div class="editContainer">
                   <h1>"Edit Portfolio"</h1>              
                   <InputField input_type="text" id="portfolio_name" label="Project Name" validation=validate_portfolio set_value=set_portfolio_name  get_value=portfolio_name require=true />
@@ -627,8 +639,12 @@ pub fn EditPage() -> impl IntoView {
                     on_edit=Callback::new(move |index| edit_portfolio(index))
                     />
               </div>
+              </Suspense>
+              </Show>
                   </RenderTab>
                   <RenderTab  no=5 active_page=select_tab>
+                  <Show when=move || select_tab() == 5>
+                  <Suspense fallback=move || view! { <p>"Loading..."</p> }>
                   <div class="editContainer">
                   <h1>"Edit Contact"</h1>
                 
@@ -657,6 +673,8 @@ pub fn EditPage() -> impl IntoView {
                       on_edit=Callback::new(move |index| edit_contact(index))
                       is_edit=true/ >
               </div>
+              </Suspense>
+              </Show>
                   </RenderTab>
               
                   {if is_verify.get()  {

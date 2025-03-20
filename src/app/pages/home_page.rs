@@ -14,8 +14,7 @@ pub fn HomePage() -> impl IntoView {
 
     view! {
         <Suspense fallback=Loading>
-            {move || {
-                // Directly match on the result rather than using .map()
+            {move || { 
                 match get_profile_info.get() {
                     Some(Ok(profile)) => {
                         let (skills, _) = create_signal(profile.skills.clone().unwrap_or_default());
@@ -52,13 +51,9 @@ pub fn HomePage() -> impl IntoView {
                                         <span class="avatar">
                                                 <button type="button" class="avatar" 
                                                 on:click=move |_| {
-                                                    set_open_dialog.set(!open_dialog.get());   }
-                                                >
-                                                <img alt="avatar" src={avatar.clone()}  
-                                               
-                                            />
-                                                </button>
-                                               
+                                                    set_open_dialog.set(!open_dialog.get());   } >
+                                                <img alt="avatar" src={avatar.clone()}  />
+                                                </button>                            
                                             <div class="details">
                                             <h1>{profile.first_name.clone()}" "{profile.last_name.clone()}</h1>
                                             <p><b>Nick Name: </b>{profile.nick_name.clone()}</p>

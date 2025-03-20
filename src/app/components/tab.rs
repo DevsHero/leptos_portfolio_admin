@@ -39,11 +39,18 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
             />    
             </RenderTab>
             <RenderTab  no=2 active_page=select_tab>
+            
+            <Show when=move || select_tab() == 2>
+            // Only render when first activated
+            <Suspense fallback=move || view! { <p>"Loading experiences..."</p> }>
             <Portfolio  
             portfolios=portfolios
          
             is_edit=false
             />  
+            </Suspense>
+        </Show>
+          
             </RenderTab>
         </section>
     }
