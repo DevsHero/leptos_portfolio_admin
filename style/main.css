@@ -782,10 +782,14 @@ body {
 body {
   background-color: var(--background);
 }
+.layout{
+  width: 72rem;
+}
 .indexLayout {
   display: grid;
-  max-width: 80rem;
+
   grid-template-columns: 1.2fr 2fr;
+  margin-top: 3.5rem;
 }
 .indexLayout > * {
   background: red;
@@ -797,13 +801,12 @@ body {
   background-color: var(--background);
 }
 .topbar {
-  grid-column: span 2 / span 2;
   display: flex;
-  width: 100%;
   flex-direction: row;
-  align-items: flex-end;
-  justify-content:flex-end;
-
+  position: fixed;
+   width: 100%;
+  background-color: var(--background);
+  z-index: 1000;
 }
 .pill {
   display: flex;
@@ -990,12 +993,13 @@ body {
   display: flex;
   flex-direction: column;
   margin-left : 1rem;
+  max-width: 50rem
 }
 .editPage {
   display: flex;
   flex-direction: column;
-  width: 55vw;
  
+ margin-top: 3.5rem;
 }
 
  
@@ -1007,7 +1011,6 @@ body {
   justify-content: center;
   border-radius: 9999px;
   box-shadow: var(--shadow0);
-  margin-top:  20;
  
  
 }
@@ -1018,6 +1021,7 @@ body {
   --btn-shadow: none;
   box-shadow: var(--btn-shadow);
   transition-duration: 0.2s;
+  
 }
 .tabSectionSelector > button:hover {
   background-color: var(--surface0);;
@@ -1056,9 +1060,6 @@ body {
   }
 }
  
- 
-
-
 .tabContainer > p {
   grid-column: span 2 / span 2;
   grid-row: span 2 / span 2;
@@ -1070,16 +1071,30 @@ body {
 .activePage {
   display: inline; 
 }
-.project {
-  height: -moz-min-content;
-  height: min-content;
-  border-radius: 0.75rem;
-  padding: 0.5rem;
-  transition-duration: 200ms;
-  box-shadow: var(--shadow0);
+.tabRowBadget {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; 
+  align-items: center;
+  gap: 0.5rem;
 }
-.project:hover {
-  box-shadow: var(--shadow00);
+.badget {
+  background-color: hwb(0 0% 15%);
+  border-radius: 50%; 
+  font-size: small;
+  font-weight: bold;
+  width: 20;
+ height: 20;
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  text-align: center;
+}
+.rowItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  
 }
 .experienceRowFirstItem {
   display: flex;
@@ -1089,6 +1104,7 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
+  
 }
 .experienceRow {
   display: flex;
@@ -1224,7 +1240,7 @@ input, select, textarea {
   height: 2.7rem;
   padding: 0.5rem;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 8px;
   color: var(--mantle);
  
 
@@ -1606,15 +1622,23 @@ width: 100%;
 .experienceH4{
   font-size: 14px;
 }
-.selectMode{
-      
-  margin: 0 auto;
-  
+.selectMode{   
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+ 
 }
+
 .loading{
-  padding: 2rem;
-    justify-content: center;
-    align-items: center;
+  margin-top: 3rem;
+ 
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+
 }
 /* dialog css */
 .dialogContainer {
@@ -1693,8 +1717,9 @@ width: 100%;
 /* mobile css */
 @media (width <  768px) {
   .editPage {
-  width: 90vw;
-   
+ 
+   padding: 1rem;
+   margin-top: 1rem;
   }
   .indexLayout{
  width: 100%;
@@ -1738,6 +1763,9 @@ width: 100%;
     padding-left: 1rem;
     padding-right: 1rem;
    
+  }
+  .topbar {
+    left: 0;
   }
   /* .imageSlideItem{
     height: 12rem;
@@ -1791,6 +1819,9 @@ width: 100%;
   width: 3rem;
   height: 3rem;
  
+}
+.layout{
+  width: 100%;
 }
 }
 *::-webkit-scrollbar {

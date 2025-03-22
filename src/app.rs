@@ -3,6 +3,7 @@ pub mod models;
 pub mod pages;
 pub mod server;
 pub mod utils;
+use components::Topbar;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -18,21 +19,21 @@ pub fn App() -> impl IntoView {
     );
     let config = get_config.get().and_then(Result::ok).unwrap_or_default().clone();
     view! {
-       <head> <script src="/assets/tinymce-integration.js"></script> </head>
+     
         <Stylesheet id="leptos" href="/pkg/leptos-portfolio-admin.css"/>
         <link data-trunk rel="tailwind-css" href="/style/input.css" />
         <Title text={config.title}/>
         <link data-trunk rel="icon" href="public/favicon.ico" />
   
         <Router>
-            <main>
+            <main class="layout">
             <Toaster 
 	    position=leptos_toaster::ToasterPosition::BottomCenter
 	>
 		// ...
-	
+        <Topbar/>
                 <Routes>
-                    <Route path="/" view=move || {
+                    <Route path="/"  view=move || {
                         view! {
                             <HomePage />
                     

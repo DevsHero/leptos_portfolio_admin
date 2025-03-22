@@ -10,7 +10,6 @@ use crate::app::components::{
     RenderTab,
     SkillChips,
     TextEditor,
-    Topbar,
 };
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
@@ -57,14 +56,50 @@ pub fn EditPage() -> impl IntoView {
             })
         );
     };
+    let verify_action = Action::new(move |_| {
+        async move {
+            let result = verify(input_password.get()).await;
+            match result {
+                Ok(true) => {
+                    set_is_incorrect(false);
+                    set_is_verify(true);
+                    set_is_init(true);
+                    create_toast(
+                        (
+                            {
+                                view! { <p class="toastInfo">"Admin Mode" </p> }
+                            }
+                        ).into_view(),
+                        "Welcome Admin user.".into_view(),
+                        ToastVariant::Info
+                    );
+                }
+                _ => {
+                    create_toast(
+                        (
+                            {
+                                view! { <p class="toastFail">"Failed" </p> }
+                            }
+                        ).into_view(),
+                        "Incorrect Password.".into_view(),
+                        ToastVariant::Error
+                    );
+
+                    set_is_incorrect(true);
+                }
+            }
+        }
+    });
     view! {     
+        <head> <script src="/assets/tinymce-integration.js"></script> </head>
         <main class="editPage"  >
-        <Topbar/>
+     
         <Suspense fallback=Loading>
         { move || {    
             match get_profile_info.get() {
                 Some(Ok(profile)) => {                    
-                //Profile 
+                {if is_init.get() { 
+                      //Profile 
                 let (first_name, set_first_name) = create_signal(profile.first_name);
                 let (last_name, set_last_name) = create_signal(profile.last_name);
                 let (about, set_about) = create_signal(profile.about);
@@ -91,7 +126,6 @@ pub fn EditPage() -> impl IntoView {
                 let (skill_level, set_skill_level) = create_signal(String::from("Basic"));
                 //Portfolio
                 let (portfolios, set_portfolios) = create_signal(profile.portfolios.unwrap_or_else(Vec::new));   
-                let (portfolio_index, set_portfolio_index) = create_signal(u8::from(1));
                 let (portfolio_name, set_portfolio_name) = create_signal(String::new());
                 let (portfolio_link, set_portfolio_link) = create_signal(String::new());
                 let (is_private, set_is_private) = create_signal(false);
@@ -117,25 +151,7 @@ pub fn EditPage() -> impl IntoView {
                 let (validate_experience, set_validate_experience) = create_signal(false);
                 let (validate_portfolio, set_validate_portfolio) = create_signal(false);
                 let (validate_contact, set_validate_contact) = create_signal(false);
-                let verify_action = Action::new(move |_| {
-                    async move { 
-                        let result = verify(input_password.get()).await;
-                        match result {
-                            Ok(true) => {
-                                set_is_incorrect(false);
-                                set_is_verify(true);
-                                set_is_init(true);
-                                create_toast({view! {<p class="toastInfo">"Admin Mode" </p>}}.into_view(), "Welcome Admin user.".into_view(), ToastVariant::Info);
-                   
-                            },
-                            _ => {
-                                create_toast( {view! {<p class="toastFail">"Failed" </p>}}.into_view() , "Incorrect Password.".into_view(), ToastVariant::Error);
-             
-                                set_is_incorrect(true);
-                            },
-                        }
-                    }
-                });         
+                 
                 let update_profile_action = Action::new(move |profile: &Profile| {
                     set_is_saving.set(true);
                     let profile = profile.clone();
@@ -402,7 +418,6 @@ pub fn EditPage() -> impl IntoView {
                        
                     }  
                 };
-                {if is_init.get() { 
                 view! {
                   <div> 
                 
@@ -707,7 +722,7 @@ pub fn EditPage() -> impl IntoView {
              <b style="font-size: 18px;">Select Access Mode</b>
                 <button 
                 type="button"
-                style="width: 20rem; height: 2.5rem; margin-top: 5rem; color:green;   border-width: 1px;  border-color: green;"
+                style="width: 20rem; height: 2.5rem; margin-top: 1rem; color:green;   border-width: 1px;  border-color: green;"
                 on:click=move |_| {
                     create_toast({view! {<p class="toastInfo">"Viewer Mode" </p>}}.into_view(), "Welcome Viewer user.".into_view(), ToastVariant::Info);
                   
@@ -720,11 +735,11 @@ pub fn EditPage() -> impl IntoView {
                 on:click=move |_| {
                      set_use_password(true);
                 }
-                >Admin Mode "(can update)"</button>
+                >Admin Mode</button>
                 </div>
                 {if use_password.get() {
                     view! {
-                        <div style="margin-top: 30px;">
+                        <div style="width: 20rem; margin-top: 30px;">
                         <InputField input_type="password" id="input_password" label="Admin Password" set_value=set_input_password  get_value=input_password require=true />
                      <p style="color:red;">    {move || if is_incorrect.get() { "Incorrect Password" } else { "" }}</p>
                          <div class="formButton">
@@ -734,7 +749,7 @@ pub fn EditPage() -> impl IntoView {
                             on:click=  move |_| {
                                 verify_action.dispatch(());
                             }>
-                            {move || if is_saving.get() { "Verifying..." } else { "Verify" }}
+                            Verify
                         </button>   
                     </div>  
                         </div>         

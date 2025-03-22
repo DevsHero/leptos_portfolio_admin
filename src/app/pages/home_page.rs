@@ -1,5 +1,5 @@
 use crate::app::{
-    components::{ Dialog, HomeContacts, Loading, SelectTab, SkillChips, Topbar },
+    components::{ Dialog, HomeContacts, Loading, SelectTab, SkillChips },
     server::api::get_profile,
     utils::calculate_age,
 };
@@ -14,25 +14,20 @@ pub fn HomePage() -> impl IntoView {
 
     view! {
         <Suspense fallback=Loading>
-            {move || { 
+            { move ||  { 
                 match get_profile_info.get() {
                     Some(Ok(profile)) => {
                         let (skills, _) = create_signal(profile.skills.clone().unwrap_or_default());
                         let (birth_date, set_birth_date) = create_signal(String::new());
                         let (open_dialog, set_open_dialog) = create_signal(false);
-                    
-                        let avatar =  profile.avatar.clone();
-                        
+                        let avatar =  profile.avatar.clone();                      
                         create_effect(move |_| {
                         let age = calculate_age(&profile.birth_date);
                             set_birth_date.set(age.to_string());
-                        });
-                        
+                        });      
                         view! {
-                           
                             <main class="indexLayout">
                            { move || { 
-
                             if open_dialog.get() { 
                                 let clone_avatar =  profile.avatar.clone();
                                 view!  {<div  on:click=move |_| {
@@ -45,7 +40,7 @@ pub fn HomePage() -> impl IntoView {
                                 view! {<div></div>}
                             } 
                            }  }
-                               <Topbar/>
+                             <div></div>
                                 <section class="info">
                                     <div class="profile">
                                         <span class="avatar">

@@ -3,9 +3,8 @@ use leptos::{ component, view, IntoView };
 #[component]
 pub fn Loading() -> impl IntoView {
     view! {
-        <div class="loading flex flex-col items-center justify-center p-8">
+        <div class="loading ">
             <img
-          
                 alt="loading"
                 src="assets/logo.webp"
                 width="60"

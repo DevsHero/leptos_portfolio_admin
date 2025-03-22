@@ -19,7 +19,7 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
                     }
                     on:click=move |_| set_select_tab(1)
                 >
-                   Experiences
+                 <span class="tabRowBadget">  Experiences <p class="badget"> {experiences.get().len()} </p> </span> 
                 </button>
                 <button
                 type="button" 
@@ -28,7 +28,7 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
                     }
                     on:click=move |_| set_select_tab(2)
                 >
-                    Portfolios
+                <span class="tabRowBadget">  Portfolios <p class="badget"> {portfolios.get().len()} </p> </span>    
                 </button>
             </div>
             <RenderTab  no=1 active_page=select_tab>
@@ -42,7 +42,7 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
             
             <Show when=move || select_tab() == 2>
             // Only render when first activated
-            <Suspense fallback=move || view! { <p>"Loading experiences..."</p> }>
+            <Suspense fallback=move || view! { <p>"Loading ..."</p> }>
             <Portfolio  
             portfolios=portfolios
          
