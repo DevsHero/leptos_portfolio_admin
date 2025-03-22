@@ -14,12 +14,10 @@ use crate::app::components::{
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
 use crate::app::server::api::{ get_profile, update_portfolio, verify };
-
 use leptos::either::{ Either, EitherOf3 };
 use leptos::prelude::*;
-// use leptos_toaster::{ Theme, Toast, ToastId, ToastOptions, ToastVariant, ToasterPosition, Toasts };
 use web_sys::SubmitEvent;
-
+use leptoaster::{ expect_toaster, ToastBuilder, ToastLevel, ToastPosition };
 #[component]
 pub fn EditPage() -> impl IntoView {
     let (select_tab, set_select_tab) = signal(1);
@@ -33,30 +31,6 @@ pub fn EditPage() -> impl IntoView {
     let (input_password, set_input_password) = signal(String::new());
     let (is_incorrect, set_is_incorrect) = signal(false);
 
-    // let //create_toast = move |title: View, detail: View, varaint: ToastVariant| {
-    //     let toast_id = ToastId::new();
-    //     let toast_context = expect_context::<Toasts>();
-
-    //     toast_context.toast(
-    //         view! {
-    //             <Toast
-    //                 toast_id
-    //                 variant=varaint
-    //                 theme=Theme::Dark
-    //                 invert=false
-    //                 rich_colors=false
-    //                 title=view! { {title} }.into_view()
-    //                 description=Some(view! {  {detail}}.into_view())
-    //             />
-    //         },
-    //         Some(toast_id),
-    //         Some(ToastOptions {
-    //             dismissible: true,
-    //             duration: Some(std::time::Duration::from_secs(4)),
-    //             position: Some(ToasterPosition::BottomLeft),
-    //         })
-    //     );
-    // };
     let verify_action = Action::new(move |_| {
         async move {
             let result = verify(input_password.get()).await;
@@ -65,26 +39,22 @@ pub fn EditPage() -> impl IntoView {
                     set_is_incorrect(false);
                     set_is_verify(true);
                     set_is_init(true);
-                    // create_toast(
-                    //     (
-                    //         {
-                    //             view! { <p class="toastInfo">"Admin Mode" </p> }
-                    //         }
-                    //     ).into_view(),
-                    //     "Welcome Admin user.".into_view(),
-                    //     ToastVariant::Info
-                    // );
+                    let toaster = expect_toaster();
+                    toaster.toast(
+                        ToastBuilder::new("Admin mode is Activate")
+                            .with_level(ToastLevel::Info)
+                            .with_expiry(Some(3_000))
+                            .with_position(ToastPosition::TopRight)
+                    );
                 }
                 _ => {
-                    // //create_toast(
-                    //     (
-                    //         {
-                    //             view! { <p class="toastFail">"Failed" </p> }
-                    //         }
-                    //     ).into_view(),
-                    //     "Incorrect Password.".into_view(),
-                    //     ToastVariant::Error
-                    // );
+                    let toaster = expect_toaster();
+                    toaster.toast(
+                        ToastBuilder::new("Incorrect Password.")
+                            .with_level(ToastLevel::Error)
+                            .with_expiry(Some(3_000))
+                            .with_position(ToastPosition::TopRight)
+                    );
 
                     set_is_incorrect(true);
                 }
@@ -97,6 +67,7 @@ pub fn EditPage() -> impl IntoView {
      
         <Suspense fallback=Loading>
         { move || Suspend::new(async move {  
+         
             match get_profile_info.get() {
                 Some(Ok(profile)) => EitherOf3::A({                    
                 {if is_init.get() { 
@@ -170,8 +141,13 @@ pub fn EditPage() -> impl IntoView {
                         set_is_update_experience(false);
                         set_is_update_portfolio(false);
                         set_is_update_contact(false);
-                        //create_toast({view! {<p class="toastSuccess">"Update Success" </p>}}.into_view(), "All information has been updated.".into_view(), ToastVariant::Success);
-                     
+                         let toaster = expect_toaster();
+                        toaster.toast(
+                            ToastBuilder::new("Update Success.")
+                                .with_level(ToastLevel::Success) 
+                                .with_expiry(Some(3_000))
+                                .with_position(ToastPosition::TopRight)
+                        ) ;
                         result
                     }
                 });
@@ -190,7 +166,13 @@ pub fn EditPage() -> impl IntoView {
                                  !nationality.get().trim().is_empty()&& 
                                  !address.get().trim().is_empty();
                 if !form_valid {
-                    //create_toast( {view! {<p class="toastFail">"Update Failed" </p>}}.into_view() , "Profile Missing required fields.".into_view(), ToastVariant::Error);
+                     let toaster = expect_toaster();
+                    toaster.toast(
+                        ToastBuilder::new("Update Failed Profile Missing required fields.")
+                            .with_level(ToastLevel::Error) 
+                            .with_expiry(Some(3_000))
+                            .with_position(ToastPosition::TopRight)
+                    ) ;
                 }else{
                 let updated_profile = Profile {
                     id: profile_id.clone(),
@@ -233,10 +215,22 @@ pub fn EditPage() -> impl IntoView {
                  
                     set_is_update_skill(true);
                     
-                    //create_toast({view! {<p class="toastInfo">"Add Skill Success" </p>}}.into_view(), "Skill Added.".into_view(), ToastVariant::Success);
+                    let toaster = expect_toaster();
+                    toaster.toast(
+                        ToastBuilder::new("Add Skill Success")
+                            .with_level(ToastLevel::Info) 
+                            .with_expiry(Some(3_000))
+                            .with_position(ToastPosition::TopRight)
+                    ) ;
                     }
                     else{
-                        //create_toast( {view! {<p class="toastFail">"Add Skill Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                        let toaster = expect_toaster();
+                        toaster.toast(
+                            ToastBuilder::new("Add Skill Failed")
+                                .with_level(ToastLevel::Error) 
+                                .with_expiry(Some(3_000))
+                                .with_position(ToastPosition::TopRight)
+                        ) ;
                     }
                 };
                 let add_experience = move |_| {
@@ -270,10 +264,22 @@ pub fn EditPage() -> impl IntoView {
                     
                     set_is_update_experience(true);
               
-                    //create_toast({view! {<p class="toastInfo">"Add Experience Success" </p>}}.into_view(), "Experience Added.".into_view(), ToastVariant::Success);
+                     let toaster = expect_toaster();
+                    toaster.toast(
+                        ToastBuilder::new("Add Experience Success")
+                            .with_level(ToastLevel::Info) 
+                            .with_expiry(Some(3_000))
+                            .with_position(ToastPosition::TopRight)
+                    ) ;
                     }
                     else{
-                        //create_toast( {view! {<p class="toastFail">"Add Experience Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                        let toaster = expect_toaster();
+                        toaster.toast(
+                            ToastBuilder::new("Add Experience Failed")
+                                .with_level(ToastLevel::Error) 
+                                .with_expiry(Some(3_000))
+                                .with_position(ToastPosition::TopRight)
+                        ) ;
                     }
                 };
                 let add_portfolio = move |_| {
@@ -303,10 +309,24 @@ pub fn EditPage() -> impl IntoView {
                   
                     set_is_update_portfolio(true);
              
-                    //create_toast({view! {<p class="toastInfo">"Add Portfolio Success" </p>}}.into_view(), "Portfolio Added.".into_view(), ToastVariant::Success);
+                      let toaster = expect_toaster();
+                    toaster.toast(
+                        ToastBuilder::new("Add Portfolio Success")
+                            .with_level(ToastLevel::Info) 
+                            .with_expiry(Some(3_000))
+                            .with_position(ToastPosition::TopRight)
+                    ) ;
+                   
                     }
                     else{
-                        //create_toast( {view! {<p class="toastFail">"Add Portfolio Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                           let toaster = expect_toaster();
+                        toaster.toast(
+                            ToastBuilder::new("Add Portfolio Success")
+                                .with_level(ToastLevel::Error) 
+                                .with_expiry(Some(3_000))
+                                .with_position(ToastPosition::TopRight)
+                        ) ;
+
                     }
                 };
 
@@ -330,10 +350,22 @@ pub fn EditPage() -> impl IntoView {
                   
                 set_is_update_contact(true);
              
-                //create_toast({view! {<p class="toastInfo">"Add Contact Success" </p>}}.into_view(), "Contact Added.".into_view(), ToastVariant::Success);
+               let toaster = expect_toaster();
+                toaster.toast(
+                    ToastBuilder::new("Add Contact Success")
+                        .with_level(ToastLevel::Info) 
+                        .with_expiry(Some(3_000))
+                        .with_position(ToastPosition::TopRight)
+                ) ;
                     }
                     else{
-                        //create_toast( {view! {<p class="toastFail">"Add Contact Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                        let toaster = expect_toaster();
+                        toaster.toast(
+                            ToastBuilder::new("Add Contact Failed")
+                                .with_level(ToastLevel::Error) 
+                                .with_expiry(Some(3_000))
+                                .with_position(ToastPosition::TopRight)
+                        ) ;
                     }
                 };
 
@@ -724,8 +756,13 @@ pub fn EditPage() -> impl IntoView {
                 type="button"
                 style="width: 20rem; height: 2.5rem; margin-top: 1rem; color:green;   border-width: 1px;  border-color: green;"
                 on:click=move |_| {
-                    //create_toast({view! {<p class="toastInfo">"Viewer Mode" </p>}}.into_view(), "Welcome Viewer user.".into_view(), ToastVariant::Info);
-                  
+                       let toaster = expect_toaster();
+                    toaster.toast(
+                        ToastBuilder::new("Viewer Mode is activate")
+                            .with_level(ToastLevel::Info) 
+                            .with_expiry(Some(3_000))
+                            .with_position(ToastPosition::TopRight)
+                    );
                     set_is_init(true);     
                 }
                 >Viewer Mode "(can't update)"</button>

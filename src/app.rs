@@ -7,12 +7,14 @@ use components::Topbar;
 use leptos::prelude::*;
 use leptos_meta::*;
 use leptos_router::{ components::{ Route, Router, Routes }, StaticSegment };
-// use leptos_toaster::Toaster;
+
 use pages::{ HomePage, EditPage };
-use server::api::site_config;
+// use server::api::site_config;
+use leptoaster::{ provide_toaster, Toaster };
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
+    provide_toaster();
     // let get_config = Resource::new(
     //     || (),
     //     move |_| async move { site_config().await }
@@ -22,11 +24,10 @@ pub fn App() -> impl IntoView {
      
         <Stylesheet id="leptos" href="/pkg/leptos-portfolio-admin.css"/>
 
-  
         <Router>
+        <Toaster/>
             <main class="layout">
-   
-	 
+
         <Topbar/>
              <Routes fallback=move || view! { <NotFound /> }>
                     <Route path=StaticSegment("") view=HomePage/>
