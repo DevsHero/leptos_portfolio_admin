@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 
 #[component]
 pub fn InputField(
@@ -15,7 +15,7 @@ pub fn InputField(
     let input_type = input_type.into();
     let error_label = label.clone();
     let label_for_input = label.clone();
-    let (error, set_error) = create_signal(None::<String>);
+    let (error, set_error) = signal(None::<String>);
 
     // Create a function to validate the input
     let validate = move || {
@@ -31,7 +31,7 @@ pub fn InputField(
 
     // If a validation trigger is provided, create an effect to watch it
     if let Some(trigger) = validation {
-        create_effect(move |_| {
+        Effect::new(move |_| {
             // When the trigger changes to true, perform validation
             if trigger.get() {
                 validate();
@@ -60,9 +60,9 @@ pub fn InputField(
             {
                 move || {
                     if let Some(msg) = error.get() {
-                        view! { <p class="errorInput">{msg}</p> }
+                     Either::Left(   view! { <p class="errorInput">{msg}</p> })
                     } else {
-                        view! { <p ></p> }
+                        Either::Right(())
                     }
                 }
             }

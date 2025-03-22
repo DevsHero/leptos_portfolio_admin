@@ -1,5 +1,5 @@
 use crate::app::models::Skill;
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 use leptos_icons::Icon;
 use icondata as i;
 #[component]
@@ -24,7 +24,7 @@ pub fn SkillChips(
                             view! {
                                 <>
                                     {if is_edit {
-                                        view! {
+                                      Either::Left( view! {
                                             <div class="inputArrayRow">
                                         <button
                                         type="button" 
@@ -32,7 +32,7 @@ pub fn SkillChips(
                                             style="margin-right:10px;"
                                             on:click=move |_| {
                                                 if let Some(ref callback) = on_edit {
-                                                    leptos::Callable::call(callback, index);
+                                                     (callback, index);
                                                 }
                                             }
                                         >
@@ -43,23 +43,23 @@ pub fn SkillChips(
                                         class="deleteButton"
                                         on:click=move |_| {
                                             if let Some(ref callback) = on_delete {
-                                                leptos::Callable::call(callback, index);
+                                                  (callback, index);
                                             }
                                         }
                                     >
                                     <Icon icon={i::BsTrash} />
                                     </button>
                                     </div>
-                                        }
+                                        })
                                     } else {
-                                        view! { <div></div> }
+                                        Either::Right(())
                                     }}
                                 </>
                             }
                         }
                     </div>
                 }
-            }).collect::<Vec<_>>() }
+            }).collect_view() }
         </div>
     }
 }

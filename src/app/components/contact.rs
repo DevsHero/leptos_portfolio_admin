@@ -1,4 +1,5 @@
-use leptos::*;
+use leptos::either::Either;
+use leptos::prelude::*;
 use leptos_icons::Icon;
 use icondata as i;
 
@@ -17,7 +18,7 @@ pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
                 .map(|contact| {
                     let get_icon = get_icon_by_name(&contact.contact_icon);
                     if contact.use_link {
-                        view! {
+                        Either::Left(       view! {
                             <>
                         <a  href=contact.contact_value 
                             target="_blank"    >
@@ -27,8 +28,8 @@ pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
                         </a>  
                         </>
                     }
-                    } else {
-                        view! {
+                  )  } else {
+                    Either::Right(         view! {
                             <>  
                     <Dialog children_only=false detail=contact.contact_value title=contact.contact_title.unwrap_or("".to_string())   >
                     <div class="contactIcon">
@@ -37,10 +38,10 @@ pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
                    </Dialog>
              </>
                     
-                    }
+                    })
                     }
                 })
-                .collect::<Vec<_>>()
+                .collect_view()
               }   </div>
     }
 }

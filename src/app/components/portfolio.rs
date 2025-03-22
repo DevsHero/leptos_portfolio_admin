@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 use crate::app::{ components::ImageSlider, models::portfolio::Portfolio };
 use leptos_icons::Icon;
 use icondata as i;
@@ -12,8 +12,8 @@ pub fn Portfolio(
     is_edit: bool
 ) -> impl IntoView {
     {
-        let (is_mobile, set_is_mobile) = create_signal(false);
-        create_effect(move |_| {
+        let (is_mobile, set_is_mobile) = signal(false);
+        Effect::new(move |_| {
             if let Some(window) = web_sys::window() {
                 if let Ok(width) = window.inner_width().map(|w| w.as_f64().unwrap_or(0.0)) {
                     set_is_mobile(width < 768.0);
@@ -28,7 +28,8 @@ pub fn Portfolio(
                 .map(|(index, portfolio)| {
                     let edit_menu = {
                         if is_edit {
-                            view! {
+                            Either::Left(
+                                view! {
                            <div class="iconRow">
                            <button
                            type="button"
@@ -71,7 +72,7 @@ pub fn Portfolio(
                                class="editButton"
                                on:click=move |_| {
                                    if let Some(ref callback) = on_edit {
-                                       leptos::Callable::call(callback, index);
+                                       (callback, index);
                                    }
                                }
                            >
@@ -82,7 +83,7 @@ pub fn Portfolio(
                                class="deleteButton"
                                on:click=move |_| {
                                    if let Some(ref callback) = on_delete {
-                                       leptos::Callable::call(callback, index);
+                                       (callback, index);
                                    }
                                }
                            >
@@ -90,17 +91,22 @@ pub fn Portfolio(
                            </button>
                        </div>
                         }
+                            )
                         } else {
-                            view! { <div></div> }
+                            Either::Right(())
                         }
                     };
-                    let edit_menu_clone = edit_menu.clone();
-                    let aLink: HtmlElement<html::Div> = if portfolio.portfolio_link.is_empty() {
-                        view! { <div></div> }
+
+                    let aLink = if portfolio.portfolio_link.is_empty() {
+                        None
                     } else {
-                        view! { <div style=" margin-top:2px;  align-items: end; color:blue;"> <a href=portfolio.portfolio_link target="_blank" >  
-                        <Icon  icon={i::TbWorldWww} /> 
-                        </a></div> }
+                        Some(
+                            view! { <div style="margin-top:2px; align-items: end; color:blue;">
+                            <a href=portfolio.portfolio_link target="_blank">
+                                <Icon icon={i::TbWorldWww} />
+                            </a>
+                        </div> }
+                        )
                     };
                     let url = if portfolio.portfolio_icon_url.is_empty() {
                         "https://cdn-icons-png.flaticon.com/512/7867/7867852.png".to_string()
@@ -115,7 +121,7 @@ pub fn Portfolio(
                          <div class="portfolioHeader">
                              <img src=url alt="Portfolio Icon" />
                              <div class="experienceRowFirstItemText">
-                             { if is_mobile.get() { edit_menu.clone()} else{view! {<div></div>}}}
+                             { if is_mobile.get() { Either::Left(edit_menu) } else{ Either::Right(())}}
                              <h3><b>Name</b>: {portfolio.portfolio_name}</h3>  
                              <h3><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} } {aLink}</h3> 
                              </div>
@@ -125,30 +131,31 @@ pub fn Portfolio(
                          <div class="portfolioDescriptions" inner_html=portfolio.portfolio_detail></div>    
                          </div>
                        <div  >  
-                    { if !is_mobile.get() { edit_menu_clone.clone()} else{view! {<div></div>}}}
+                //   { if is_mobile.get() { Either::Left(edit_menu.clone()) } else { Either::Right(()) }}
                 <ImageSlider images=portfolio.screenshots_url/>
                 </div>
                 </div>
                 <div class="editContactRow">
                 <div class="stackRow">
                 {if portfolio.stacks.len() > 1 {
-                 view!{
-                  
-                    <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
-                        move || stacks.iter().enumerate().map(|(index, stack)| {
-                            view! { <p style="margin-left:5px"  >{index +1}.{stack} </p> }
-                        }).collect::<Vec<_>>()}
-                }} else { 
-                 view!{
-                    <b></b> <></>
-                }} }
-              
-                       
-                 
-                    </div>
+                    Some(view! {
+                        <div>
+                            <b>Stack:</b>
+                            <For
+                                each=move || portfolio.stacks.clone()
+                                key=|stack| stack.clone()
+                                children=move |stack: String| {  // Changed from view= to children=
+                                    view! { <p style="margin-left:5px">{stack}</p> }
+                                }
+                            />
+                        </div>
+                    })
+                } else {
+                    None
+                }}        </div>
                     </div> 
             </div>}
                 })
-                .collect::<Vec<_>>()
+                .collect_view()
     }
 }

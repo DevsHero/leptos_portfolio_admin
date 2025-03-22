@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 
 #[component]
 pub fn TextAreaField(
@@ -13,7 +13,7 @@ pub fn TextAreaField(
     let label = label.into();
     let error_label = label.clone();
     let label_for_input = label.clone();
-    let (error, set_error) = create_signal(None::<String>);
+    let (error, set_error) = signal(None::<String>);
     // Create a function to validate the input
     let validate = move || {
         let value = get_value.get();
@@ -28,7 +28,7 @@ pub fn TextAreaField(
 
     // If a validation trigger is provided, create an effect to watch it
     if let Some(trigger) = validation {
-        create_effect(move |_| {
+        Effect::new(move |_| {
             // When the trigger changes to true, perform validation
             if trigger.get() {
                 validate();
@@ -40,7 +40,7 @@ pub fn TextAreaField(
         <div class="formGroup">
             <label for={id.clone()}>{renderLabel}</label>
             <textarea
-                type="text"
+            
                 id={id.clone()}
                 prop:value=move || get_value.get()
                 on:input=move |ev| {
@@ -57,9 +57,9 @@ pub fn TextAreaField(
             {
                 move || {
                     if let Some(msg) = error.get() {
-                        view! { <p class="errorInput">{msg}</p> }
+                     Either::Left(    view! { <p class="errorInput">{msg}</p> })
                     } else {
-                        view! { <p ></p> }
+                        Either::Right(())
                     }
                 }
             }

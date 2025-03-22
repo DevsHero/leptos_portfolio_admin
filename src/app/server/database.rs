@@ -1,7 +1,7 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use std::env;
-        use leptos::ServerFnError;
+        use crate::app::ServerFnError;
         use crate::app::models::portfolio::{ Experience, Portfolio, Profile, Skill, Contact };
         use surrealdb::engine::any::Any;
         use surrealdb::opt::auth::Root;

@@ -2,13 +2,13 @@ use crate::app::{
     components::{ Experience, RenderTab, Portfolio },
     models::portfolio::{ Experience, Portfolio },
 };
-use leptos::*;
+use leptos::prelude::*;
 
 #[component]
 pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> impl IntoView {
-    let (select_tab, set_select_tab) = create_signal(1);
-    let (experiences, _set_experiences) = create_signal(experiences);
-    let (portfolios, _set_portfolios) = create_signal(portfolios);
+    let (select_tab, set_select_tab) = signal(1);
+    let (experiences, _set_experiences) = signal(experiences);
+    let (portfolios, _set_portfolios) = signal(portfolios);
     view! {
         <section class="tabSection">
             <div class="tabSectionSelector">

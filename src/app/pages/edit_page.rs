@@ -15,47 +15,48 @@ use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Profile, Skill, Portfolio };
 use crate::app::server::api::{ get_profile, update_portfolio, verify };
 
-use leptos::*;
-use leptos_toaster::{ Theme, Toast, ToastId, ToastOptions, ToastVariant, ToasterPosition, Toasts };
+use leptos::either::{ Either, EitherOf3 };
+use leptos::prelude::*;
+// use leptos_toaster::{ Theme, Toast, ToastId, ToastOptions, ToastVariant, ToasterPosition, Toasts };
 use web_sys::SubmitEvent;
 
 #[component]
 pub fn EditPage() -> impl IntoView {
-    let (select_tab, set_select_tab) = create_signal(1);
+    let (select_tab, set_select_tab) = signal(1);
     let get_profile_info = Resource::new(
         || (),
         |_| async move { get_profile().await }
     );
-    let (is_init, set_is_init) = create_signal(false);
-    let (is_verify, set_is_verify) = create_signal(false);
-    let (use_password, set_use_password) = create_signal(false);
-    let (input_password, set_input_password) = create_signal(String::new());
-    let (is_incorrect, set_is_incorrect) = create_signal(false);
+    let (is_init, set_is_init) = signal(false);
+    let (is_verify, set_is_verify) = signal(false);
+    let (use_password, set_use_password) = signal(false);
+    let (input_password, set_input_password) = signal(String::new());
+    let (is_incorrect, set_is_incorrect) = signal(false);
 
-    let create_toast = move |title: View, detail: View, varaint: ToastVariant| {
-        let toast_id = ToastId::new();
-        let toast_context = expect_context::<Toasts>();
+    // let //create_toast = move |title: View, detail: View, varaint: ToastVariant| {
+    //     let toast_id = ToastId::new();
+    //     let toast_context = expect_context::<Toasts>();
 
-        toast_context.toast(
-            view! {
-                <Toast
-                    toast_id
-                    variant=varaint
-                    theme=Theme::Dark
-                    invert=false
-                    rich_colors=false
-                    title=view! { {title} }.into_view()
-                    description=Some(view! {  {detail}}.into_view())
-                />
-            },
-            Some(toast_id),
-            Some(ToastOptions {
-                dismissible: true,
-                duration: Some(std::time::Duration::from_secs(4)),
-                position: Some(ToasterPosition::BottomLeft),
-            })
-        );
-    };
+    //     toast_context.toast(
+    //         view! {
+    //             <Toast
+    //                 toast_id
+    //                 variant=varaint
+    //                 theme=Theme::Dark
+    //                 invert=false
+    //                 rich_colors=false
+    //                 title=view! { {title} }.into_view()
+    //                 description=Some(view! {  {detail}}.into_view())
+    //             />
+    //         },
+    //         Some(toast_id),
+    //         Some(ToastOptions {
+    //             dismissible: true,
+    //             duration: Some(std::time::Duration::from_secs(4)),
+    //             position: Some(ToasterPosition::BottomLeft),
+    //         })
+    //     );
+    // };
     let verify_action = Action::new(move |_| {
         async move {
             let result = verify(input_password.get()).await;
@@ -64,26 +65,26 @@ pub fn EditPage() -> impl IntoView {
                     set_is_incorrect(false);
                     set_is_verify(true);
                     set_is_init(true);
-                    create_toast(
-                        (
-                            {
-                                view! { <p class="toastInfo">"Admin Mode" </p> }
-                            }
-                        ).into_view(),
-                        "Welcome Admin user.".into_view(),
-                        ToastVariant::Info
-                    );
+                    // create_toast(
+                    //     (
+                    //         {
+                    //             view! { <p class="toastInfo">"Admin Mode" </p> }
+                    //         }
+                    //     ).into_view(),
+                    //     "Welcome Admin user.".into_view(),
+                    //     ToastVariant::Info
+                    // );
                 }
                 _ => {
-                    create_toast(
-                        (
-                            {
-                                view! { <p class="toastFail">"Failed" </p> }
-                            }
-                        ).into_view(),
-                        "Incorrect Password.".into_view(),
-                        ToastVariant::Error
-                    );
+                    // //create_toast(
+                    //     (
+                    //         {
+                    //             view! { <p class="toastFail">"Failed" </p> }
+                    //         }
+                    //     ).into_view(),
+                    //     "Incorrect Password.".into_view(),
+                    //     ToastVariant::Error
+                    // );
 
                     set_is_incorrect(true);
                 }
@@ -91,66 +92,66 @@ pub fn EditPage() -> impl IntoView {
         }
     });
     view! {     
-        <head> <script src="/assets/tinymce-integration.js"></script> </head>
+        <script src="/assets/tinymce-integration.js"></script>
         <main class="editPage"  >
      
         <Suspense fallback=Loading>
-        { move || {    
+        { move || Suspend::new(async move {  
             match get_profile_info.get() {
-                Some(Ok(profile)) => {                    
+                Some(Ok(profile)) => EitherOf3::A({                    
                 {if is_init.get() { 
                       //Profile 
-                let (first_name, set_first_name) = create_signal(profile.first_name);
-                let (last_name, set_last_name) = create_signal(profile.last_name);
-                let (about, set_about) = create_signal(profile.about);
-                let (nick_name, set_nick_name) = create_signal(profile.nick_name);
-                let (gender, set_gender) = create_signal(profile.gender);
-                let (role, set_role) = create_signal(profile.role);
-                let (birth_date, set_birth_date) = create_signal(profile.birth_date);
-                let (nationality, set_nationality) = create_signal(profile.nationality);
-                let (avatar, set_avatar) = create_signal(profile.avatar);
-                let (address, set_address) = create_signal(profile.address);
+                let (first_name, set_first_name) = signal(profile.first_name);
+                let (last_name, set_last_name) = signal(profile.last_name);
+                let (about, set_about) = signal(profile.about);
+                let (nick_name, set_nick_name) = signal(profile.nick_name);
+                let (gender, set_gender) = signal(profile.gender);
+                let (role, set_role) = signal(profile.role);
+                let (birth_date, set_birth_date) = signal(profile.birth_date);
+                let (nationality, set_nationality) = signal(profile.nationality);
+                let (avatar, set_avatar) = signal(profile.avatar);
+                let (address, set_address) = signal(profile.address);
                 //Experience 
-                    let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
-                let (company_name, set_company_name) = create_signal(String::new());
-                let (company_address, set_company_address) = create_signal(String::new());
-                let (company_url, set_company_url) = create_signal(String::new());
-                let (company_logo_url, set_company_logo_url) = create_signal(String::new());
-                let (position_name, set_position_name) = create_signal(String::new());
-                let (start_date, set_start_date) = create_signal(String::new());
-                let (end_date, set_end_date) = create_signal(String::new());
-                let (describe, set_describe) = create_signal(String::new());      
+                    let (experiences, set_experiences) = signal(profile.experiences.unwrap_or_else(Vec::new));
+                let (company_name, set_company_name) = signal(String::new());
+                let (company_address, set_company_address) = signal(String::new());
+                let (company_url, set_company_url) = signal(String::new());
+                let (company_logo_url, set_company_logo_url) = signal(String::new());
+                let (position_name, set_position_name) = signal(String::new());
+                let (start_date, set_start_date) = signal(String::new());
+                let (end_date, set_end_date) = signal(String::new());
+                let (describe, set_describe) = signal(String::new());      
                 //Skill 
-                let (skills, set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new));
-                let (skill_name, set_skill_name) = create_signal(String::new());
-                let (skill_level, set_skill_level) = create_signal(String::from("Basic"));
+                let (skills, set_skills) = signal(profile.skills.unwrap_or_else(Vec::new));
+                let (skill_name, set_skill_name) = signal(String::new());
+                let (skill_level, set_skill_level) = signal(String::from("Basic"));
                 //Portfolio
-                let (portfolios, set_portfolios) = create_signal(profile.portfolios.unwrap_or_else(Vec::new));   
-                let (portfolio_name, set_portfolio_name) = create_signal(String::new());
-                let (portfolio_link, set_portfolio_link) = create_signal(String::new());
-                let (is_private, set_is_private) = create_signal(false);
-                let (portfolio_icon_url, set_portfolio_icon_url) = create_signal(String::new());
-                let (portfolio_detail, set_portfolio_detail) = create_signal(String::new());
-                let (screenshots_url, set_screenshots_url) = create_signal(vec!["".to_string()]);
-                let (stacks, set_stacks) = create_signal(vec!["".to_string()]);
+                let (portfolios, set_portfolios) = signal(profile.portfolios.unwrap_or_else(Vec::new));   
+                let (portfolio_name, set_portfolio_name) = signal(String::new());
+                let (portfolio_link, set_portfolio_link) = signal(String::new());
+                let (is_private, set_is_private) = signal(false);
+                let (portfolio_icon_url, set_portfolio_icon_url) = signal(String::new());
+                let (portfolio_detail, set_portfolio_detail) = signal(String::new());
+                let (screenshots_url, set_screenshots_url) = signal(vec!["".to_string()]);
+                let (stacks, set_stacks) = signal(vec!["".to_string()]);
                 //Contact
-                let (contacts, set_contacts) = create_signal(profile.contacts.unwrap_or_else(Vec::new));
-                let (contact_value, set_contact_value) = create_signal(String::new());
-                let (contact_icon, set_contact_icon) = create_signal(String::new());
-                let (contact_title, set_contact_title) = create_signal(String::new());
-                let (use_link, set_use_link) = create_signal(false); 
+                let (contacts, set_contacts) = signal(profile.contacts.unwrap_or_else(Vec::new));
+                let (contact_value, set_contact_value) = signal(String::new());
+                let (contact_icon, set_contact_icon) = signal(String::new());
+                let (contact_title, set_contact_title) = signal(String::new());
+                let (use_link, set_use_link) = signal(false); 
 
-                let (_is_update_skill, set_is_update_skill) = create_signal(false);
-                let (_is_update_experience, set_is_update_experience) = create_signal(false);
-                let (_is_update_portfolio, set_is_update_portfolio) = create_signal(false);
-                let (_is_update_contact, set_is_update_contact) = create_signal(false);
-                let (is_saving, set_is_saving) = create_signal(false);
+                let (_is_update_skill, set_is_update_skill) = signal(false);
+                let (_is_update_experience, set_is_update_experience) = signal(false);
+                let (_is_update_portfolio, set_is_update_portfolio) = signal(false);
+                let (_is_update_contact, set_is_update_contact) = signal(false);
+                let (is_saving, set_is_saving) = signal(false);
 
-                let (validate_profile, set_validate_profile) = create_signal(false);
-                let (validate_skill, set_validate_skill) = create_signal(false);
-                let (validate_experience, set_validate_experience) = create_signal(false);
-                let (validate_portfolio, set_validate_portfolio) = create_signal(false);
-                let (validate_contact, set_validate_contact) = create_signal(false);
+                let (validate_profile, set_validate_profile) = signal(false);
+                let (validate_skill, set_validate_skill) = signal(false);
+                let (validate_experience, set_validate_experience) = signal(false);
+                let (validate_portfolio, set_validate_portfolio) = signal(false);
+                let (validate_contact, set_validate_contact) = signal(false);
                  
                 let update_profile_action = Action::new(move |profile: &Profile| {
                     set_is_saving.set(true);
@@ -169,7 +170,7 @@ pub fn EditPage() -> impl IntoView {
                         set_is_update_experience(false);
                         set_is_update_portfolio(false);
                         set_is_update_contact(false);
-                        create_toast({view! {<p class="toastSuccess">"Update Success" </p>}}.into_view(), "All information has been updated.".into_view(), ToastVariant::Success);
+                        //create_toast({view! {<p class="toastSuccess">"Update Success" </p>}}.into_view(), "All information has been updated.".into_view(), ToastVariant::Success);
                      
                         result
                     }
@@ -189,7 +190,7 @@ pub fn EditPage() -> impl IntoView {
                                  !nationality.get().trim().is_empty()&& 
                                  !address.get().trim().is_empty();
                 if !form_valid {
-                    create_toast( {view! {<p class="toastFail">"Update Failed" </p>}}.into_view() , "Profile Missing required fields.".into_view(), ToastVariant::Error);
+                    //create_toast( {view! {<p class="toastFail">"Update Failed" </p>}}.into_view() , "Profile Missing required fields.".into_view(), ToastVariant::Error);
                 }else{
                 let updated_profile = Profile {
                     id: profile_id.clone(),
@@ -211,7 +212,7 @@ pub fn EditPage() -> impl IntoView {
                 update_profile_action.dispatch(updated_profile);
             }
             };
-            create_effect(move |_| {
+            Effect::new(move |_| {
                     if let Some(Ok(_)) = update_profile_action.value().get() {
                         // Refresh data after successful update
                         get_profile_info.refetch();
@@ -232,10 +233,10 @@ pub fn EditPage() -> impl IntoView {
                  
                     set_is_update_skill(true);
                     
-                    create_toast({view! {<p class="toastInfo">"Add Skill Success" </p>}}.into_view(), "Skill Added.".into_view(), ToastVariant::Success);
+                    //create_toast({view! {<p class="toastInfo">"Add Skill Success" </p>}}.into_view(), "Skill Added.".into_view(), ToastVariant::Success);
                     }
                     else{
-                        create_toast( {view! {<p class="toastFail">"Add Skill Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                        //create_toast( {view! {<p class="toastFail">"Add Skill Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
                     }
                 };
                 let add_experience = move |_| {
@@ -269,10 +270,10 @@ pub fn EditPage() -> impl IntoView {
                     
                     set_is_update_experience(true);
               
-                    create_toast({view! {<p class="toastInfo">"Add Experience Success" </p>}}.into_view(), "Experience Added.".into_view(), ToastVariant::Success);
+                    //create_toast({view! {<p class="toastInfo">"Add Experience Success" </p>}}.into_view(), "Experience Added.".into_view(), ToastVariant::Success);
                     }
                     else{
-                        create_toast( {view! {<p class="toastFail">"Add Experience Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                        //create_toast( {view! {<p class="toastFail">"Add Experience Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
                     }
                 };
                 let add_portfolio = move |_| {
@@ -302,10 +303,10 @@ pub fn EditPage() -> impl IntoView {
                   
                     set_is_update_portfolio(true);
              
-                    create_toast({view! {<p class="toastInfo">"Add Portfolio Success" </p>}}.into_view(), "Portfolio Added.".into_view(), ToastVariant::Success);
+                    //create_toast({view! {<p class="toastInfo">"Add Portfolio Success" </p>}}.into_view(), "Portfolio Added.".into_view(), ToastVariant::Success);
                     }
                     else{
-                        create_toast( {view! {<p class="toastFail">"Add Portfolio Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                        //create_toast( {view! {<p class="toastFail">"Add Portfolio Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
                     }
                 };
 
@@ -329,10 +330,10 @@ pub fn EditPage() -> impl IntoView {
                   
                 set_is_update_contact(true);
              
-                create_toast({view! {<p class="toastInfo">"Add Contact Success" </p>}}.into_view(), "Contact Added.".into_view(), ToastVariant::Success);
+                //create_toast({view! {<p class="toastInfo">"Add Contact Success" </p>}}.into_view(), "Contact Added.".into_view(), ToastVariant::Success);
                     }
                     else{
-                        create_toast( {view! {<p class="toastFail">"Add Contact Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                        //create_toast( {view! {<p class="toastFail">"Add Contact Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
                     }
                 };
 
@@ -418,7 +419,7 @@ pub fn EditPage() -> impl IntoView {
                        
                     }  
                 };
-                view! {
+                Either::Left(     view! {
                   <div> 
                 
                   <div class="tabSectionSelector" >
@@ -574,7 +575,7 @@ pub fn EditPage() -> impl IntoView {
                   </div>
               { move ||
                   if select_tab() == 3  {
-                view!{
+                    Either::Left(  view!{
                   <div>  <TextEditor
                   label="Job Describe"
                   id="describe"
@@ -585,9 +586,9 @@ pub fn EditPage() -> impl IntoView {
                   set_value=set_describe
               />
               </div>
-                  }
+                  })
                   }else{
-                      view!{ <div></div> }
+                    Either::Right(())
                   }
               }
                    
@@ -618,7 +619,7 @@ pub fn EditPage() -> impl IntoView {
                 
                   { move ||
                       if select_tab() == 4  {
-                    view!{
+                        Either::Left(  view!{
                       <div>         
                       <TextEditor
                       label="Project Detail"
@@ -630,9 +631,9 @@ pub fn EditPage() -> impl IntoView {
                       set_value=set_portfolio_detail
                       />
                   </div>
-                      }
+                      })
                       }else{
-                          view!{ <div></div> }
+                        Either::Right(())
                       }
                   }
                      
@@ -666,13 +667,13 @@ pub fn EditPage() -> impl IntoView {
                   {move ||view! { <CheckBox id="use_link"  label= "Use link (disable dialog)" set_value=set_use_link  get_value=use_link />}}
                   <IconDropdown validation=validate_contact label="Contact Icon"  get_value=contact_icon  set_value=set_contact_icon require=true  / >
                   {move || {if !use_link.get() {
-                      view! {
+                    Either::Left(     view! {
                           <div>
                           <InputField input_type="text" id="contact_title" label="Contact Title (Show in dialog)" set_value=set_contact_title  get_value=contact_title require=true />
                           </div>
-                      }
+                      } )
                   } else {
-                      view! { <div></div> }
+                    Either::Right(())
                   }}}
                   <InputField validation=validate_contact input_type="text" id="contact_value" label="Contact Value" set_value=set_contact_value  get_value=contact_value require=true />
                   
@@ -693,7 +694,7 @@ pub fn EditPage() -> impl IntoView {
                   </RenderTab>
               
                   {if is_verify.get()  {
-                      view! {   <div class="bottomForm">
+                    Either::Left(          view! {   <div class="bottomForm">
                   <button
                       type="submit"
                       class="updateButton"
@@ -708,15 +709,14 @@ pub fn EditPage() -> impl IntoView {
                       "Cancel"
                   </button>
               </div>
-                       } }
+                       } )}
                else{
-                  view! {
-                          <div> </div>
-                  } }}
+                Either::Right(())
+                }}
                   </form></div>
                 }
-            }   else{
-            view! {
+           ) }   else{
+                Either::Right(      view! {
                 <div class="selectMode" > <b><h1 style="font-size: 1.5rem;">"Edit Page"</h1></b>
             <div style="display: flex; flex-direction: column; margin-top: 15px; gap: 1rem">
              <b style="font-size: 18px;">Select Access Mode</b>
@@ -724,7 +724,7 @@ pub fn EditPage() -> impl IntoView {
                 type="button"
                 style="width: 20rem; height: 2.5rem; margin-top: 1rem; color:green;   border-width: 1px;  border-color: green;"
                 on:click=move |_| {
-                    create_toast({view! {<p class="toastInfo">"Viewer Mode" </p>}}.into_view(), "Welcome Viewer user.".into_view(), ToastVariant::Info);
+                    //create_toast({view! {<p class="toastInfo">"Viewer Mode" </p>}}.into_view(), "Welcome Viewer user.".into_view(), ToastVariant::Info);
                   
                     set_is_init(true);     
                 }
@@ -738,7 +738,7 @@ pub fn EditPage() -> impl IntoView {
                 >Admin Mode</button>
                 </div>
                 {if use_password.get() {
-                    view! {
+                    Either::Left(      view! {
                         <div style="width: 20rem; margin-top: 30px;">
                         <InputField input_type="password" id="input_password" label="Admin Password" set_value=set_input_password  get_value=input_password require=true />
                      <p style="color:red;">    {move || if is_incorrect.get() { "Incorrect Password" } else { "" }}</p>
@@ -753,23 +753,22 @@ pub fn EditPage() -> impl IntoView {
                         </button>   
                     </div>  
                         </div>         
-                } }
+                } )}
              else{
-                view! {
- <div></div>
-                }} }                       
+                Either::Right(())
+            } }                       
                 </div>
-            } }}  },
-            Some(Err(e)) => view! { 
+            }) }}  }),
+            Some(Err(e)) => EitherOf3::B(view! { 
                 <div class="indexLayout">
                     <p>"Error loading profile: "{e.to_string()}</p>
                 </div> 
-            },
-            None => view! { 
+            }  ),
+            None => EitherOf3::C(view! { 
                 <div class="indexLayout">
                     <p>"Loading..."</p>
                 </div> 
-            }} }}
+            })} })}
         </Suspense>
         </main>
     }

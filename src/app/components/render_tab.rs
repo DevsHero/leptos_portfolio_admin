@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 #[component]
 pub fn RenderTab(no: i32, active_page: ReadSignal<i32>, children: Children) -> impl IntoView {
     let class = Memo::new(move |_| {

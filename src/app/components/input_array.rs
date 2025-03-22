@@ -1,5 +1,5 @@
-use leptos::*;
-use leptos::{ component, view, IntoView, For };
+use leptos::prelude::*;
+use leptos::{ component, view, IntoView };
 use leptos_icons::Icon;
 use icondata as i;
 
@@ -35,7 +35,7 @@ pub fn InputArrayField(
             children=move |(index, _)| {
                 let input_id = format!("{}-{}", id, index);
                 view! {
-                    <div class="inputArrayRow" key={index}>
+                    <div class="inputArrayRow" id={index}>
                         <button
                             type="button"
                             class="btn-remove"

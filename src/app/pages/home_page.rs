@@ -3,7 +3,7 @@ use crate::app::{
     server::api::get_profile,
     utils::calculate_age,
 };
-use leptos::*;
+use leptos::{ either::{ Either, EitherOf3 }, prelude::* };
 
 #[component]
 pub fn HomePage() -> impl IntoView {
@@ -14,14 +14,14 @@ pub fn HomePage() -> impl IntoView {
 
     view! {
         <Suspense fallback=Loading>
-            { move ||  { 
+            { move || Suspend::new(async move {
                 match get_profile_info.get() {
-                    Some(Ok(profile)) => {
-                        let (skills, _) = create_signal(profile.skills.clone().unwrap_or_default());
-                        let (birth_date, set_birth_date) = create_signal(String::new());
-                        let (open_dialog, set_open_dialog) = create_signal(false);
+                    Some(Ok(profile)) =>  EitherOf3::A( {
+                        let (skills, _) = signal(profile.skills.clone().unwrap_or_default());
+                        let (birth_date, set_birth_date) = signal(String::new());
+                        let (open_dialog, set_open_dialog) = signal(false);
                         let avatar =  profile.avatar.clone();                      
-                        create_effect(move |_| {
+                        Effect::new(move |_| {
                         let age = calculate_age(&profile.birth_date);
                             set_birth_date.set(age.to_string());
                         });      
@@ -30,17 +30,17 @@ pub fn HomePage() -> impl IntoView {
                            { move || { 
                             if open_dialog.get() { 
                                 let clone_avatar =  profile.avatar.clone();
-                                view!  {<div  on:click=move |_| {
+                              Either::Left(  view!  {<div  on:click=move |_| {
                                 set_open_dialog.set(!open_dialog.get()); }>
                                 <Dialog children_only=true >
                                 <img alt="avatar" src={clone_avatar.clone()} />
                             </Dialog>
-                                </div>}}
+                                </div>})}
                             else {
-                                view! {<div></div>}
+                                Either::Right(())
                             } 
                            }  }
-                             <div></div>
+                        
                                 <section class="info">
                                     <div class="profile">
                                         <span class="avatar">
@@ -84,19 +84,19 @@ pub fn HomePage() -> impl IntoView {
                                 />
                             </main>
                         }
-                    },
-                    Some(Err(e)) => view! { 
+                    }),
+                    Some(Err(e)) =>  EitherOf3::B(view! { 
                         <main class="indexLayout">
                             <div>"Error loading profile: "{e.to_string()}</div>
                         </main> 
-                    },
-                    None => view! { 
+                    }),
+                    None => EitherOf3::C( view! { 
                         <main class="indexLayout">
                             <div>"Loading..."</div>
                         </main> 
-                    }
+                    })
                 }
-            }}
+            })}
         </Suspense>
     }
 }

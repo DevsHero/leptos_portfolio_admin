@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 use crate::app::{ models::portfolio::Experience, utils::convert_date_format };
 use leptos_icons::Icon;
 use icondata as i;
@@ -22,15 +22,17 @@ pub fn Experience(
                         experience.company_logo_url.clone()
                     };
                     let aLink = if experience.company_url.is_empty() {
-                        view! { <div></div> }
+                        Either::Left(view! { <div></div> })
                     } else {
-                        view! {
+                        Either::Right(
+                            view! {
                             <div style="margin-left: 5px; color:blue;">
                                 <a href=experience.company_url target="_blank">
                                     <Icon icon={i::TbWorldWww} />
                                 </a>
                             </div>
                         }
+                        )
                     };
                     view! {
                         <div class="experienceContainer">
@@ -53,7 +55,7 @@ pub fn Experience(
                                 { view! {
                                     <>
                                         {if is_edit {
-                                            view! {
+                                            Either::Left(      view! {
                                                 <div class="iconRow">
                                                   
                                                     <button
@@ -61,7 +63,7 @@ pub fn Experience(
                                                         type="button" 
                                                         on:click=move |_| {
                                                             if let Some(ref callback) = on_edit {
-                                                                leptos::Callable::call(callback, index);
+                                                                (callback, index);
                                                             }
                                                         }
                                                     >
@@ -72,16 +74,16 @@ pub fn Experience(
                                                         type="button" 
                                                         on:click=move |_| {
                                                             if let Some(ref callback) = on_delete {
-                                                                leptos::Callable::call(callback, index);
+                                                                (callback, index);
                                                             }
                                                         }
                                                     >
                                                         <Icon icon={i::BsTrash} />
                                                     </button>
                                                 </div>
-                                            }
+                                            } )
                                         } else {
-                                            view! { <div></div> }
+                                            Either::Right(())
                                         }}
                                     </>
                                 } }
@@ -90,6 +92,6 @@ pub fn Experience(
                         </div>
                     }
                 })
-                .collect::<Vec<_>>()
+                .collect_view()
     }
 }

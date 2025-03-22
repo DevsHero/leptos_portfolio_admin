@@ -1,4 +1,4 @@
-use leptos::{ server, ServerFnError };
+use leptos::prelude::{ server, ServerFnError };
 use crate::app::models::{ Profile, SiteConfig, Skill };
 use std::env;
 

@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -30,7 +30,7 @@ pub fn TextEditor(
     let label = label.into();
     let error_label = label.clone();
     let error2_label = label.clone();
-    let (error, set_error) = create_signal(None::<String>);
+    let (error, set_error) = signal(None::<String>);
     // Create a function to validate the input
     let validate = move || {
         let get_value = get_value.get();
@@ -43,7 +43,7 @@ pub fn TextEditor(
         }
     };
     if let Some(trigger) = validation {
-        create_effect(move |_| {
+        Effect::new(move |_| {
             // When the trigger changes to true, perform validation
             if trigger.get() {
                 validate();
@@ -54,7 +54,6 @@ pub fn TextEditor(
     let initial_content = get_value.get();
     let editor_id_clone = editor_id.clone();
     let editor_id_for_cleanup = editor_id.clone();
-    let editor_id_for_cleanup2 = editor_id.clone();
     let on_change = {
         let closure = Closure::wrap(
             Box::new(move |content: String| {
@@ -72,7 +71,7 @@ pub fn TextEditor(
         js_value
     };
 
-    create_effect(move |_| {
+    Effect::new(move |_| {
         // Initialize editor with timeout to ensure DOM is ready
         let window = web_sys::window().expect("no global window exists");
         let editor_selector = editor_selector.clone();
@@ -90,7 +89,7 @@ pub fn TextEditor(
         );
         callback.forget();
     });
-    create_effect(move |_| {
+    Effect::new(move |_| {
         let content = get_value.get();
         set_tiny_mce_content(&editor_id, &content);
     });
@@ -112,7 +111,7 @@ pub fn TextEditor(
     view! {
         <div class="formGroup">
         <label  >{renderLabel}</label>
-        <div for={editor_id_for_cleanup2} id=editor_id_for_cleanup>
+        <div   id=editor_id_for_cleanup>
             <textarea 
             class="textEditor"
                 style="visibility: hidden; display: none;" 
@@ -124,9 +123,9 @@ pub fn TextEditor(
         {
             move || {
                 if let Some(msg) = error.get() {
-                    view! { <p class="errorInput">{msg}</p> }
+               Either::Left(   view! { <p class="errorInput">{msg}</p> })  
                 } else {
-                    view! { <p ></p> }
+                    Either::Right(())
                 }
             }
         }

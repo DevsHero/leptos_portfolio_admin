@@ -4,52 +4,38 @@ pub mod pages;
 pub mod server;
 pub mod utils;
 use components::Topbar;
-use leptos::*;
+use leptos::prelude::*;
 use leptos_meta::*;
-use leptos_router::*;
-use leptos_toaster::Toaster;
+use leptos_router::{ components::{ Route, Router, Routes }, StaticSegment };
+// use leptos_toaster::Toaster;
 use pages::{ HomePage, EditPage };
 use server::api::site_config;
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
-    let get_config = Resource::new(
-        || (),
-        move |_| async move { site_config().await }
-    );
-    let config = get_config.get().and_then(Result::ok).unwrap_or_default().clone();
+    // let get_config = Resource::new(
+    //     || (),
+    //     move |_| async move { site_config().await }
+    // );
+    // let config = get_config.get().and_then(Result::ok).unwrap_or_default().clone();
     view! {
      
         <Stylesheet id="leptos" href="/pkg/leptos-portfolio-admin.css"/>
-        <link data-trunk rel="tailwind-css" href="/style/input.css" />
-        <Title text={config.title}/>
-        <link data-trunk rel="icon" href="public/favicon.ico" />
+
   
         <Router>
             <main class="layout">
-            <Toaster 
-	    position=leptos_toaster::ToasterPosition::BottomCenter
-	>
-		// ...
+   
+	 
         <Topbar/>
-                <Routes>
-                    <Route path="/"  view=move || {
-                        view! {
-                            <HomePage />
-                    
-                        }
-                    }/>
+             <Routes fallback=move || view! { <NotFound /> }>
+                    <Route path=StaticSegment("") view=HomePage/>
                  
-                    <Route path="/edit" view=move || {
-                        view! {
-                            <EditPage />
-                     
-                        }
-                    }/>
-                    <Route path="/*any" view=NotFound/>
+                    <Route path=StaticSegment("/edit") view=EditPage/>
+                   
                 </Routes>
 
-                </Toaster>
+             
             </main>
         </Router>
     }

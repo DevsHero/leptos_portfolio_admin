@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 use leptos_icons::Icon;
 use icondata as i;
 use crate::app::utils::ICON_MAP;
@@ -14,12 +14,12 @@ pub fn IconDropdown(
     let label = label.into();
     let label_for_error = label.clone();
     // Store the selected icon as a String instead of &'static str
-    let (selected_icon, set_selected_icon) = create_signal(String::new());
-    let (is_open, set_is_open) = create_signal(false);
-    let (error, set_error) = create_signal(None::<String>);
+    let (selected_icon, set_selected_icon) = signal(String::new());
+    let (is_open, set_is_open) = signal(false);
+    let (error, set_error) = signal(None::<String>);
 
     // Initialize selected icon from the current value when component mounts
-    create_effect(move |_| {
+    Effect::new(move |_| {
         let current_value = get_value.get();
         if !current_value.is_empty() {
             // Only update if we have a value and it's different
@@ -42,7 +42,7 @@ pub fn IconDropdown(
     };
 
     if let Some(trigger) = validation {
-        create_effect(move |_| {
+        Effect::new(move |_| {
             // When the trigger changes, perform validation
             if trigger.get() {
                 validate();
@@ -65,25 +65,25 @@ pub fn IconDropdown(
                             move || {
                                 let icon_name = selected_icon.get();
                                 if !get_value.get().is_empty()   && !icon_name.is_empty() {
-                                    // Look up the icon using the string name
+                                    Either::Left(    // Look up the icon using the string name
                                     if let Some(&icon) = ICON_MAP.get(icon_name.as_str()) {
-                                        view! { 
+                                        Either::Left(     view! { 
                                             <div class="aLinkRow"> 
                                             <Icon icon={icon} />
                                             <span style="margin-left: 8px" >{icon_name}</span>
                                             </div>
-                                        }
+                                        } )
                                     } else {
-                                        view! { <div class="dropdown"><Icon icon={i::AiSearchOutlined} /> <span class="ml-2">"Select icon"</span></div> }
+                                        Either::Right(   view! { <div class="dropdown"><Icon icon={i::AiSearchOutlined} /> <span class="ml-2">"Select icon"</span></div> })
                                     }
-                                } else {
-                                    view! { <div class="dropdown"><Icon icon={i::AiSearchOutlined} /> <span class="ml-2">"Select icon"</span></div> }
+                               ) } else {
+                                Either::Right(  view! { <div class="dropdown"><Icon icon={i::AiSearchOutlined} /> <span class="ml-2">"Select icon"</span></div> })
                                 }
                             }
                         }
                     </button>
                     { move || if is_open.get() {
-                        view! { 
+                        Either::Left(    view! { 
                             <ul 
                                 class="absolute top-full left-0 z-10 w-full bg-white shadow-lg rounded-md overflow-y-auto max-h-60 border border-gray-200"
                                 style="color: var(--background); position:absolute; padding:0.5rem; border-radius = 5; min-width: 200px; max-height: 200px; overflow-y: scroll;  background-color: var(--lavender);"
@@ -105,11 +105,11 @@ pub fn IconDropdown(
                                             <span >{name}</span>
                                         </li>
                                     }
-                                }).collect::<Vec<_>>() }
+                                }).collect_view() }
                             </ul>
-                        }
+                        })
                     } else {
-                        view! { <ul class="hidden"></ul> }
+                        Either::Right(())
                     } }
                 </div>
         
@@ -118,9 +118,9 @@ pub fn IconDropdown(
         {
             move || {
                 if let Some(msg) = error.get() {
-                    view! { <p class="errorInput">{msg}</p> }
+                    Either::Left(  view! { <p class="errorInput">{msg}</p> } )
                 } else {
-                    view! { <p></p> }
+                    Either::Right(())
                 }
             }
         }

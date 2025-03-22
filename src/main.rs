@@ -6,28 +6,50 @@ async fn main() -> std::io::Result<()> {
     use actix_web::*;
     use leptos_portfolio_admin::app::*;
     use dotenvy::dotenv;
-    use leptos::*;
+    use leptos::{ logging, prelude::* };
+    use leptos_meta::MetaTags;
     use leptos_actix::{ generate_route_list, LeptosRoutes };
     let env_result = dotenv();
     if env_result.is_err() {
         logging::warn!("There is no local development .env file");
     }
-    let conf = get_configuration(None).await.unwrap();
+    let conf = get_configuration(None).unwrap();
     let addr = conf.leptos_options.site_addr;
     // Generate the list of routes in your Leptos App
-    let routes = generate_route_list(App);
+
     // Generate the list of routes in your Leptos App
     println!("listening on http://{}", &addr);
     HttpServer::new(move || {
+        let routes = generate_route_list(App);
         let leptos_options = &conf.leptos_options;
-        let site_root = &leptos_options.site_root;
+        let site_root = leptos_options.site_root.clone().to_string();
         App::new()
             .service(Files::new("/pkg", format!("{site_root}/pkg")))
             // serve other assets from the `assets` directory
-            .service(Files::new("/assets", site_root))
+            .service(Files::new("/assets", &site_root))
             // serve the favicon from /favicon.ico
             .service(favicon)
-            .leptos_routes(leptos_options.to_owned(), routes.to_owned(), App)
+            .leptos_routes(routes, {
+                let leptos_options = leptos_options.clone();
+                move || {
+                    view! {
+                        <!DOCTYPE html>
+                        <html lang="en">
+                            <head>
+                            
+                                <meta charset="utf-8"/>
+                                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                                <AutoReload options=leptos_options.clone() />
+                                <HydrationScripts options=leptos_options.clone()/>
+                                <MetaTags/>
+                            </head>
+                            <body>
+                                <App/>
+                            </body>
+                        </html>
+                    }
+                }
+            })
             .app_data(web::Data::new(leptos_options.to_owned()))
     })
         .bind(&addr)?
@@ -36,7 +58,7 @@ async fn main() -> std::io::Result<()> {
 #[cfg(feature = "ssr")]
 #[actix_web::get("favicon.ico")]
 async fn favicon(
-    leptos_options: actix_web::web::Data<leptos::LeptosOptions>
+    leptos_options: actix_web::web::Data<leptos::config::LeptosOptions>
 ) -> actix_web::Result<actix_files::NamedFile> {
     let leptos_options = leptos_options.into_inner();
     let site_root = &leptos_options.site_root;

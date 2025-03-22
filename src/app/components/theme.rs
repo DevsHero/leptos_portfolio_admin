@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 
 use web_sys::window;
 use leptos_icons::Icon;
@@ -16,8 +16,8 @@ fn darkmode(enable: bool) {
 }
 #[component]
 pub fn ThemeButton() -> impl IntoView {
-    let (dark_mode, set_dark_mode) = create_signal(false);
-    create_effect(move |_| {
+    let (dark_mode, set_dark_mode) = signal(false);
+    Effect::new(move |_| {
         let prefered_mode = getLocalStorage("mode");
 
         let mode = match prefered_mode.as_string() {
@@ -32,9 +32,9 @@ pub fn ThemeButton() -> impl IntoView {
     });
     let icon = move || {
         if dark_mode() {
-            view! { <Icon icon={i::MdiWeatherNight} /> }
+            Either::Left(view! { <Icon icon={i::MdiWeatherNight} /> })
         } else {
-            view! { <Icon icon={i::FiSun} /> }
+            Either::Right(view! { <Icon icon={i::FiSun} /> })
         }
     };
     view! {

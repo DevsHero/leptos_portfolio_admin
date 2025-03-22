@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 #[component]
 pub fn Dialog(
     #[prop(optional)] title: Option<String>,
@@ -6,7 +6,7 @@ pub fn Dialog(
     children: Children,
     children_only: bool
 ) -> impl IntoView {
-    let (show_dialog, set_show_dialog) = create_signal(false);
+    let (show_dialog, set_show_dialog) = signal(false);
 
     let toggle_dialog = move |_|
         set_show_dialog.update(|open| {
@@ -24,7 +24,7 @@ pub fn Dialog(
             </button>
             {if !children_only  
                 {
-                    view! {   
+                    Either::Left(          view! {   
                         <div> 
                         {    move || show_dialog.get().then(|| view! {
                 <div class="dialog-overlay" on:click=toggle_dialog>
@@ -55,7 +55,10 @@ pub fn Dialog(
                     </div>
                 </div>
             })}
-            </div> }} else {view! {<div></div>}}}
+            </div> })} else {    Either::Right(())
+        
+        
+        }}
            
         </div>
     }

@@ -1,5 +1,5 @@
 use crate::app::utils::get_icon_by_name;
-use leptos::*;
+use leptos::{ either::Either, prelude::* };
 use leptos_icons::Icon;
 use icondata as i;
 use crate::app::models::portfolio::Contact;
@@ -32,7 +32,7 @@ pub fn EditContacts(
                     view! {
                         <>
                             {if is_edit {
-                                view! {
+                                Either::Left(     view! {
                                     <div class="inputArrayRow">
                                         <button
                                         type="button" 
@@ -40,7 +40,7 @@ pub fn EditContacts(
                                             style="margin-right:10px;"
                                             on:click=move |_| {
                                                 if let Some(ref callback) = on_edit {
-                                                    leptos::Callable::call(callback, index);
+                                                    (callback, index);
                                                 }
                                             }
                                         >
@@ -51,7 +51,7 @@ pub fn EditContacts(
                                         class="deleteButton"
                                         on:click=move |_| {
                                             if let Some(ref callback) = on_delete {
-                                                leptos::Callable::call(callback, index);
+                                                (callback, index);
                                             }
                                         }
                                     >
@@ -59,8 +59,8 @@ pub fn EditContacts(
                                     </button>
                                     </div>
                                 }
-                            } else {
-                                view! { <div></div> }
+                 ) } else {
+                                Either::Right(())
                             }}
                         </>
                     }
@@ -71,6 +71,6 @@ pub fn EditContacts(
                 <p>Use Link : {contact.use_link} </p>        
          </div>  }
                 })
-                .collect::<Vec<_>>()
+                .collect_view()
     }
 }
