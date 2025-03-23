@@ -24,10 +24,11 @@ pub fn Experience(
                     view! {
                         <div class="experienceContainer">
                          
-                                <span class="experienceRowFirstItem">
+                                <span class="experienceRowFirstItem"   >
                                     <img src=url alt="Company Icon" />
                                     <div class="experienceRowFirstItemText">
-                                        <h3 ><b>Company</b>: {experience.company_name}</h3>
+                                    <div class="rowItem">
+                                        <h3 ><b>Company</b>: {experience.company_name}</h3> </div>
                                         <h3  ><b>Position</b>: {experience.position_name}</h3>
                                         <h3  ><b>Address</b>: {experience.company_address}</h3>
                                         <div class="rowItem">
@@ -48,43 +49,38 @@ pub fn Experience(
                                         }}
                                         </div>
                                     </div>
+                                    {if is_edit {
+                                        Either::Left(      view! {
+                                            <div class="iconRow">
+                                                <button
+                                                    class="editButton iconMargin"
+                                                    type="button" 
+                                                    on:click=move |_| {
+                                                        if let Some(ref callback) = on_edit {
+                                                            callback.run( index);
+                                                        }
+                                                    }
+                                                >
+                                                    <Icon icon={i::BiEditRegular} />
+                                                </button>
+                                                <button
+                                                    class="deleteButton"
+                                                    type="button" 
+                                                    on:click=move |_| {
+                                                        if let Some(ref callback) = on_delete {
+                                                            callback.run( index);
+                                                        }
+                                                    }
+                                                >
+                                                    <Icon icon={i::BsTrash} />
+                                                </button>
+                                            </div>
+                                        } )
+                                    } else {
+                                        Either::Right(())
+                                    }}
                                 </span>
-                                { view! {
-                                    <>
-                                        {if is_edit {
-                                            Either::Left(      view! {
-                                                <div class="iconRow">
-                                                  
-                                                    <button
-                                                        class="editButton iconMargin"
-                                                        type="button" 
-                                                        on:click=move |_| {
-                                                            if let Some(ref callback) = on_edit {
-                                                                callback.run( index);
-                                                            }
-                                                        }
-                                                    >
-                                                        <Icon icon={i::BiEditRegular} />
-                                                    </button>
-                                                    <button
-                                                        class="deleteButton"
-                                                        type="button" 
-                                                        on:click=move |_| {
-                                                            if let Some(ref callback) = on_delete {
-                                                                callback.run( index);
-                                                            }
-                                                        }
-                                                    >
-                                                        <Icon icon={i::BsTrash} />
-                                                    </button>
-                                                </div>
-                                            } )
-                                        } else {
-                                            Either::Right(())
-                                        }}
-                                    </>
-                                } }
-                           
+                             
                             <div class="descriptions" inner_html=experience.describe></div>
                         </div>
                     }  

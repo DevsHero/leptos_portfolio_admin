@@ -1099,6 +1099,7 @@ body {
 .experienceRowFirstItem {
   display: flex;
   flex-direction: row;
+ 
 }
 .rowItem {
   display: flex;
@@ -1572,11 +1573,11 @@ width: 100%;
   flex-direction: row;
 }
 .iconRow {
-  gap: 5;
-  margin-bottom: 5px; /* Add 'px' to properly apply margin */
+  gap: 5px; /* Ensure gap has a unit (e.g., px) */
   display: flex;
   flex-direction: row;
-  justify-content: flex-end; /* Align items to the right */
+ 
+  align-items: flex-start; /* Align items at the top */
 }
 .checkboxRow {
   display: flex;
