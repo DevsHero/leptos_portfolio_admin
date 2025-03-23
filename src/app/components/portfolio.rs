@@ -29,7 +29,7 @@ pub fn Portfolio(
                     let edit_menu = {
                         if is_edit {
                             view! {
-                           <div class="iconRow">
+                           <div class="iconRow" style="align-items:  center;">
                            <button
                            type="button"
                            class="moveButton"
