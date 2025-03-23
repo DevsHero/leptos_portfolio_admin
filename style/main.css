@@ -1559,11 +1559,17 @@ width: 100%;
 .stackRow {
   display: flex;
   flex-direction: row; 
-  font-size: 12;
-  width: 100%;
-  color:rgb(237, 98, 237);
-  gap: 5;
-  overflow-y: scroll;
+  font-size: 12px; /* Ensure font-size has a unit */
+  width: 40rem;
+  height: 1.7rem;
+  color: rgb(237, 98, 237);
+  gap: 5px; /* Ensure gap has a unit */
+ 
+  white-space: nowrap; /* Ensures text stays in one line */
+ 
+   overflow-x: scroll;
+   scrollbar-width: thin; /* For Firefox */
+   scrollbar-color: rgb(150, 150, 150) transparent; 
 }
 
 .inputArrayRow {

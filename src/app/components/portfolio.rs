@@ -129,24 +129,20 @@ pub fn Portfolio(
                 <ImageSlider images=portfolio.screenshots_url/>
                 </div>
                 </div>
-                <div class="editContactRow">
+              
                 <div class="stackRow">
                 {if portfolio.stacks.len() > 1 {
-                 view!{
+                Some( view!{
                   
                     <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
                         move || stacks.iter().enumerate().map(|(index, stack)| {
                             view! { <p style="margin-left:5px"  >{index +1}.{stack} </p> }
                         }).collect::<Vec<_>>()}
-                }} else { 
-                 view!{
-                    <b></b> <></>
-                }} }
-              
-                       
-                 
+                })
+                } else { 
+                 None} }
                     </div>
-                    </div> 
+                 
             </div>}
                 })
                 .collect::<Vec<_>>()
