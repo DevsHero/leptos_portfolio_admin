@@ -6,7 +6,7 @@ pub mod utils;
 use components::Topbar;
 use leptos::*;
 use leptos_meta::*;
-use leptos_router::*;
+use leptos_router::{ Routes, Router, Route };
 use leptos_toaster::Toaster;
 use pages::{ HomePage, EditPage };
 use server::api::site_config;
@@ -46,7 +46,7 @@ pub fn App() -> impl IntoView {
                      
                         }
                     }/>
-                    <Route path="/*any" view=NotFound/>
+                    // <Route path="/*any" view=NotFound/>
                 </Routes>
 
                 </Toaster>

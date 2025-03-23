@@ -10,8 +10,6 @@ pub mod render_tab;
 pub use render_tab::RenderTab;
 pub mod input;
 pub use input::InputField;
-pub mod textarea;
-pub use textarea::TextAreaField;
 pub mod portfolio;
 pub use portfolio::Portfolio;
 pub mod image_slider;
