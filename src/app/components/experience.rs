@@ -9,34 +9,21 @@ pub fn Experience(
     #[prop(optional)] on_edit: Option<Callback<usize>>,
     is_edit: bool
 ) -> impl IntoView {
-    {
-        move ||
-            experiences
-                .get()
-                .into_iter()
-                .enumerate()
-                .map(|(index, experience)| {
+    (
+        view! {
+        <For
+        each=move || experiences.get().into_iter().enumerate() 
+        key=|(index, _experience)| *index
+        children=move |(index, experience)| {
                     let url = if experience.company_logo_url.is_empty() {
                         "https://cdn-icons-png.flaticon.com/512/6214/6214253.png".to_string()
                     } else {
                         experience.company_logo_url.clone()
                     };
-                    let aLink = if experience.company_url.is_empty() {
-                        Either::Left(view! { <div></div> })
-                    } else {
-                        Either::Right(
-                            view! {
-                            <div style="margin-left: 5px; color:blue;">
-                                <a href=experience.company_url target="_blank">
-                                    <Icon icon={i::TbWorldWww} />
-                                </a>
-                            </div>
-                        }
-                        )
-                    };
+                  
                     view! {
                         <div class="experienceContainer">
-                            <span class="experienceRow">
+                         
                                 <span class="experienceRowFirstItem">
                                     <img src=url alt="Company Icon" />
                                     <div class="experienceRowFirstItemText">
@@ -48,7 +35,17 @@ pub fn Experience(
                                                 <b>Period</b>:
                                                 {convert_date_format(&experience.start_date)} - {convert_date_format(&experience.end_date)}
                                             </h3>
-                                            {aLink}
+                                         {if experience.company_url.is_empty() {
+                                            None
+                                        } else {
+                                           Some(
+                                                view! {
+                                                    <a style="margin-left: 5px; color:blue;" href=experience.company_url target="_blank">
+                                                        <Icon icon={i::TbWorldWww} />
+                                                    </a>
+                                            }
+                                            )
+                                        }}
                                         </div>
                                     </div>
                                 </span>
@@ -63,7 +60,7 @@ pub fn Experience(
                                                         type="button" 
                                                         on:click=move |_| {
                                                             if let Some(ref callback) = on_edit {
-                                                                (callback, index);
+                                                                callback.run( index);
                                                             }
                                                         }
                                                     >
@@ -74,7 +71,7 @@ pub fn Experience(
                                                         type="button" 
                                                         on:click=move |_| {
                                                             if let Some(ref callback) = on_delete {
-                                                                (callback, index);
+                                                                callback.run( index);
                                                             }
                                                         }
                                                     >
@@ -87,11 +84,13 @@ pub fn Experience(
                                         }}
                                     </>
                                 } }
-                            </span>
+                           
                             <div class="descriptions" inner_html=experience.describe></div>
                         </div>
-                    }
-                })
-                .collect_view()
+                    }  
+                } 
+              
+                />
     }
+    ).into_any()
 }

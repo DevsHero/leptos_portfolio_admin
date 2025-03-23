@@ -9,7 +9,8 @@ pub fn SkillChips(
     #[prop(optional)] on_edit: Option<Callback<usize>>,
     is_edit: bool
 ) -> impl IntoView {
-    view! {
+    (
+        view! {
         <div class="skillList">
             {move || skills.get().into_iter().enumerate().map(|(index, skill)| {
                 let level_class = skill.level.to_lowercase();
@@ -62,4 +63,5 @@ pub fn SkillChips(
             }).collect_view() }
         </div>
     }
+    ).into_any()
 }

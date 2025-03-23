@@ -39,7 +39,8 @@ pub fn InputField(
         });
     }
     let renderLabel = if require { format!("{}*", label) } else { format!("{}", label) };
-    view! {
+    (
+        view! {
         <div class="formGroup">
             <label for={id.clone()}>{renderLabel}</label>
             <input
@@ -68,4 +69,5 @@ pub fn InputField(
             }
         </div>
     }
+    ).into_any()
 }

@@ -12,7 +12,8 @@ pub fn HomePage() -> impl IntoView {
         move |_| async move { get_profile().await }
     );
 
-    view! {
+    (
+        view! {
         <Suspense fallback=Loading>
             { move || Suspend::new(async move {
                 match get_profile_info.get() {
@@ -26,7 +27,7 @@ pub fn HomePage() -> impl IntoView {
                             set_birth_date.set(age.to_string());
                         });      
                         view! {
-                            <main class="indexLayout">
+                            <div class="indexLayout">
                            { move || { 
                             if open_dialog.get() { 
                                 let clone_avatar =  profile.avatar.clone();
@@ -82,21 +83,22 @@ pub fn HomePage() -> impl IntoView {
                                     experiences={profile.experiences.clone().unwrap_or_default()} 
                                     portfolios={profile.portfolios.clone().unwrap_or_default()}
                                 />
-                            </main>
+                            </div>
                         }
                     }),
                     Some(Err(e)) =>  EitherOf3::B(view! { 
-                        <main class="indexLayout">
+                        <div class="indexLayout">
                             <div>"Error loading profile: "{e.to_string()}</div>
-                        </main> 
+                        </div> 
                     }),
                     None => EitherOf3::C( view! { 
-                        <main class="indexLayout">
+                        <div class="indexLayout">
                             <div>"Loading..."</div>
-                        </main> 
+                        </div> 
                     })
                 }
             })}
         </Suspense>
     }
+    ).into_any()
 }

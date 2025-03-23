@@ -10,15 +10,16 @@ pub fn EditContacts(
     #[prop(optional)] on_edit: Option<Callback<usize>>,
     is_edit: bool
 ) -> impl IntoView {
-    {
-        move ||
-            contacts
-                .get()
-                .into_iter()
-                .enumerate()
-                .map(|(index, contact)| {
-                    let get_icon = get_icon_by_name(&contact.contact_icon);
-                    view! {
+    (
+        {
+            move ||
+                contacts
+                    .get()
+                    .into_iter()
+                    .enumerate()
+                    .map(|(index, contact)| {
+                        let get_icon = get_icon_by_name(&contact.contact_icon);
+                        view! {
                     <div class="editContactContainer">
             
                     <div  class="editContactRow" >
@@ -70,7 +71,8 @@ pub fn EditContacts(
                 <p>Value : {contact.contact_value} </p>
                 <p>Use Link : {contact.use_link} </p>        
          </div>  }
-                })
-                .collect_view()
-    }
+                    })
+                    .collect_view()
+        }
+    ).into_any()
 }

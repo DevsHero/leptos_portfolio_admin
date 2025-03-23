@@ -50,7 +50,8 @@ pub fn IconDropdown(
         });
     }
     let renderLabel = if require { format!("{}*", label) } else { format!("{}", label) };
-    view! { 
+    (
+        view! { 
         <>
         <div  style="display: flex;flex-direction: row;">
  
@@ -126,4 +127,5 @@ pub fn IconDropdown(
         }
         </>
     }
+    ).into_any()
 }

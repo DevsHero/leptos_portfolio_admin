@@ -13,7 +13,8 @@ pub fn Dialog(
             *open = !*open;
         });
 
-    view! {
+    (
+        view! {
         <div class={if children_only {"dialogChildren"} else {"dialogContainer"}}>
             <button 
                 type="button" 
@@ -62,4 +63,5 @@ pub fn Dialog(
            
         </div>
     }
+    ).into_any()
 }

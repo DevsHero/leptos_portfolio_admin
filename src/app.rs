@@ -4,15 +4,16 @@ pub mod pages;
 pub mod server;
 pub mod utils;
 use components::Topbar;
-use leptos::prelude::*;
+use leptos::{ logging, prelude::* };
 use leptos_meta::*;
 use leptos_router::{ components::{ Route, Router, Routes }, StaticSegment };
 
-use pages::{ HomePage, EditPage };
+use pages::{ EditPage, HomePage };
 // use server::api::site_config;
 use leptoaster::{ provide_toaster, Toaster };
 #[component]
 pub fn App() -> impl IntoView {
+    // logging::log!("where do I run?");
     provide_meta_context();
     provide_toaster();
     // let get_config = Resource::new(
@@ -21,7 +22,7 @@ pub fn App() -> impl IntoView {
     // );
     // let config = get_config.get().and_then(Result::ok).unwrap_or_default().clone();
     view! {
-     
+
         <Stylesheet id="leptos" href="/pkg/leptos-portfolio-admin.css"/>
 
         <Router>
@@ -31,12 +32,12 @@ pub fn App() -> impl IntoView {
         <Topbar/>
              <Routes fallback=move || view! { <NotFound /> }>
                     <Route path=StaticSegment("") view=HomePage/>
-                 
+
                     <Route path=StaticSegment("/edit") view=EditPage/>
-                   
+
                 </Routes>
 
-             
+
             </main>
         </Router>
     }

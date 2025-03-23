@@ -1563,6 +1563,8 @@ width: 100%;
   color:rgb(237, 98, 237);
   gap: 5;
   overflow-y: scroll;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: rgb(150, 150, 150) transparent; /* Custom color */
 }
 
 .inputArrayRow {

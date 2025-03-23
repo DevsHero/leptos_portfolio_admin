@@ -4,10 +4,12 @@ pub fn RenderTab(no: i32, active_page: ReadSignal<i32>, children: Children) -> i
     let class = Memo::new(move |_| {
         if no == active_page() { "tabContainer activePage" } else { "tabContainer" }
     });
-    view! {
+    (
+        view! {
         <div class=class id=no>
             {children()}
        
         </div>
         }
+    ).into_any()
 }

@@ -13,8 +13,8 @@ pub fn InputArrayField(
 ) -> impl IntoView {
     let id = id.into();
     let label = label.into();
-
-    view! {
+    (
+        view! {
         <div class="formGroup">
             <div class="experienceRow">
                 <label for={id.clone()}>{label}</label>
@@ -73,4 +73,5 @@ pub fn InputArrayField(
         />
         </div>
     }
+    ).into_any()
 }

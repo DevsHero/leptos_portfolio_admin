@@ -37,7 +37,8 @@ pub fn ThemeButton() -> impl IntoView {
             Either::Right(view! { <Icon icon={i::FiSun} /> })
         }
     };
-    view! {
+    (
+        view! {
         <button
         type="button" 
         on:click=move |_| {
@@ -51,4 +52,5 @@ pub fn ThemeButton() -> impl IntoView {
             {icon}
         </button>
     }
+    ).into_any()
 }

@@ -9,7 +9,8 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
     let (select_tab, set_select_tab) = signal(1);
     let (experiences, _set_experiences) = signal(experiences);
     let (portfolios, _set_portfolios) = signal(portfolios);
-    view! {
+    (
+        view! {
         <section class="tabSection">
             <div class="tabSectionSelector">
                 <button
@@ -34,24 +35,20 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
             <RenderTab  no=1 active_page=select_tab>
             <Experience   
             experiences=experiences
-           
             is_edit=false
             />    
             </RenderTab>
             <RenderTab  no=2 active_page=select_tab>
-            
             <Show when=move || select_tab() == 2>
-            // Only render when first activated
             <Suspense fallback=move || view! { <p>"Loading ..."</p> }>
             <Portfolio  
             portfolios=portfolios
-         
             is_edit=false
             />  
             </Suspense>
         </Show>
-          
             </RenderTab>
         </section>
     }
+    ).into_any()
 }

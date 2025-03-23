@@ -61,7 +61,8 @@ pub fn EditPage() -> impl IntoView {
             }
         }
     });
-    view! {     
+    (
+        view! {     
         <script src="/assets/tinymce-integration.js"></script>
         <main class="editPage"  >
      
@@ -809,4 +810,5 @@ pub fn EditPage() -> impl IntoView {
         </Suspense>
         </main>
     }
+    ).into_any()
 }

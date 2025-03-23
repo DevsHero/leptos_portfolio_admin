@@ -14,7 +14,6 @@ pub fn TextAreaField(
     let error_label = label.clone();
     let label_for_input = label.clone();
     let (error, set_error) = signal(None::<String>);
-    // Create a function to validate the input
     let validate = move || {
         let value = get_value.get();
         if require && value.trim().is_empty() {
@@ -25,28 +24,24 @@ pub fn TextAreaField(
             true
         }
     };
-
-    // If a validation trigger is provided, create an effect to watch it
     if let Some(trigger) = validation {
         Effect::new(move |_| {
-            // When the trigger changes to true, perform validation
             if trigger.get() {
                 validate();
             }
         });
     }
     let renderLabel = if require { format!("{}*", label) } else { format!("{}", label) };
-    view! {
+    (
+        view! {
         <div class="formGroup">
             <label for={id.clone()}>{renderLabel}</label>
             <textarea
-            
                 id={id.clone()}
                 prop:value=move || get_value.get()
                 on:input=move |ev| {
                     let value = event_target_value(&ev);
                     set_value(value.clone());
-                    // Optionally perform live validation:
                     if value.trim().is_empty() {
                         set_error(Some(format!("{} is required.", label_for_input.clone())));
                     } else {
@@ -65,4 +60,5 @@ pub fn TextAreaField(
             }
         </div>
     }
+    ).into_any()
 }

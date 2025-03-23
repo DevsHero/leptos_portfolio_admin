@@ -7,7 +7,8 @@ use crate::app::{ models::portfolio::Contact, utils::get_icon_by_name };
 use crate::app::components::Dialog;
 #[component]
 pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
-    view! {
+    (
+        view! {
         <div class="contacts">
  
     
@@ -44,4 +45,5 @@ pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
                 .collect_view()
               }   </div>
     }
+    ).into_any()
 }

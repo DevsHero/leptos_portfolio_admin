@@ -10,7 +10,8 @@ pub fn CheckBox(
     let id = id.into();
     let label = label.into();
 
-    view! {
+    (
+        view! {
         <div class="formGroup">
             <div class="checkboxRow">
                 <label for={id.clone()}>{label}</label>
@@ -27,4 +28,5 @@ pub fn CheckBox(
             </div>
         </div>
     }
+    ).into_any()
 }

@@ -5,7 +5,8 @@ use crate::app::components::ThemeButton;
 
 #[component]
 pub fn Topbar() -> impl IntoView {
-    view! {
+    (
+        view! {
         <section class="topbar">
             <div class="pill">
                 <a  href="/" class="topbarButton ">
@@ -21,4 +22,5 @@ pub fn Topbar() -> impl IntoView {
             </div>
         </section>
     }
+    ).into_any()
 }

@@ -66,18 +66,15 @@ pub fn TextEditor(
             }) as Box<dyn Fn(String)>
         );
         let js_value = closure.as_ref().clone();
-
-        closure.forget(); // Prevent Rust from dropping the closure
+        closure.forget();
         js_value
     };
 
     Effect::new(move |_| {
-        // Initialize editor with timeout to ensure DOM is ready
         let window = web_sys::window().expect("no global window exists");
         let editor_selector = editor_selector.clone();
         let initial_content = initial_content.clone();
         let on_change = on_change.clone();
-
         let callback = Closure::wrap(
             Box::new(move || {
                 init_tiny_mce(&editor_selector, &initial_content, &on_change);
@@ -96,7 +93,6 @@ pub fn TextEditor(
     on_cleanup(move || {
         destroy_tiny_mce(&editor_id_clone);
     });
-    // hidden upgrade button from tinymce
     let window = web_sys::window().expect("no global window exists");
     let document = window.document().expect("no document exists");
     if let Ok(Some(head)) = document.query_selector("head") {
@@ -108,7 +104,8 @@ pub fn TextEditor(
         }
     }
     let renderLabel = if require { format!("{}*", label) } else { format!("{}", label) };
-    view! {
+    (
+        view! {
         <div class="formGroup">
         <label  >{renderLabel}</label>
         <div   id=editor_id_for_cleanup>
@@ -131,4 +128,5 @@ pub fn TextEditor(
         }
         </div>
     }
+    ).into_any()
 }

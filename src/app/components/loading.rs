@@ -2,7 +2,8 @@ use leptos::prelude::*;
 
 #[component]
 pub fn Loading() -> impl IntoView {
-    view! {
+    (
+        view! {
         <div class="loading ">
             <img
                 alt="loading"
@@ -15,4 +16,5 @@ pub fn Loading() -> impl IntoView {
             <p>"fetching data..."</p>
         </div>
     }
+    ).into_any()
 }
