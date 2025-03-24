@@ -1458,12 +1458,15 @@ button:hover {
   background: var(--sapphire);
 }
  
-
+.homeLoading{
+  margin-top: 6.5rem;
+}
 .experienceContainer {
   display: flex;
   flex-direction: column;
   height: 14rem;
- 
+  max-width: 42rem;
+  margin: auto;
   padding: 0.5rem;
   margin-bottom: 20px;
   border-radius: 8px;
@@ -1517,7 +1520,9 @@ width: 100%;
 .portfolioContainer {
   gap: 1rem;
   padding: 0.5rem;
-  
+  max-width: 42rem;
+  margin: auto;
+ 
   background-color: var(--surface0);
   margin-bottom: 20px;
   border-radius: 8px;
@@ -1560,7 +1565,7 @@ width: 100%;
   display: flex;
   flex-direction: row; 
   font-size: 12px; /* Ensure font-size has a unit */
-  width: 45rem;
+  width: 40rem;
   height: 1.7rem;
   color: rgb(237, 98, 237);
   gap: 5px; /* Ensure gap has a unit */
@@ -1760,6 +1765,7 @@ width: 100%;
     padding: 0.75rem;
     margin-bottom: 20px;
     border-radius: 8px;
+ 
     background-color: var(--surface0); 
   }
   .avatar > img {
@@ -1769,9 +1775,8 @@ width: 100%;
    
   }
   .tabSectionSelector {
-    margin-top: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    margin-top: 0.5rem;
+    
    
   }
   .topbar {
@@ -1807,8 +1812,6 @@ width: 100%;
    .descriptions {
     width: 85vw;
    }
-
-   
    .experienceRowFirstItem > img {
     width: 4rem;
     height:4rem;
@@ -1832,6 +1835,14 @@ width: 100%;
 }
 .layout{
   width: 100%;
+}
+.tabRowBadget {
+ 
+  flex-direction: column;
+  gap: 0 ;
+}
+.homeLoading{
+  margin-top: 5rem;
 }
 }
 *::-webkit-scrollbar {

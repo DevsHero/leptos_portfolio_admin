@@ -17,7 +17,7 @@ pub fn InputArrayField(
     view! {
         <div class="formGroup">
             <div class="experienceRow">
-                <label for={id.clone()}>{label}</label>
+                <label id={id.clone()}>{label}</label>
                 <button
                     type="button"
                     class="btn-add"

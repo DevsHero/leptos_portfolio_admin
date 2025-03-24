@@ -173,7 +173,6 @@ pub fn EditPage() -> impl IntoView {
                 let (validate_experience, set_validate_experience) = create_signal(false);
                 let (validate_portfolio, set_validate_portfolio) = create_signal(false);
                 let (validate_contact, set_validate_contact) = create_signal(false);
-                 
                 let update_profile_action = Action::new(move |profile: &Profile| {
                     set_is_saving.set(true);
                     let profile = profile.clone();
@@ -370,15 +369,13 @@ pub fn EditPage() -> impl IntoView {
                     });
                       set_is_update_experience(true)
                 };
-                 let delete_portfolio= move |index: usize| {
-                   
+                 let delete_portfolio= move |index: usize| {   
                     set_portfolios.update(|portfolios| {
                         portfolios.remove(index);
                         for i in (index)..( portfolios.len()) {
                             portfolios[i].index = (i+1) as u8;
                         }
                     });
-
                       set_is_update_portfolio(true)
                 };
                  let delete_contact= move |index: usize| {
@@ -442,7 +439,6 @@ pub fn EditPage() -> impl IntoView {
                 };
                 view! {
                   <div> 
-                
                   <div class="tabSectionSelector" >
                       <button
                       type="button"
@@ -450,7 +446,9 @@ pub fn EditPage() -> impl IntoView {
                               if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
                           }
                           on:click=move |_| set_select_tab(1)  >
-                     Profile
+                          <span class="tabRowBadget"> Profile </span> 
+   
+                 
                       </button>
                       <button
                       type="button"
@@ -459,7 +457,8 @@ pub fn EditPage() -> impl IntoView {
                           }
                           on:click=move |_| set_select_tab(2)   >
                           
-                          <span class="tabRowBadget">  Skill {if skills.get().len() > 0  {Some(view! {<p class="badget">  {skills.get().len()}</p>})} else {None}} </span> 
+                          <span class="tabRowBadget">  Skill  {move || if skills.get().len() > 0 {view! {<p class="badget">  {skills.get().len()}</p>}}else{view! {<p></p>}}} </span> 
+   
                  
                       </button>
                       <button
@@ -468,8 +467,7 @@ pub fn EditPage() -> impl IntoView {
                           if select_tab() == 3 { "tabsTitle active" } else { "tabsTitle" }
                       }
                       on:click=move |_| set_select_tab(3)  >
-                      <span class="tabRowBadget">  Experience {if experiences.get().len() > 0  {Some(view! {<p class="badget">  {experiences.get().len()}</p>})} else {None}} </span> 
-                 
+                        <span class="tabRowBadget">  Experience  {move || if experiences.get().len() > 0 {view! {<p class="badget">  {experiences.get().len()}</p>}}else{view! {<p></p>}}} </span> 
                   </button>
                   <button
                   type="button"
@@ -477,7 +475,7 @@ pub fn EditPage() -> impl IntoView {
                       if select_tab() == 4 { "tabsTitle active" } else { "tabsTitle" }
                   }
                   on:click=move |_| set_select_tab(4) >
-                  <span class="tabRowBadget">  Portfolio {if portfolios.get().len() > 0  {Some(view! {<p class="badget">  {portfolios.get().len()}</p>})} else {None}} </span> 
+                  <span class="tabRowBadget">  Portfolio  {move || if portfolios.get().len() > 0 {view! {<p class="badget">  {portfolios.get().len()}</p>}}else{view! {<p></p>}}} </span> 
          
               </button>
               <button
@@ -486,8 +484,9 @@ pub fn EditPage() -> impl IntoView {
                   if select_tab() == 5 { "tabsTitle active" } else { "tabsTitle" }
               }
               on:click=move |_| set_select_tab(5)  >
-              <span class="tabRowBadget">  Contact {if contacts.get().len() > 0  {Some(view! {<p class="badget">  {contacts.get().len()}</p>})} else {None}} </span> 
- 
+  
+              <span class="tabRowBadget">  Contact  {move || if contacts.get().len() > 0 {view! {<p class="badget">  {contacts.get().len()}</p>}}else{view! {<p></p>}}} </span> 
+   
           </button>
                   </div>
                   <form on:submit=on_submit >
@@ -510,7 +509,7 @@ pub fn EditPage() -> impl IntoView {
                     
                       <div class="formRow">
                           <div class="formGroup" >
-                              <label for="gender">"Gender"</label>
+                              <label id="gender">"Gender"</label>
                               <select
                               class="selectDropdown"
                                   id="gender"
@@ -554,7 +553,7 @@ pub fn EditPage() -> impl IntoView {
                   <div class="formRow">   
                       <InputField input_type="text" id="skill_name" validation=validate_skill label="Skill Name" set_value=set_skill_name  get_value=skill_name require=true />        
                       <div class="formGroup">
-                          <label for="skill_level">"Level"</label>
+                          <label id="skill_level">"Level"</label>
                           <select
                           class="selectDropdown"
                               id="skill_level"

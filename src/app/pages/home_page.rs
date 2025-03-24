@@ -44,7 +44,7 @@ pub fn HomePage() -> impl IntoView {
             move || {
                 if !is_ready.get() {
                     // Loading state
-                    view! { <div> <Loading /></div> }
+                    view! { <div class="homeLoading"> <Loading /></div> }
                 } else if let Some(error) = error.get() {
                     // Error state
                     view! { <div>"Error loading profile: " {error}</div> }
