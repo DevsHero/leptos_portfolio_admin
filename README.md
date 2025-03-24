@@ -83,11 +83,11 @@ An all-in-one portfolio solution with dynamic content management through an admi
 - **Via Local Docker:**
   1. Build image (From macbook m4 cpu 12core 512gb the build time estimate 850 sec.)
   ```
-  docker build --platform linux/amd64 -t leptos-portfolio-admin:v6 . 
+  docker build --platform linux/amd64 -t leptos-portfolio-admin:latest . 
   ```
   2. run image with .env file
   ```
-  docker run -d -p 3000:3000 --platform linux/amd64 --env-file '.env' leptos-portfolio-admin:v6
+  docker run -d -p 3000:3000 --platform linux/amd64 --env-file '.env' leptos-portfolio-admin:latest
   ```
   3. The site already served at localhost:3000
 

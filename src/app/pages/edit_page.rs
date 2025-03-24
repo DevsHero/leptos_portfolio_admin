@@ -21,6 +21,9 @@ use web_sys::SubmitEvent;
 
 #[component]
 pub fn EditPage() -> impl IntoView {
+    let (is_ready, set_is_ready) = create_signal(false);
+    let (profile, set_profile) = create_signal(None);
+    let (error, set_error) = create_signal(None);
     let (select_tab, set_select_tab) = create_signal(1);
     let get_profile_info = Resource::new(
         || (),
@@ -90,14 +93,33 @@ pub fn EditPage() -> impl IntoView {
             }
         }
     });
+    create_effect(move |_| {
+        spawn_local(async move {
+            match get_profile().await {
+                Ok(data) => {
+                    set_profile.set(Some(data));
+                    set_is_ready.set(true);
+                }
+                Err(e) => {
+                    set_error.set(Some(e.to_string()));
+                    set_is_ready.set(true);
+                }
+            }
+        });
+    });
     view! {     
         <head> <script src="/assets/tinymce-integration.js"></script> </head>
         <main class="editPage"  >
      
-        <Suspense fallback=Loading>
+     
         { move || {    
-            match get_profile_info.get() {
-                Some(Ok(profile)) => {                    
+            if !is_ready.get() {
+                // Loading state
+                view! { <div> <Loading /></div> }
+            } else if let Some(error) = error.get() {
+                // Error state
+                view! { <div>"Error loading profile: " {error}</div> }
+            } else if let Some(profile) = profile.get() {              
                 {if is_init.get() { 
                       //Profile 
                 let (first_name, set_first_name) = create_signal(profile.first_name);
@@ -759,18 +781,10 @@ pub fn EditPage() -> impl IntoView {
  <div></div>
                 }} }                       
                 </div>
-            } }}  },
-            Some(Err(e)) => view! { 
-                <div class="indexLayout">
-                    <p>"Error loading profile: "{e.to_string()}</p>
-                </div> 
-            },
-            None => view! { 
-                <div class="indexLayout">
-                    <p>"Loading..."</p>
-                </div> 
-            }} }}
-        </Suspense>
+            } }}  }else {
+                // Fallback state: No data available
+                view! { <div>"No profile data available."</div> }
+            }}}
         </main>
     }
 }
