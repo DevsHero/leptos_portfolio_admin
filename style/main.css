@@ -1560,7 +1560,7 @@ width: 100%;
   display: flex;
   flex-direction: row; 
   font-size: 12px; /* Ensure font-size has a unit */
-  width: 40rem;
+  width: 45rem;
   height: 1.7rem;
   color: rgb(237, 98, 237);
   gap: 5px; /* Ensure gap has a unit */

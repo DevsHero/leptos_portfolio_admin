@@ -150,7 +150,7 @@ pub fn EditPage() -> impl IntoView {
                 let (portfolios, set_portfolios) = create_signal(profile.portfolios.unwrap_or_else(Vec::new));   
                 let (portfolio_name, set_portfolio_name) = create_signal(String::new());
                 let (portfolio_link, set_portfolio_link) = create_signal(String::new());
-                let (is_private, set_is_private) = create_signal(false);
+                let (is_opensource, set_is_opensource) = create_signal(false);
                 let (portfolio_icon_url, set_portfolio_icon_url) = create_signal(String::new());
                 let (portfolio_detail, set_portfolio_detail) = create_signal(String::new());
                 let (screenshots_url, set_screenshots_url) = create_signal(vec!["".to_string()]);
@@ -308,7 +308,7 @@ pub fn EditPage() -> impl IntoView {
                             portfolio_detail: portfolio_detail.get(),
                             portfolio_icon_url: portfolio_icon_url.get(),
                             portfolio_link: portfolio_link.get(),
-                            is_private: is_private.get(),
+                            is_opensource: is_opensource.get(),
                             screenshots_url: screenshots_url.get(),
                             stacks: stacks.get()
                         };
@@ -318,7 +318,7 @@ pub fn EditPage() -> impl IntoView {
                         set_portfolio_detail.set(String::new());
                         set_portfolio_icon_url.set(String::new());
                         set_portfolio_link.set(String::new());
-                        set_is_private.set(false);
+                        set_is_opensource.set(false);
                         set_screenshots_url.set(vec!["".to_string()]);
                         set_stacks.set(vec!["".to_string()]);
                   
@@ -418,7 +418,7 @@ pub fn EditPage() -> impl IntoView {
                         let portfolio = portfolio.1.clone(); 
                         set_portfolio_name.set(portfolio.portfolio_name);
                         set_company_logo_url.set(portfolio.portfolio_link);
-                        set_is_private.set(portfolio.is_private);
+                        set_is_opensource.set(portfolio.is_opensource);
                         set_portfolio_detail.set(portfolio.portfolio_detail);
                         set_portfolio_icon_url.set(portfolio.portfolio_icon_url);
                         set_stacks.set(portfolio.stacks);
@@ -450,7 +450,7 @@ pub fn EditPage() -> impl IntoView {
                               if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
                           }
                           on:click=move |_| set_select_tab(1)  >
-                         Profile
+                     Profile
                       </button>
                       <button
                       type="button"
@@ -458,7 +458,9 @@ pub fn EditPage() -> impl IntoView {
                               if select_tab() == 2 { "tabsTitle active" } else { "tabsTitle" }
                           }
                           on:click=move |_| set_select_tab(2)   >
-                          Skill
+                          
+                          <span class="tabRowBadget">  Skill {if skills.get().len() > 0  {Some(view! {<p class="badget">  {skills.get().len()}</p>})} else {None}} </span> 
+                 
                       </button>
                       <button
                       type="button"
@@ -466,7 +468,8 @@ pub fn EditPage() -> impl IntoView {
                           if select_tab() == 3 { "tabsTitle active" } else { "tabsTitle" }
                       }
                       on:click=move |_| set_select_tab(3)  >
-                      Experience
+                      <span class="tabRowBadget">  Experience {if experiences.get().len() > 0  {Some(view! {<p class="badget">  {experiences.get().len()}</p>})} else {None}} </span> 
+                 
                   </button>
                   <button
                   type="button"
@@ -474,7 +477,8 @@ pub fn EditPage() -> impl IntoView {
                       if select_tab() == 4 { "tabsTitle active" } else { "tabsTitle" }
                   }
                   on:click=move |_| set_select_tab(4) >
-                  Portfolio
+                  <span class="tabRowBadget">  Portfolio {if portfolios.get().len() > 0  {Some(view! {<p class="badget">  {portfolios.get().len()}</p>})} else {None}} </span> 
+         
               </button>
               <button
               type="button"
@@ -482,7 +486,8 @@ pub fn EditPage() -> impl IntoView {
                   if select_tab() == 5 { "tabsTitle active" } else { "tabsTitle" }
               }
               on:click=move |_| set_select_tab(5)  >
-              Contact
+              <span class="tabRowBadget">  Contact {if contacts.get().len() > 0  {Some(view! {<p class="badget">  {contacts.get().len()}</p>})} else {None}} </span> 
+ 
           </button>
                   </div>
                   <form on:submit=on_submit >
@@ -635,6 +640,7 @@ pub fn EditPage() -> impl IntoView {
                   <div class="editContainer">
                   <h1>"Edit Portfolio"</h1>              
                   <InputField input_type="text" id="portfolio_name" label="Project Name" validation=validate_portfolio set_value=set_portfolio_name  get_value=portfolio_name require=true />
+                  {move ||view! { <CheckBox id="is_opensource"  label= "Opensource" set_value=set_is_opensource  get_value=is_opensource />}}
                   <InputField input_type="text" id="portfolio_link" label="Project Link Url" set_value=set_portfolio_link  get_value=portfolio_link require=false />
                   <InputField input_type="text" id="portfolio_icon_url" label="Project Icon Url" set_value=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />
                 

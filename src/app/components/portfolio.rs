@@ -117,7 +117,7 @@ pub fn Portfolio(
                              <div class="experienceRowFirstItemText">
                              { if is_mobile.get() { edit_menu.clone()} else{view! {<div></div>}}}
                              <h3><b>Name</b>: {portfolio.portfolio_name}</h3>  
-                             <h3><b>Opensource</b>: {if portfolio.is_private {"No"} else {"Yes"} } {aLink}</h3> 
+                             <h3><b>Opensource</b>: {if portfolio.is_opensource {"Yes"} else {"No"} } {aLink}</h3> 
                              </div>
                              
                          </div>

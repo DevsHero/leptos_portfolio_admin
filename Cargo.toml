@@ -55,7 +55,7 @@ ssr = [
 [profile.release]
 lto = true          # Link Time Optimization
 codegen-units = 1   # Better optimization
-opt-level = 'z'     # Optimize for size
+opt-level = 's'     # Optimize for size
 panic = 'abort'     # Remove panic infrastructure
 incremental = false # Better optimization
 
@@ -63,7 +63,7 @@ incremental = false # Better optimization
 inherits = "release"
 codegen-units = 1
 lto = true
-opt-level = "z"
+opt-level = "s"
 panic = "abort"
 
 [package.metadata.leptos]

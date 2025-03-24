@@ -9,7 +9,10 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
     let (select_tab, set_select_tab) = create_signal(1);
     let (experiences, _set_experiences) = create_signal(experiences);
     let (portfolios, _set_portfolios) = create_signal(portfolios);
+    let count_experience = experiences.get().len();
+    let count_portfolio = portfolios.get().len();
     view! {
+     
         <section class="tabSection">
             <div class="tabSectionSelector">
                 <button
@@ -19,7 +22,7 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
                     }
                     on:click=move |_| set_select_tab(1)
                 >
-                 <span class="tabRowBadget">  Experiences <p class="badget"> {experiences.get().len()} </p> </span> 
+                 <span class="tabRowBadget">  Experiences {if count_experience > 0  {Some(view! {<p class="badget">  {count_experience}</p>})} else {None}} </span> 
                 </button>
                 <button
                 type="button" 
@@ -28,7 +31,7 @@ pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> im
                     }
                     on:click=move |_| set_select_tab(2)
                 >
-                <span class="tabRowBadget">  Portfolios <p class="badget"> {portfolios.get().len()} </p> </span>    
+                  <span class="tabRowBadget">  Portfolios {if count_portfolio > 0  {Some(view! {<p class="badget">  {count_portfolio}</p>})} else {None}} </span> 
                 </button>
             </div>
             <RenderTab  no=1 active_page=select_tab>

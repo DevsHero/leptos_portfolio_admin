@@ -35,7 +35,7 @@ impl Default for Contact {
 pub struct Portfolio {
     pub portfolio_name: String,
     pub portfolio_link: String,
-    pub is_private: bool,
+    pub is_opensource: bool,
     pub portfolio_detail: String,
     pub portfolio_icon_url: String,
     pub stacks: Vec<String>,
@@ -48,7 +48,7 @@ impl Default for Portfolio {
             index: u8::from(1),
             portfolio_name: String::from("Leptos Portfolio Admin"),
             portfolio_link: String::from("https://github.com/zelda2003/leptos_portfolio_admin"),
-            is_private: bool::from(false),
+            is_opensource: bool::from(false),
             portfolio_detail: String::from("Fullstack rust portfolio project with admin system"),
             portfolio_icon_url: String::from("https://cdn-icons-png.flaticon.com/512/25/25231.png"),
             screenshots_url: vec![
