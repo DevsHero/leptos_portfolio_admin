@@ -1,6 +1,6 @@
 use crate::app::{
-    components::{ Dialog, HomeContacts, Loading, SelectTab, SkillChips },
-    server::api::get_profile,
+    components::{ Dialog, HomeContacts, Loading, PdfExportButton, SelectTab, SkillChips },
+    server::api::{ get_profile, pdf_export },
     utils::calculate_age,
 };
 use leptos::*;

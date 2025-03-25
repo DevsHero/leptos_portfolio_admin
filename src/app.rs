@@ -24,7 +24,7 @@ pub fn App() -> impl IntoView {
         <link data-trunk rel="tailwind-css" href="/style/input.css" />
         <Title text={config.title}/>
         <link data-trunk rel="icon" href="public/favicon.ico" />
-  
+    
         <Router>
             <main class="layout">
             <Toaster 
