@@ -776,9 +776,7 @@ body {
   justify-content: center;
  
 }
-@media (min-width: 768px) {
-  
-}
+ 
 body {
   background-color: var(--background);
 }
@@ -993,7 +991,8 @@ body {
   display: flex;
   flex-direction: column;
   margin-left : 1rem;
-  max-width: 50rem
+  margin-top: 0.5rem;
+
 }
 .editPage {
   display: flex;
@@ -1044,7 +1043,7 @@ body {
 .tabContainer {
   margin-top: 15;
   position: relative;
- 
+  height: 32rem;
   border-radius: 1.5rem;
   padding: 1rem;
   display: none;
@@ -1054,11 +1053,7 @@ body {
 
 }
 
-@media (min-width: 768px) {
-  .tabContainer {
-    height: 32.3rem;
-  }
-}
+ 
  
 .tabContainer > p {
   grid-column: span 2 / span 2;
@@ -1072,6 +1067,13 @@ body {
   display: inline; 
 }
 .tabRowBadget {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; 
+  align-items: center;
+  gap: 0.5rem;
+}
+.editTabRowBadget {
   display: flex;
   flex-direction: row;
   justify-content: center; 
@@ -1157,24 +1159,7 @@ body {
 .cursor-move {
   cursor: move;
 }
-@media only screen and (max-width: 600px) {
-  .indexLayout {
-    display: flex;
-    flex-direction: column;
-    grid-template-rows: 0.2fr 2fr 3fr;
-  }
-  .topbar {
-    grid-column: span 1 / span 1;
-    grid-row: span 1 / span 1;
-  }
-  .about > p {
-    text-wrap: wrap;
-  }
-  .profile {
-    grid-column: span 1 / span 1;
-    grid-row: span 2 / span 2;
-  }
-}
+ 
  
 .icon {
   display: flex;
@@ -1465,7 +1450,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   height: 14rem;
-  max-width: 42rem;
+ 
   margin: auto;
   padding: 0.5rem;
   margin-bottom: 20px;
@@ -1511,18 +1496,16 @@ width: 100%;
 }
 
 .portfolioRow {
- 
   display: flex;
   flex-direction: row;  
   border-radius: 8px;
   justify-content: space-between;
 }
+
 .portfolioContainer {
   gap: 1rem;
   padding: 0.5rem;
-  max-width: 42rem;
   margin: auto;
- 
   background-color: var(--surface0);
   margin-bottom: 20px;
   border-radius: 8px;
@@ -1729,17 +1712,31 @@ width: 100%;
   margin-bottom: 15px;
 }
  
-/* mobile css */
-@media (width <  768px) {
+/* portrait css */
+@media (orientation: portrait) {
+  .indexLayout {
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: 0.2fr 2fr 3fr;
+    width: 100%;
+  }
+  .topbar {
+    grid-column: span 1 / span 1;
+    grid-row: span 1 / span 1;
+  }
+  .about > p {
+    text-wrap: wrap;
+  }
+  .profile {
+    grid-column: span 1 / span 1;
+    grid-row: span 2 / span 2;
+  }
   .editPage {
  
    padding: 1rem;
    margin-top: 1rem;
   }
-  .indexLayout{
- width: 100%;
- 
-  }
+  
   .tabsTitle {
     font-size:14px;
   }
@@ -1758,41 +1755,26 @@ width: 100%;
     font-size: 13px;
   }
   .experienceContainer{
-    display: flex;
-    flex-direction: column;
-    height: 15rem;
     gap: 0.25rem;
-    padding: 0.75rem;
-    margin-bottom: 20px;
-    border-radius: 8px;
- 
-    background-color: var(--surface0); 
   }
   .avatar > img {
-   
     width: 6.5rem;
     height: 6.5rem;
-   
-  }
-  .tabSectionSelector {
-    margin-top: 0.5rem;
-    
    
   }
   .topbar {
     left: 0;
   }
-  /* .imageSlideItem{
-    height: 12rem;
-  } */
   .stackRow {
     width: 87vw;
   }
   .tabContainer {
+    height: 100%;
     padding: 0.75rem;
   }
   .tabSection {
-  margin-top: 1rem;
+
+  margin-top: 3.5rem;
     margin-left : 0;
   }
   .tabsTitle {
@@ -1802,15 +1784,15 @@ width: 100%;
     margin-top: 0.5rem;
   }
   .portfolioDescriptions{
-    width: 85vw;
     height: 8rem;
   }
    .imageSlideContainer{
     width: 100%;
     margin-top: 5px;
    }
-   .descriptions {
-    width: 85vw;
+   .imageSlideButton{
+    justify-content: center;
+    gap: 5rem;
    }
    .experienceRowFirstItem > img {
     width: 4rem;
@@ -1836,7 +1818,7 @@ width: 100%;
 .layout{
   width: 100%;
 }
-.tabRowBadget {
+.editTabRowBadget {
  
   flex-direction: column;
   gap: 0 ;
@@ -1844,7 +1826,86 @@ width: 100%;
 .homeLoading{
   margin-top: 5rem;
 }
+
 }
 *::-webkit-scrollbar {
  display: none;
+}
+@keyframes fade-in-up {
+  0% {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  100% {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+@keyframes progress {
+  0% { width: 0; }
+  80% { width: 100%; }
+  100% { width: 100%; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 2s ease-out both;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.animate-progress {
+  animation: progress 3s ease-in-out infinite;
+}
+/* Continuous rotation animation */
+@keyframes logo-spin {
+  from {
+      transform: rotate(0deg);
+  }
+  to {
+      transform: rotate(360deg);
+  }
+}
+
+/* Apply animation to logo */
+.logo-animate {
+  animation: logo-spin 20s linear infinite;
+  transition: opacity 0.3s ease;
+  transform-origin: 50% 50%;
+}
+
+/* Optional: Add hover effect */
+.logo-animate:hover {
+  animation-duration: 5s; /* Speed up on hover */
+  cursor: pointer;
+}
+body.hydrating button {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+body.hydrating button::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }

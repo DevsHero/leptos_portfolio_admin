@@ -3,7 +3,7 @@ use leptos_router::A;
 use leptos_icons::Icon;
 use icondata as i;
 
-use crate::app::components::{ PdfExportButton, ThemeButton };
+use crate::app::components::ThemeButton;
 
 #[component]
 pub fn Topbar() -> impl IntoView {

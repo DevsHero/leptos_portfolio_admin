@@ -5,7 +5,11 @@ use crate::app::{
 use leptos::*;
 
 #[component]
-pub fn SelectTab(experiences: Vec<Experience>, portfolios: Vec<Portfolio>) -> impl IntoView {
+pub fn SelectTab(
+    experiences: Vec<Experience>,
+    portfolios: Vec<Portfolio>
+    // is_ready: ReadSignal<bool>
+) -> impl IntoView {
     let (select_tab, set_select_tab) = create_signal(1);
     let (experiences, _set_experiences) = create_signal(experiences);
     let (portfolios, _set_portfolios) = create_signal(portfolios);

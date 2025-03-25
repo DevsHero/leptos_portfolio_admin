@@ -6,7 +6,7 @@ pub mod utils;
 use components::Topbar;
 use leptos::*;
 use leptos_meta::*;
-use leptos_router::{ Routes, Router, Route };
+use leptos_router::{ Route, Router, Routes, SsrMode };
 use leptos_toaster::Toaster;
 use pages::{ HomePage, EditPage };
 use server::api::site_config;
@@ -33,17 +33,15 @@ pub fn App() -> impl IntoView {
 		// ...
         <Topbar/>
                 <Routes>
-                    <Route path="/"  view=move || {
+                    <Route path="/"  ssr=SsrMode::Async  view=move || {
                         view! {
                             <HomePage />
-                    
                         }
                     }/>
                  
-                    <Route path="/edit" view=move || {
+                    <Route path="/edit" ssr=SsrMode::Async view=move || {
                         view! {
                             <EditPage />
-                     
                         }
                     }/>
                     // <Route path="/*any" view=NotFound/>

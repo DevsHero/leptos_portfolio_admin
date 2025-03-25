@@ -446,7 +446,7 @@ pub fn EditPage() -> impl IntoView {
                               if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
                           }
                           on:click=move |_| set_select_tab(1)  >
-                          <span class="tabRowBadget"> Profile </span> 
+                          <span class="editTabRowBadget"> Profile </span> 
    
                  
                       </button>
@@ -457,7 +457,7 @@ pub fn EditPage() -> impl IntoView {
                           }
                           on:click=move |_| set_select_tab(2)   >
                           
-                          <span class="tabRowBadget">  Skill  {move || if skills.get().len() > 0 {view! {<p class="badget">  {skills.get().len()}</p>}}else{view! {<p></p>}}} </span> 
+                          <span class="editTabRowBadget">  Skill  {move || if skills.get().len() > 0 {view! {<p class="badget">  {skills.get().len()}</p>}}else{view! {<p></p>}}} </span> 
    
                  
                       </button>
@@ -467,7 +467,7 @@ pub fn EditPage() -> impl IntoView {
                           if select_tab() == 3 { "tabsTitle active" } else { "tabsTitle" }
                       }
                       on:click=move |_| set_select_tab(3)  >
-                        <span class="tabRowBadget">  Experience  {move || if experiences.get().len() > 0 {view! {<p class="badget">  {experiences.get().len()}</p>}}else{view! {<p></p>}}} </span> 
+                        <span class="editTabRowBadget">  Experience  {move || if experiences.get().len() > 0 {view! {<p class="badget">  {experiences.get().len()}</p>}}else{view! {<p></p>}}} </span> 
                   </button>
                   <button
                   type="button"
@@ -475,7 +475,7 @@ pub fn EditPage() -> impl IntoView {
                       if select_tab() == 4 { "tabsTitle active" } else { "tabsTitle" }
                   }
                   on:click=move |_| set_select_tab(4) >
-                  <span class="tabRowBadget">  Portfolio  {move || if portfolios.get().len() > 0 {view! {<p class="badget">  {portfolios.get().len()}</p>}}else{view! {<p></p>}}} </span> 
+                  <span class="editTabRowBadget">  Portfolio  {move || if portfolios.get().len() > 0 {view! {<p class="badget">  {portfolios.get().len()}</p>}}else{view! {<p></p>}}} </span> 
          
               </button>
               <button
@@ -485,7 +485,7 @@ pub fn EditPage() -> impl IntoView {
               }
               on:click=move |_| set_select_tab(5)  >
   
-              <span class="tabRowBadget">  Contact  {move || if contacts.get().len() > 0 {view! {<p class="badget">  {contacts.get().len()}</p>}}else{view! {<p></p>}}} </span> 
+              <span class="editTabRowBadget">  Contact  {move || if contacts.get().len() > 0 {view! {<p class="badget">  {contacts.get().len()}</p>}}else{view! {<p></p>}}} </span> 
    
           </button>
                   </div>
