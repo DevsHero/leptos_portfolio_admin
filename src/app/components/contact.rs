@@ -3,13 +3,22 @@ use leptos_icons::Icon;
 use icondata as i;
 
 use crate::app::{ models::portfolio::Contact, utils::get_icon_by_name };
-use crate::app::components::Dialog;
+use crate::app::components::{ Dialog, PdfExportButton };
 #[component]
-pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
+pub fn HomeContacts(
+    contacts: Vec<Contact>,
+    is_ready: ReadSignal<bool>,
+    use_pdf: bool
+) -> impl IntoView {
     view! {
-        <div class="contacts">
- 
-    
+        
+       
+ <div class=move || if !is_ready.get() { "loadingContact " } else { "contacts" }>
+ {move || if use_pdf  {
+    Some(view! { <PdfExportButton/> })
+} else {
+    None
+}}
         {
        
             contacts
@@ -41,6 +50,6 @@ pub fn HomeContacts(contacts: Vec<Contact>) -> impl IntoView {
                     }
                 })
                 .collect::<Vec<_>>()
-              }   </div>
+              }   </div>  
     }
 }

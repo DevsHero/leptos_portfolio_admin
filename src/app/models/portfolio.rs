@@ -14,6 +14,21 @@ impl Default for Skill {
     }
 }
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
+pub struct PDF {
+    pub use_pdf: bool,
+    pub use_generate: bool,
+    pub pdf_link: Option<String>,
+}
+impl Default for PDF {
+    fn default() -> Self {
+        Self {
+            use_pdf: bool::from(false),
+            use_generate: bool::from(false),
+            pdf_link: None,
+        }
+    }
+}
+#[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Contact {
     pub contact_icon: String,
     pub use_link: bool,
@@ -107,6 +122,7 @@ pub struct Profile {
     pub nick_name: String,
     pub gender: String,
     pub birth_date: String,
+    pub pdf: PDF,
     pub role: String,
     pub nationality: String,
     pub about: String,
@@ -127,6 +143,7 @@ impl Default for Profile {
             gender: String::from("Male"),
             birth_date: String::from("2000-01-01"),
             nationality: String::from("USA"),
+            pdf: PDF::default(),
             about: String::from("I'm Developer"),
             avatar: String::from(
                 "https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/github.png"

@@ -12,7 +12,7 @@ use crate::app::components::{
     TextEditor,
 };
 use crate::app::models::portfolio::{ Contact, Experience };
-use crate::app::models::{ Profile, Skill, Portfolio };
+use crate::app::models::{ Portfolio, Profile, Skill, PDF };
 use crate::app::server::api::{ get_profile, update_portfolio, verify };
 
 use leptos::*;
@@ -132,8 +132,12 @@ pub fn EditPage() -> impl IntoView {
                 let (nationality, set_nationality) = create_signal(profile.nationality);
                 let (avatar, set_avatar) = create_signal(profile.avatar);
                 let (address, set_address) = create_signal(profile.address);
+                let (use_pdf, set_use_pdf) = create_signal(profile.pdf.use_pdf);
+                let (use_generate, set_use_generate) = create_signal(profile.pdf.use_generate);
+                let (pdf_link, set_pdf_link) = create_signal(profile.pdf.pdf_link.unwrap_or_default());
+               
                 //Experience 
-                    let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
+                let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
                 let (company_name, set_company_name) = create_signal(String::new());
                 let (company_address, set_company_address) = create_signal(String::new());
                 let (company_url, set_company_url) = create_signal(String::new());
@@ -218,6 +222,11 @@ pub fn EditPage() -> impl IntoView {
                     last_name: last_name.get(),
                     about: about.get(),
                     nick_name: nick_name.get(),
+                    pdf: PDF {
+                        use_pdf: use_pdf.get(),
+                        use_generate: use_generate.get(),
+                        pdf_link:Some(pdf_link.get()) ,
+                    },
                     gender: gender.get(),
                     role: role.get(),
                     birth_date: birth_date.get(),
@@ -287,9 +296,7 @@ pub fn EditPage() -> impl IntoView {
                         set_end_date.set(String::new()); 
                         set_company_address.set(String::new()); 
                         set_describe.set(String::new()); 
-                    
-                    set_is_update_experience(true);
-              
+                        set_is_update_experience(true);
                     create_toast({view! {<p class="toastInfo">"Add Experience Success" </p>}}.into_view(), "Experience Added.".into_view(), ToastVariant::Success);
                     }
                     else{
@@ -506,7 +513,14 @@ pub fn EditPage() -> impl IntoView {
                       <InputField input_type="text" id="nick_name" label="Nick Name" set_value=set_nick_name  get_value=nick_name require=false />
                       <InputField input_type="text" id="nationality" label="Nationality" validation=validate_profile set_value=set_nationality  get_value=nationality require=true />
                       </div>
-                    
+                      <div class="formRow">
+                      {move ||view! { <CheckBox id="use_pdf"  label= "Export CV PDF" set_value=set_use_pdf get_value=use_pdf />}}
+                      {move ||  if use_pdf.get() {Some(view! { <CheckBox id="use_generate"  label= "Html Generate (disable = pdf link)" set_value=set_use_generate get_value=use_generate />})} else {None}}
+                      </div>
+                      {move || if !use_generate.get() && use_pdf.get()
+                        {Some(view! { <InputField input_type="text" id="pdf_link" label="Pdf File Link" validation=validate_profile set_value=set_pdf_link  get_value=pdf_link require=true />})}
+                        else {None} } 
+                      
                       <div class="formRow">
                           <div class="formGroup" >
                               <label id="gender">"Gender"</label>

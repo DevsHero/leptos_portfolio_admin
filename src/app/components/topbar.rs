@@ -14,12 +14,11 @@ pub fn Topbar() -> impl IntoView {
                     <Icon icon={i::AiHomeOutlined} />
                 </A>
                 <A
-                    href="/edit"  // Client-side navigation
+                    href="/edit"   
                     class="topbarButton"
                 >
                     <Icon icon={i::OcGearSm} />
-                </A>
-                // <PdfExportButton/>
+                </A> 
                 <ThemeButton />
             </div>
         </section>

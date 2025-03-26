@@ -18,6 +18,7 @@ pub fn App() -> impl IntoView {
         move |_| async move { site_config().await }
     );
     let config = get_config.get().and_then(Result::ok).unwrap_or_default().clone();
+
     view! {
      
         <Stylesheet id="leptos" href="/pkg/leptos-portfolio-admin.css"/>

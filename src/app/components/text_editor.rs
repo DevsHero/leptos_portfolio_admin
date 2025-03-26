@@ -112,7 +112,7 @@ pub fn TextEditor(
     view! {
         <div class="formGroup">
         <label  >{renderLabel}</label>
-        <div id={editor_id_for_cleanup2} id=editor_id_for_cleanup>
+        <div for={editor_id_for_cleanup2} id=editor_id_for_cleanup>
             <textarea 
             class="textEditor"
                 style="visibility: hidden; display: none;" 

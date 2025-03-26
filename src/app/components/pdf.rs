@@ -29,8 +29,8 @@ pub fn PdfExportButton() -> impl IntoView {
                     // Create a Blob from the decoded bytes
                     let parts = js_sys::Array::new();
                     parts.push(&JsValue::from(Uint8Array::from(decoded_pdf.as_slice())));
-                    let mut options = BlobPropertyBag::new();
-                    options.type_("application/pdf");
+                    let options = BlobPropertyBag::new();
+                    options.set_type("application/pdf");
                     match Blob::new_with_u8_array_sequence_and_options(&parts, &options) {
                         Ok(blob) => {
                             // Create a URL for the Blob
@@ -68,7 +68,7 @@ pub fn PdfExportButton() -> impl IntoView {
 
     view! {
         <button 
-        class="topbarButton" 
+        class="pdfIcon" 
         on:click=open_pdf>
         <Icon icon={i::FaFilePdfRegular} />
         </button>

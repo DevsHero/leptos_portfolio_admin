@@ -7,8 +7,8 @@ use leptos::*;
 #[component]
 pub fn SelectTab(
     experiences: Vec<Experience>,
-    portfolios: Vec<Portfolio>
-    // is_ready: ReadSignal<bool>
+    portfolios: Vec<Portfolio>,
+    is_ready: ReadSignal<bool>
 ) -> impl IntoView {
     let (select_tab, set_select_tab) = create_signal(1);
     let (experiences, _set_experiences) = create_signal(experiences);
@@ -26,7 +26,7 @@ pub fn SelectTab(
                     }
                     on:click=move |_| set_select_tab(1)
                 >
-                 <span class="tabRowBadget">  Experiences {if count_experience > 0  {Some(view! {<p class="badget">  {count_experience}</p>})} else {None}} </span> 
+                 <span  class=move || if !is_ready.get() { "loadingTab " } else { "tabRowBadget" } >  Experiences {if count_experience > 0  {Some(view! {<p class="badget">  {count_experience}</p>})} else {None}} </span> 
                 </button>
                 <button
                 type="button" 
@@ -34,8 +34,8 @@ pub fn SelectTab(
                         if select_tab() == 2 { "tabsTitle active" } else { "tabsTitle" }
                     }
                     on:click=move |_| set_select_tab(2)
-                >
-                  <span class="tabRowBadget">  Portfolios {if count_portfolio > 0  {Some(view! {<p class="badget">  {count_portfolio}</p>})} else {None}} </span> 
+                > 
+                  <span  class=move || if !is_ready.get() { "loadingTab " } else { "tabRowBadget" }>  Portfolios {if count_portfolio > 0  {Some(view! {<p class="badget">  {count_portfolio}</p>})} else {None}} </span> 
                 </button>
             </div>
             <RenderTab  no=1 active_page=select_tab>

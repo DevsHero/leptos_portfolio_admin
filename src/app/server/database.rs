@@ -2,7 +2,7 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use std::env;
         use leptos::ServerFnError;
-        use crate::app::models::portfolio::{ Experience, Portfolio, Profile, Skill, Contact };
+        use crate::app::models::portfolio::{ Experience, Portfolio, Profile, Skill, Contact, PDF };
         use surrealdb::engine::any::Any;
         use surrealdb::opt::auth::Root;
         use surrealdb::{ Surreal, Error };
@@ -60,6 +60,7 @@ cfg_if::cfg_if! {
                         pub about: String,
                         pub avatar: String,
                         pub address: String,
+                        pub pdf: PDF,
                         pub id: Thing, // Using Thing instead of String
                         pub skills: Option<Vec<Skill>>,
                         pub experiences: Option<Vec<Experience>>,
@@ -81,6 +82,7 @@ cfg_if::cfg_if! {
                                 birth_date: temp_profile.birth_date,
                                 role: temp_profile.role,
                                 nationality: temp_profile.nationality,
+                                pdf: temp_profile.pdf,
                                 about: temp_profile.about,
                                 avatar: temp_profile.avatar,
                                 address: temp_profile.address,
@@ -110,18 +112,6 @@ cfg_if::cfg_if! {
         ) -> Result<Option<Profile>, ServerFnError> {
             let _ = open_db_connection().await;
 
-            // Create a map of the fields to update
-            let mut update_data = std::collections::HashMap::new();
-            update_data.insert("first_name", profile.first_name);
-            update_data.insert("last_name", profile.last_name);
-            update_data.insert("nick_name", profile.nick_name);
-            update_data.insert("gender", profile.gender);
-            update_data.insert("birth_date", profile.birth_date);
-            update_data.insert("role", profile.role);
-            update_data.insert("nationality", profile.nationality);
-            update_data.insert("about", profile.about);
-            update_data.insert("address", profile.address);
-            update_data.insert("avatar", profile.avatar);
             if _is_update_skill {
                 let _skill_result = update_skill(profile.skills.clone().expect("REASON")).await;
                 // println!("_skill_result: {:?}", _skill_result);
@@ -146,11 +136,15 @@ cfg_if::cfg_if! {
                 ).await;
                 // println!("_contact_result: {:?}", _contact_result);
             }
-
+            let mut updateProfile = profile.clone();
+            updateProfile.skills = None;
+            updateProfile.experiences = None;
+            updateProfile.portfolios = None;
+            updateProfile.contacts = None;
             let res: Result<Option<Profile>, Error> = DB.update((
                 "profile",
                 profile.id.clone(),
-            )).content(update_data.clone()).await;
+            )).content(updateProfile).await;
             let _ = DB.invalidate().await;
             // println!("updated_user: {:?}", res);
             match res {
