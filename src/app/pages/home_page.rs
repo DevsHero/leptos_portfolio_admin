@@ -1,5 +1,5 @@
 use crate::app::{
-    components::{ Dialog, HomeContacts, Loading, SelectTab, SkillChips, Topbar },
+    components::{ Dialog, HomeContacts, LanguageChips, Loading, SelectTab, SkillChips, Topbar },
     server::api::get_profile,
     utils::calculate_age,
 };
@@ -23,6 +23,7 @@ pub fn HomePage() -> impl IntoView {
                 match get_profile_info.get() {
                     Some(Ok(profile)) => {
                         let (skills, _) = create_signal(profile.skills.clone().unwrap_or_default());
+                        let (languages, _) = create_signal(profile.languages.clone().unwrap_or_default());
                         let (birth_date, set_birth_date) = create_signal(String::new());
                         let (open_dialog, set_open_dialog) = create_signal(false);
                     
@@ -80,11 +81,19 @@ pub fn HomePage() -> impl IntoView {
                                          <div>
                                              <SkillChips
                                                  skills=skills
-                                        
                                                  is_edit=false
                                              />
                                          </div>
                                      </div>
+                                     <div class="skills">
+                                     <h2>Languages</h2>
+                                     <div>
+                                         <LanguageChips 
+                                             languages=languages
+                                             is_edit=false
+                                         />
+                                     </div>
+                                 </div>
                                  </section>
                                  <SelectTab 
                                  is_ready=is_ready

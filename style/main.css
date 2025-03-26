@@ -847,19 +847,19 @@ body {
 }
 .profile {
   border-radius: 1.5rem;
-  padding: 0.25rem;
  
   box-shadow: var(--shadow0);
 }
 .avatar {
   display: flex;
   flex-direction: row;
- 
+
   justify-content: space-evenly;
  
 }
 .avatar > img {
   margin: auto;
+  margin-top: 5;
   width: 7.5rem;
   height: 7.5rem;
   display: inline-block;
@@ -911,9 +911,9 @@ body {
 
  
 .about {
-  margin-top: 0.375rem;
+ 
   border-radius: 1.5rem;
-  padding: 0.5rem;
+  padding: 0 0.4rem 0.4rem 0.4rem;
   box-shadow: var(--shadow0);
 
 }
@@ -932,32 +932,25 @@ body {
   padding: 0.5rem;
   border-radius: 0.5rem;
   background-color: var(--surface0);
- 
   scrollbar-width: thin;  
-  scrollbar-color: rgb(150, 150, 150) transparent; 
-  
+  scrollbar-color: rgb(150, 150, 150) transparent;  
 }
 
- 
- 
 .skills {
-  margin-top: 0.375rem;
+  margin-top: 0.2rem;
   display: flex;
   flex-direction: column;
- 
   border-radius: 1.5rem;
-  padding: 0.5rem;
- 
+  padding: 0 0.4rem 0.4rem 0.4rem;
   background: var(--background);
   box-shadow: var(--shadow0);
 }
 .skills > h2 {
- 
- 
   font-size: 1.125rem;
   line-height: 1.75rem;
   font-weight: 600;
 }
+ 
 .skillsIcons {
   margin-top: 0.5rem;
   display: grid;
@@ -1346,8 +1339,18 @@ button:hover {
   gap: 0.4rem;
   flex-wrap: wrap;
   overflow-y: scroll; 
-  height: 8.6rem;
-  padding: 0.1rem;
+  height: 5.5rem;
+ 
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: rgb(150, 150, 150) transparent; /* Custom color */
+}
+.languageList {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  overflow-y: scroll; 
+  height: 2.7rem;
+ 
   scrollbar-width: thin; /* For Firefox */
   scrollbar-color: rgb(150, 150, 150) transparent; /* Custom color */
 }
@@ -1385,6 +1388,14 @@ button:hover {
 }
 .level-expert {
   background: rgb(10, 143, 191);
+  color: white;
+}
+.level-intermediate {
+  background: hwb(33 5% 20%);
+  color: white;
+}
+.level-native {
+  background: rgb(209, 0, 0);
   color: white;
 }
 .deleteButton {

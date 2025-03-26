@@ -34,3 +34,7 @@ pub mod topbar;
 pub use topbar::Topbar;
 pub mod pdf;
 pub use pdf::PdfExportButton;
+pub mod education;
+pub use education::Education;
+pub mod language_chip;
+pub use language_chip::LanguageChips;

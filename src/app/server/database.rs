@@ -2,7 +2,16 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use std::env;
         use leptos::ServerFnError;
-        use crate::app::models::portfolio::{ Experience, Portfolio, Profile, Skill, Contact, PDF };
+        use crate::app::models::portfolio::{
+            Experience,
+            Portfolio,
+            Profile,
+            Skill,
+            Contact,
+            PDF,
+            Education,
+            Language,
+        };
         use surrealdb::engine::any::Any;
         use surrealdb::opt::auth::Root;
         use surrealdb::{ Surreal, Error };
@@ -38,6 +47,8 @@ cfg_if::cfg_if! {
                     (SELECT * FROM skill ORDER BY name ASC) AS skills, 
                     (SELECT * FROM experience ORDER BY start_date DESC) AS experiences,
                     (SELECT * FROM portfolio ORDER BY index ASC ) AS portfolios,
+                    (SELECT * FROM education ORDER BY graduated_year ASC ) AS educations ,
+                    (SELECT * FROM language ORDER BY name ASC ) AS languages ,
                     (SELECT * FROM contact ORDER BY contact_icon ASC ) AS contacts 
                 FROM profile 
                 LIMIT 1;
@@ -66,6 +77,8 @@ cfg_if::cfg_if! {
                         pub experiences: Option<Vec<Experience>>,
                         pub portfolios: Option<Vec<Portfolio>>,
                         pub contacts: Option<Vec<Contact>>,
+                        pub educations: Option<Vec<Education>>,
+                        pub languages: Option<Vec<Language>>,
                     }
 
                     // First deserialize to the temporary struct
@@ -91,6 +104,8 @@ cfg_if::cfg_if! {
                                 experiences: temp_profile.experiences,
                                 portfolios: temp_profile.portfolios,
                                 contacts: temp_profile.contacts,
+                                languages: temp_profile.languages,
+                                educations: temp_profile.educations,
                             };
 
                             Ok(Some(profile))
@@ -141,6 +156,8 @@ cfg_if::cfg_if! {
             updateProfile.experiences = None;
             updateProfile.portfolios = None;
             updateProfile.contacts = None;
+            updateProfile.educations = None;
+            updateProfile.languages = None;
             let res: Result<Option<Profile>, Error> = DB.update((
                 "profile",
                 profile.id.clone(),

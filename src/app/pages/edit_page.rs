@@ -136,6 +136,12 @@ pub fn EditPage() -> impl IntoView {
                 let (use_generate, set_use_generate) = create_signal(profile.pdf.use_generate);
                 let (pdf_link, set_pdf_link) = create_signal(profile.pdf.pdf_link.unwrap_or_default());
                
+                //Language         
+                let (languages, set_languages) = create_signal(profile.languages.unwrap_or_else(Vec::new));
+
+                //Education         
+                let (educations, set_educations) = create_signal(profile.educations.unwrap_or_else(Vec::new));
+
                 //Experience 
                 let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
                 let (company_name, set_company_name) = create_signal(String::new());
@@ -237,6 +243,8 @@ pub fn EditPage() -> impl IntoView {
                     experiences :  Some(experiences.get()),
                     portfolios: Some(portfolios.get()),
                     contacts: Some(contacts.get()),
+                    languages: Some(languages.get()),
+                    educations: Some(educations.get()),
                 };
                 update_profile_action.dispatch(updated_profile);
             }

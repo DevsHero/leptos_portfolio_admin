@@ -14,6 +14,19 @@ impl Default for Skill {
     }
 }
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
+pub struct Language {
+    pub name: String,
+    pub level: String,
+}
+impl Default for Language {
+    fn default() -> Self {
+        Self {
+            name: String::from("English"),
+            level: String::from("Native"),
+        }
+    }
+}
+#[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct PDF {
     pub use_pdf: bool,
     pub use_generate: bool,
@@ -115,6 +128,32 @@ Provided support in rebuilding efforts post-Blip, maintaining neighborhood secur
         }
     }
 }
+
+#[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
+pub struct Education {
+    pub institute_name: String,
+    pub institute_logo_url: String,
+    pub graduated_year: String,
+    pub degree: String,
+    pub address: String,
+    pub major: String,
+    pub gpa: String,
+}
+impl Default for Education {
+    fn default() -> Self {
+        Self {
+            institute_name: String::from("Stanford University"),
+            institute_logo_url: String::from(
+                "https://identity.stanford.edu/wp-content/uploads/sites/3/2020/07/SU_SealColor_web3.png"
+            ),
+            graduated_year: String::from("2010"),
+            degree: String::from("bachelor's degree"),
+            address: String::from("CA USA"),
+            major: String::from("computer science"),
+            gpa: String::from("4.00"),
+        }
+    }
+}
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Profile {
     pub first_name: String,
@@ -133,6 +172,8 @@ pub struct Profile {
     pub experiences: Option<Vec<Experience>>,
     pub portfolios: Option<Vec<Portfolio>>,
     pub contacts: Option<Vec<Contact>>,
+    pub languages: Option<Vec<Language>>,
+    pub educations: Option<Vec<Education>>,
 }
 impl Default for Profile {
     fn default() -> Self {
@@ -155,6 +196,8 @@ impl Default for Profile {
             experiences: vec![Experience::default()].into(),
             portfolios: vec![Portfolio::default()].into(),
             contacts: vec![Contact::default()].into(),
+            languages: vec![Language::default()].into(),
+            educations: vec![Education::default()].into(),
         }
     }
 }
