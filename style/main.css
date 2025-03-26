@@ -1395,7 +1395,6 @@ button:hover {
   align-items: center;
   justify-content: center;
  font-size: 14;
- margin-top: 1;
 }
 .deleteButton:hover {
 
@@ -1566,14 +1565,11 @@ width: 100%;
 }
 .iconRow {
   gap: 5;
- 
   margin-bottom: 5px; /* Add 'px' to properly apply margin */
   display: flex;
   flex-direction: row;
   justify-content: flex-end; /* Align items to the right */
-  align-items: flex-start;
 }
-
 .checkboxRow {
   display: flex;
   flex-direction: row; 

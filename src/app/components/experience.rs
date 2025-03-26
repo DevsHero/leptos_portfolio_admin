@@ -54,7 +54,7 @@ pub fn Experience(
                                     <>
                                         {if is_edit {
                                             view! {
-                                                <div class="iconRow" >
+                                                <div class="iconRow">
                                                   
                                                     <button
                                                         class="editButton iconMargin"
