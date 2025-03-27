@@ -70,7 +70,7 @@ pub fn HomePage() -> impl IntoView {
                                                  <p><b>Address: </b>{profile.address.clone()}</p>
                                              </div>
                                          </span>
-                                         <HomeContacts  use_pdf=profile.pdf.use_pdf    is_ready=is_ready contacts={profile.contacts.clone().unwrap_or_default()} />
+                                         <HomeContacts  pdf=profile.pdf  is_ready=is_ready contacts={profile.contacts.clone().unwrap_or_default()} />
                                      </div>
                                      <div class="about">
                                          <h2>About Me</h2>

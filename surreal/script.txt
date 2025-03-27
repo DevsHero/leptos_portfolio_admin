@@ -22,6 +22,10 @@ INSERT INTO profile {
     birth_date: "2000-01-01",
     first_name: "John",
     gender: "Male",
+    pdf: {
+		use_generate: true,
+		use_pdf: true
+	},
     last_name: "Doe",
     nationality: "US",
     nick_name: "Mr.Robot",
@@ -34,6 +38,11 @@ INSERT INTO contact {
     contact_icon: "Facebook",
     contact_value: "https://www.facebook.com/zuck/",
     use_link: true
+};
+-- Insert data into the language table
+INSERT INTO language {
+    level: "Native",
+	name: "English"
 };
 
 INSERT INTO contact {
@@ -53,6 +62,17 @@ INSERT INTO experience {
     position_name: "Spider Man",
     company_address:"Hollywood USA",
     start_date: "2000-01-01"
+};
+
+-- Insert data into the experience table
+INSERT INTO experience {
+  	degree: "bachelor's degree",
+	gpa: "4.00",
+	graduated_year: "2010",
+	institute_address: "CA USA",
+	institute_logo_url: "https://identity.stanford.edu/wp-content/uploads/sites/3/2020/07/SU_SealColor_web3.png",
+	institute_name: "Stanford University",
+	major: "computer science"
 };
 
 -- Insert data into the portfolio table

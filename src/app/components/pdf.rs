@@ -1,13 +1,14 @@
 use leptos::*;
 use leptos::logging::log;
 use wasm_bindgen::JsValue;
-use web_sys::{ js_sys::{ self, Uint8Array }, Blob, BlobPropertyBag, Url };
+use web_sys::{ js_sys::{ self, Uint8Array }, Blob, BlobPropertyBag, MouseEvent, Url };
 use leptos_icons::Icon;
 use icondata as i;
 use crate::app::server::api::pdf_export;
+use crate::app::models::PDF;
 
 #[component]
-pub fn PdfExportButton() -> impl IntoView {
+pub fn PdfExportButton(pdf: PDF) -> impl IntoView {
     let pdf_data = create_resource(
         || (), // No input needed for this server function
         |_| async move {
@@ -21,7 +22,14 @@ pub fn PdfExportButton() -> impl IntoView {
         }
     );
 
-    let open_pdf = move |_| {
+    let mut url_pdf: Box<dyn FnMut(MouseEvent)> = Box::new(move |_| {
+        let window = web_sys::window().expect("REASON");
+        window
+            .open_with_url_and_target(&pdf.pdf_link.clone().unwrap(), "_blank")
+            .expect("Could not open new tab");
+    });
+
+    let mut generate_pdf: Box<dyn FnMut(MouseEvent)> = Box::new(move |_| {
         if let Some(Some(encoded_pdf)) = pdf_data.get() {
             // Decode the base64 string
             match base64::decode(encoded_pdf) {
@@ -50,8 +58,6 @@ pub fn PdfExportButton() -> impl IntoView {
                                             Err(e) => log!("Error opening new tab: {:?}", e),
                                         }
                                     }
-                                    // Optionally revoke the object URL after opening
-                                    // Url::revoke_object_url(&url).unwrap();
                                 }
                                 Err(e) => log!("Error creating object URL: {:?}", e),
                             }
@@ -64,14 +70,23 @@ pub fn PdfExportButton() -> impl IntoView {
         } else {
             log!("PDF data not yet loaded or an error occurred.");
         }
+    });
+
+    let handler = move |ev: MouseEvent| {
+        if pdf.use_generate {
+            generate_pdf(ev);
+        } else {
+            url_pdf(ev);
+        }
     };
 
     view! {
-        <button 
-        class="pdfIcon" 
-        on:click=open_pdf>
-        <Icon icon={i::FaFilePdfRegular} />
+        <button
+            type="button"
+            class="pdfIcon"
+            on:click=handler
+        >
+            <Icon icon={i::FaFilePdfRegular} />
         </button>
-       
     }
 }

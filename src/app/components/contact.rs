@@ -2,20 +2,17 @@ use leptos::*;
 use leptos_icons::Icon;
 use icondata as i;
 
+use crate::app::models::PDF;
 use crate::app::{ models::portfolio::Contact, utils::get_icon_by_name };
 use crate::app::components::{ Dialog, PdfExportButton };
 #[component]
-pub fn HomeContacts(
-    contacts: Vec<Contact>,
-    is_ready: ReadSignal<bool>,
-    use_pdf: bool
-) -> impl IntoView {
+pub fn HomeContacts(contacts: Vec<Contact>, is_ready: ReadSignal<bool>, pdf: PDF) -> impl IntoView {
     view! {
         
        
  <div class=move || if !is_ready.get() { "loadingContact " } else { "contacts" }>
- {move || if use_pdf  {
-    Some(view! { <PdfExportButton/> })
+ {move || if pdf.use_pdf  {
+    Some(view! { <PdfExportButton pdf=pdf.clone() />  })
 } else {
     None
 }}
