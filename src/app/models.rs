@@ -6,5 +6,6 @@ pub use portfolio::Language;
 pub use portfolio::Experience;
 pub use portfolio::Portfolio;
 pub use portfolio::Education;
+pub use portfolio::Contact;
 pub mod config;
 pub use config::SiteConfig;

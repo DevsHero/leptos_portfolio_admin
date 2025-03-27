@@ -99,6 +99,8 @@ pub fn HomePage() -> impl IntoView {
                                  is_ready=is_ready
                                      experiences={profile.experiences.clone().unwrap_or_default()} 
                                      portfolios={profile.portfolios.clone().unwrap_or_default()}
+                                     educations={profile.educations.clone().unwrap_or_default()}
+                                
                                  />
                              </div>
                         }

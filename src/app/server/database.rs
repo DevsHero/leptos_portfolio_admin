@@ -123,6 +123,8 @@ cfg_if::cfg_if! {
             _is_update_skill: bool,
             _is_update_portfolio: bool,
             _is_update_experience: bool,
+            _is_update_language: bool,
+            _is_update_education: bool,
             _is_update_contact: bool
         ) -> Result<Option<Profile>, ServerFnError> {
             let _ = open_db_connection().await;
@@ -144,6 +146,18 @@ cfg_if::cfg_if! {
                     profile.portfolios.clone().expect("REASON")
                 ).await;
                 // println!("_portfolio_result: {:?}", _portfolio_result);
+            }
+            if _is_update_education {
+                let _education_result = update_education(
+                    profile.educations.clone().expect("REASON")
+                ).await;
+                // println!("_contact_result: {:?}", _contact_result);
+            }
+            if _is_update_language {
+                let _language_result = update_language(
+                    profile.languages.clone().expect("REASON")
+                ).await;
+                // println!("_contact_result: {:?}", _contact_result);
             }
             if _is_update_contact {
                 let _contact_result = update_contact(
@@ -221,6 +235,48 @@ cfg_if::cfg_if! {
                     let json_value = serde_json::to_value(&portfolios).unwrap();
                     let insert_records: Result<Vec<Portfolio>, Error> = DB.insert(
                         "portfolio"
+                    ).content(json_value).await;
+                    // println!("Query result: {:?}",insert_records);
+                    match insert_records {
+                        Ok(inserted) => Ok(inserted),
+                        // let _ = DB.invalidate().await;
+                        Err(e) => Err(ServerFnError::from(e)),
+                    }
+                }
+                Err(e) => Err(ServerFnError::from(e)),
+            }
+        }
+        pub async fn update_education(
+            educations: Vec<Education>
+        ) -> Result<Vec<Education>, ServerFnError> {
+            let _ = open_db_connection().await;
+            let delete_all_records: Result<Vec<Education>, Error> = DB.delete("education").await;
+            match delete_all_records {
+                Ok(_deleted) => {
+                    let json_value = serde_json::to_value(&educations).unwrap();
+                    let insert_records: Result<Vec<Education>, Error> = DB.insert(
+                        "education"
+                    ).content(json_value).await;
+                    // println!("Query result: {:?}",insert_records);
+                    match insert_records {
+                        Ok(inserted) => Ok(inserted),
+                        // let _ = DB.invalidate().await;
+                        Err(e) => Err(ServerFnError::from(e)),
+                    }
+                }
+                Err(e) => Err(ServerFnError::from(e)),
+            }
+        }
+        pub async fn update_language(
+            languages: Vec<Language>
+        ) -> Result<Vec<Language>, ServerFnError> {
+            let _ = open_db_connection().await;
+            let delete_all_records: Result<Vec<Language>, Error> = DB.delete("language").await;
+            match delete_all_records {
+                Ok(_deleted) => {
+                    let json_value = serde_json::to_value(&languages).unwrap();
+                    let insert_records: Result<Vec<Language>, Error> = DB.insert(
+                        "language"
                     ).content(json_value).await;
                     // println!("Query result: {:?}",insert_records);
                     match insert_records {

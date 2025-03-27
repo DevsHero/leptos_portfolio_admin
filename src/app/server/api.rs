@@ -290,6 +290,8 @@ pub async fn update_portfolio(
     _is_update_skill: bool,
     _is_update_portfolio: bool,
     _is_update_experience: bool,
+    _is_update_language: bool,
+    _is_update_education: bool,
     _is_update_contact: bool
 ) -> Result<Option<Profile>, ServerFnError> {
     let updated = update_portfolio_api(
@@ -297,6 +299,8 @@ pub async fn update_portfolio(
         _is_update_skill,
         _is_update_portfolio,
         _is_update_experience,
+        _is_update_language,
+        _is_update_education,
         _is_update_contact
     ).await;
     match updated {
@@ -326,6 +330,8 @@ cfg_if::cfg_if! {
             _is_update_skill: bool,
             _is_update_portfolio: bool,
             _is_update_experience: bool,
+            _is_update_language: bool,
+            _is_update_education: bool,
             _is_update_contact: bool
         ) -> Result<Option<Profile>, ServerFnError> {
             database::update_all_tables(
@@ -333,6 +339,8 @@ cfg_if::cfg_if! {
                 _is_update_skill,
                 _is_update_portfolio,
                 _is_update_experience,
+                _is_update_language,
+                _is_update_education,
                 _is_update_contact
             ).await
         }

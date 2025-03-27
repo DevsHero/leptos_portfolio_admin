@@ -10,7 +10,7 @@ pub fn SkillChips(
     is_edit: bool
 ) -> impl IntoView {
     view! {
-        <div class="skillList">
+        <div class="skillList" style={if is_edit {"height:100%"} else {""}}>
             {move || skills.get().into_iter().enumerate().map(|(index, skill)| {
                 let level_class = skill.level.to_lowercase();
                 view! {

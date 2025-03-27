@@ -135,7 +135,7 @@ pub struct Education {
     pub institute_logo_url: String,
     pub graduated_year: String,
     pub degree: String,
-    pub address: String,
+    pub institute_address: String,
     pub major: String,
     pub gpa: String,
 }
@@ -148,7 +148,7 @@ impl Default for Education {
             ),
             graduated_year: String::from("2010"),
             degree: String::from("bachelor's degree"),
-            address: String::from("CA USA"),
+            institute_address: String::from("CA USA"),
             major: String::from("computer science"),
             gpa: String::from("4.00"),
         }

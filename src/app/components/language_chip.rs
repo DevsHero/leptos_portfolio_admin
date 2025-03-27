@@ -10,7 +10,7 @@ pub fn LanguageChips(
     is_edit: bool
 ) -> impl IntoView {
     view! {
-        <div class="languageList">
+        <div class="languageList" style={if is_edit {"height:100%"} else {""}}>
             {move || languages.get().into_iter().enumerate().map(|(index, skill)| {
                 let level_class = skill.level.to_lowercase();
                 view! {

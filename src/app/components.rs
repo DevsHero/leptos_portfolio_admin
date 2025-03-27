@@ -38,3 +38,5 @@ pub mod education;
 pub use education::Education;
 pub mod language_chip;
 pub use language_chip::LanguageChips;
+pub mod edit_menu;
+pub use edit_menu::EditMenu;

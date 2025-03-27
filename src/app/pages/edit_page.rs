@@ -1,10 +1,13 @@
 use crate::app::components::{
     CheckBox,
     EditContacts,
+    EditMenu,
+    Education,
     Experience,
     IconDropdown,
     InputArrayField,
     InputField,
+    LanguageChips,
     Loading,
     Portfolio,
     RenderTab,
@@ -12,7 +15,7 @@ use crate::app::components::{
     TextEditor,
 };
 use crate::app::models::portfolio::{ Contact, Experience };
-use crate::app::models::{ Portfolio, Profile, Skill, PDF };
+use crate::app::models::{ Education, Language, Portfolio, Profile, Skill, PDF };
 use crate::app::server::api::{ get_profile, update_portfolio, verify };
 
 use leptos::*;
@@ -138,10 +141,18 @@ pub fn EditPage() -> impl IntoView {
                
                 //Language         
                 let (languages, set_languages) = create_signal(profile.languages.unwrap_or_else(Vec::new));
+                let (language_name, set_language_name) = create_signal(String::new());
+                let (language_level, set_language_level) = create_signal(String::from("Intermediate"));
 
                 //Education         
                 let (educations, set_educations) = create_signal(profile.educations.unwrap_or_else(Vec::new));
-
+                let (institute_name, set_institute_name) = create_signal(String::new());
+                let (institute_logo_url, set_institute_logo_url) = create_signal(String::new());
+                let (graduated_year, set_graduated_year) = create_signal(String::new());
+                let (degree, set_degree) = create_signal(String::new());
+                let (institute_address, set_institute_address) = create_signal(String::new());
+                let (major, set_major) = create_signal(String::new());
+                let (gpa, set_gpa) = create_signal(String::new());
                 //Experience 
                 let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
                 let (company_name, set_company_name) = create_signal(String::new());
@@ -176,13 +187,17 @@ pub fn EditPage() -> impl IntoView {
                 let (_is_update_experience, set_is_update_experience) = create_signal(false);
                 let (_is_update_portfolio, set_is_update_portfolio) = create_signal(false);
                 let (_is_update_contact, set_is_update_contact) = create_signal(false);
+                let (_is_update_education, set_is_update_education) = create_signal(false);
+                let (_is_update_language, set_is_update_language) = create_signal(false);
                 let (is_saving, set_is_saving) = create_signal(false);
 
                 let (validate_profile, set_validate_profile) = create_signal(false);
                 let (validate_skill, set_validate_skill) = create_signal(false);
+                let (validate_language, set_validate_language) = create_signal(false);
                 let (validate_experience, set_validate_experience) = create_signal(false);
                 let (validate_portfolio, set_validate_portfolio) = create_signal(false);
                 let (validate_contact, set_validate_contact) = create_signal(false);
+               let (validate_education, set_validate_education) = create_signal(false);
                 let update_profile_action = Action::new(move |profile: &Profile| {
                     set_is_saving.set(true);
                     let profile = profile.clone();
@@ -192,6 +207,8 @@ pub fn EditPage() -> impl IntoView {
                             _is_update_skill.get() ,
                             _is_update_portfolio.get(),
                             _is_update_experience.get(),
+                            _is_update_language.get(),
+                            _is_update_education.get(),
                         _is_update_contact.get()
                          ).await;
                          // reset fields after update
@@ -276,6 +293,27 @@ pub fn EditPage() -> impl IntoView {
                         create_toast( {view! {<p class="toastFail">"Add Skill Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
                     }
                 };
+                let add_language = move |_| {
+                    set_validate_language.update(|v| *v = !*v);
+                    let form_valid = !language_name.get().trim().is_empty();
+                    if form_valid {
+                        let new_language = Language {
+                            name: language_name.get(),
+                            level: language_level.get(),
+                        };
+                        set_languages.update(|languages| languages.push(new_language));
+                        set_validate_language.set(false);
+                        set_language_name.set(String::new());
+                        set_language_level.set(String::from("Intermediate"));
+                 
+                    set_is_update_language(true);
+                    
+                    create_toast({view! {<p class="toastInfo">"Add Language Success" </p>}}.into_view(), "Language Added.".into_view(), ToastVariant::Success);
+                    }
+                    else{
+                        create_toast( {view! {<p class="toastFail">"Add Language Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                    }
+                };
                 let add_experience = move |_| {
                     set_validate_experience.update(|v| *v = !*v);
                     let form_valid = !company_name.get().trim().is_empty() && 
@@ -337,14 +375,47 @@ pub fn EditPage() -> impl IntoView {
                         set_stacks.set(vec!["".to_string()]);
                   
                     set_is_update_portfolio(true);
-             
+
                     create_toast({view! {<p class="toastInfo">"Add Portfolio Success" </p>}}.into_view(), "Portfolio Added.".into_view(), ToastVariant::Success);
                     }
                     else{
                         create_toast( {view! {<p class="toastFail">"Add Portfolio Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
                     }
                 };
+                let add_education = move |_| {
+                    set_validate_education.update(|v| *v = !*v);
+                    let form_valid = !institute_name.get().trim().is_empty() && 
+                                    !institute_address.get().trim().is_empty() && 
+                                    !degree.get().trim().is_empty() && 
+                                    !major.get().trim().is_empty() && 
+                                    !graduated_year.get().trim().is_empty();
+                    if form_valid {
+                        let new_education = Education { 
+                            institute_name: institute_name.get(),
+                            institute_logo_url: institute_logo_url.get(),
+                            graduated_year: graduated_year.get(),
+                            degree: degree.get(),
+                            institute_address: institute_address.get(),
+                            major: major.get(),
+                            gpa: gpa.get()
+                        };
+                        set_educations.update(|education| education.push(new_education));
+                        set_validate_education.set(false);
+                        set_institute_name.set(String::new());
+                        set_institute_logo_url.set(String::new());
+                        set_graduated_year.set(String::new());
+                        set_institute_address.set(String::new());
+                        set_degree.set(String::new());
+                        set_major.set(String::new());
+                        set_gpa.set(String::new());
+                    set_is_update_education(true);
 
+                    create_toast({view! {<p class="toastInfo">"Add Education Success" </p>}}.into_view(), "Education Added.".into_view(), ToastVariant::Success);
+                    }
+                    else{
+                        create_toast( {view! {<p class="toastFail">"Add Education Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
+                    }
+                };
                 let add_contact = move |_| {
                     set_validate_contact.update(|v| *v = !*v);
                     let form_valid = !contact_value.get().trim().is_empty() && 
@@ -399,6 +470,18 @@ pub fn EditPage() -> impl IntoView {
                     });
                       set_is_update_contact(true)
                 };
+                 let delete_education= move |index: usize| {
+                    set_educations.update(|educations| {
+                        educations.remove(index);
+                    });
+                      set_is_update_education(true)
+                };
+                 let delete_language= move |index: usize| {
+                    set_languages.update(|languages| {
+                        languages.remove(index);
+                    });
+                      set_is_update_language(true)
+                };
                 let edit_skill = move |index: usize| {
                     let list = skills.get();
                     if let Some(skill) = list.iter().enumerate().find(|(i, _)| *i == index) {
@@ -406,6 +489,15 @@ pub fn EditPage() -> impl IntoView {
                         set_skill_name.set(skill.name);
                         set_skill_level.set(skill.level);
                         delete_skill(index);        
+                    }  
+                };
+                let edit_language = move |index: usize| {
+                    let list = languages.get();
+                    if let Some(language) = list.iter().enumerate().find(|(i, _)| *i == index) {
+                        let language = language.1.clone(); 
+                        set_language_name.set(language.name);
+                        set_language_level.set(language.level);
+                        delete_language(index);        
                     }  
                 };
                 let edit_experience = move |index: usize| {
@@ -421,6 +513,21 @@ pub fn EditPage() -> impl IntoView {
                         set_company_address.set(experience.company_address);
                         set_company_url.set(experience.company_url);
                         delete_experience(index);        
+                    }  
+              
+                };
+                let edit_education = move |index: usize| {
+                    let list = educations.get();
+                    if let Some(education) = list.iter().enumerate().find(|(i, _)| *i == index) {
+                        let education = education.1.clone(); 
+                        set_institute_name.set(education.institute_name);
+                        set_institute_logo_url.set(education.institute_logo_url);
+                        set_graduated_year.set(education.graduated_year);
+                        set_degree.set(education.degree);
+                        set_institute_address.set(education.institute_address);
+                        set_major.set(education.major);
+                        set_gpa.set(education.gpa);
+                        delete_education(index);        
                     }  
               
                 };
@@ -454,56 +561,14 @@ pub fn EditPage() -> impl IntoView {
                 };
                 view! {
                   <div> 
-                  <div class="tabSectionSelector" >
-                      <button
-                      type="button"
-                          class=move || {
-                              if select_tab() == 1 { "tabsTitle active" } else { "tabsTitle" }
-                          }
-                          on:click=move |_| set_select_tab(1)  >
-                          <span class="editTabRowBadget"> Profile </span> 
-   
-                 
-                      </button>
-                      <button
-                      type="button"
-                          class=move || {
-                              if select_tab() == 2 { "tabsTitle active" } else { "tabsTitle" }
-                          }
-                          on:click=move |_| set_select_tab(2)   >
-                          
-                          <span class="editTabRowBadget">  Skill  {move || if skills.get().len() > 0 {view! {<p class="badget">  {skills.get().len()}</p>}}else{view! {<p></p>}}} </span> 
-   
-                 
-                      </button>
-                      <button
-                      type="button"
-                       class=move || {
-                          if select_tab() == 3 { "tabsTitle active" } else { "tabsTitle" }
-                      }
-                      on:click=move |_| set_select_tab(3)  >
-                        <span class="editTabRowBadget">  Experience  {move || if experiences.get().len() > 0 {view! {<p class="badget">  {experiences.get().len()}</p>}}else{view! {<p></p>}}} </span> 
-                  </button>
-                  <button
-                  type="button"
-                  class=move || {
-                      if select_tab() == 4 { "tabsTitle active" } else { "tabsTitle" }
-                  }
-                  on:click=move |_| set_select_tab(4) >
-                  <span class="editTabRowBadget">  Portfolio  {move || if portfolios.get().len() > 0 {view! {<p class="badget">  {portfolios.get().len()}</p>}}else{view! {<p></p>}}} </span> 
-         
-              </button>
-              <button
-              type="button"
-              class=move || {
-                  if select_tab() == 5 { "tabsTitle active" } else { "tabsTitle" }
-              }
-              on:click=move |_| set_select_tab(5)  >
-  
-              <span class="editTabRowBadget">  Contact  {move || if contacts.get().len() > 0 {view! {<p class="badget">  {contacts.get().len()}</p>}}else{view! {<p></p>}}} </span> 
-   
-          </button>
-                  </div>
+                 <EditMenu  select_tab=select_tab set_select_tab=set_select_tab
+                 experiences=experiences
+                 portfolios=portfolios
+                 skills=skills
+                 contacts=contacts
+                 educations=educations
+                 languages=languages
+                 />
                   <form on:submit=on_submit >
         
                   <RenderTab  no=1 active_page=select_tab > 
@@ -545,11 +610,7 @@ pub fn EditPage() -> impl IntoView {
                                   <option value="Other">"Other"</option>
                               </select>
                           </div>
-             
-               
                   <InputField input_type="date" id="birth_date" label="Birth Date" set_value=set_birth_date validation=validate_profile get_value=birth_date require=true />
-               
-                    
                       </div>
                       <InputField input_type="text" id="role" label="Job Title" set_value=set_role validation=validate_profile get_value=role require=true />
                       <InputField input_type="text" id="address" label="Address" set_value=set_address validation=validate_profile get_value=address require=true />
@@ -614,8 +675,6 @@ pub fn EditPage() -> impl IntoView {
                   <InputField input_type="text" id="position_name" label="Position Name" validation=validate_experience set_value=set_position_name  get_value=position_name require=true />
                   <InputField input_type="text" id="company_url" label="Company Page Url" set_value=set_company_url  get_value=company_url require=false />
                   <InputField input_type="text" id="company_address" label="Company Address" set_value=set_company_address  get_value=company_address require=false />
-                    
-                  
                   <div class="formRow">
                   <InputField input_type="date" id="start_date" label="Start Date" validation=validate_experience set_value=set_start_date  get_value=start_date require=true />
                   <InputField input_type="date" id="end_date" label="End Date" validation=validate_experience set_value=set_end_date  get_value=end_date require=true /> 
@@ -740,7 +799,72 @@ pub fn EditPage() -> impl IntoView {
               </Suspense>
               </Show>
                   </RenderTab>
+                  <RenderTab  no=6 active_page=select_tab>
+                  <Show when=move || select_tab() == 6>
+                  <Suspense fallback=move || view! { <p>"Loading..."</p> }>
+                  <div class="editContainer">
+                  <h1>"Edit Education"</h1>
+                  <InputField validation=validate_education input_type="text" id="institute_name" label="Institute Name" set_value=set_institute_name  get_value=institute_name require=true />
+                  <InputField input_type="text" id="institute_logo_url" label="Institute Logo Url" set_value=set_institute_logo_url  get_value=institute_logo_url require=false />
+                  <InputField validation=validate_education input_type="text" id="institute_address" label="Institute Address" set_value=set_institute_address  get_value=institute_address require=true />
+                  <InputField validation=validate_education input_type="text" id="degree" label="Degree" set_value=set_degree  get_value=degree require=true />
+                  <InputField validation=validate_education input_type="text" id="major" label="Major" set_value=set_major  get_value=major require=true />
+                  <InputField input_type="text" id="gpa" label="GPA" set_value=set_gpa  get_value=gpa require=false />
+                  <InputField validation=validate_education input_type="text" id="graduated_year" label="Graduated Year" set_value=set_graduated_year  get_value=graduated_year require=true />
+                  <button
+                          type="button"
+                          class="addButton"
+                          on:click=add_education >
+                          "Add Education"
+                  </button>
+                      <Education  
+                      educations=educations  
+                      on_delete=Callback::new(move |index| delete_education(index))
+                      on_edit=Callback::new(move |index| edit_education(index))
+                      is_edit=true/ >
+              </div>
+              </Suspense>
+              </Show>
+                  </RenderTab>
+                  <RenderTab  no=7 active_page=select_tab>    
+                  <Show when=move || select_tab() == 7>
+                  <Suspense fallback=move || view! { <p>"Loading..."</p> }> 
               
+                  <div class="editContainer">
+                  <h1>"Edit Language"</h1>             
+                  <div class="formRow">   
+                      <InputField input_type="text" id="language_name" validation=validate_language label="Language" set_value=set_language_name  get_value=language_name require=true />        
+                      <div class="formGroup">
+                          <label id="language_level">"Level"</label>
+                          <select
+                          class="selectDropdown"
+                              id="language_level"
+                              prop:value=language_level
+                              on:change=move |ev| {
+                                  set_language_level(event_target_value(&ev));
+                              }>
+                              <option value="Basic">"Basic"</option>
+                              <option value="Intermediate">"Intermediate"</option>
+                              <option value="Proficiency">"Proficiency"</option>
+                              <option value="Native">"Native"</option>
+                          </select>
+                          <button
+                          type="button"
+                              class="addButton"
+                          on:click=add_language >
+                          "Add Language"
+                      </button>
+                      </div>
+                  </div>
+                  <LanguageChips
+                  languages=languages
+                  on_delete=Callback::new(move |index| delete_language(index))
+                  on_edit=Callback::new(move |index| edit_language(index))
+                 is_edit=true />
+              </div>
+              </Suspense>
+              </Show>
+                  </RenderTab>
                   {if is_verify.get()  {
                       view! {   <div class="bottomForm">
                   <button
