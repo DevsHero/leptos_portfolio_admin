@@ -1,7 +1,7 @@
 use crate::app::{
-    components::{ Dialog, HomeContacts, LanguageChips, Loading, SelectTab, SkillChips, Topbar },
+    components::{ Dialog, HomeContacts, LanguageChips, Loading, SelectTab, SkillChips },
     server::api::get_profile,
-    utils::calculate_age,
+    utils::utils::calculate_age,
 };
 use leptos::*;
 
@@ -26,14 +26,12 @@ pub fn HomePage() -> impl IntoView {
                         let (languages, _) = create_signal(profile.languages.clone().unwrap_or_default());
                         let (birth_date, set_birth_date) = create_signal(String::new());
                         let (open_dialog, set_open_dialog) = create_signal(false);
-                    
                         let avatar =  profile.avatar.clone();
-                        
+                        let profile_clone = profile.clone();
                         create_effect(move |_| {
                         let age = calculate_age(&profile.birth_date);
                             set_birth_date.set(age.to_string());
                         });
-                        
                         view! {
                             <div class="indexLayout">
                             { move || { 
@@ -70,7 +68,7 @@ pub fn HomePage() -> impl IntoView {
                                                  <p><b>Address: </b>{profile.address.clone()}</p>
                                              </div>
                                          </span>
-                                         <HomeContacts  pdf=profile.pdf  is_ready=is_ready contacts={profile.contacts.clone().unwrap_or_default()} />
+                                         <HomeContacts profile=profile_clone.clone()   is_ready=is_ready   />
                                      </div>
                                      <div class="about">
                                          <h2>About Me</h2>
@@ -100,7 +98,6 @@ pub fn HomePage() -> impl IntoView {
                                      experiences={profile.experiences.clone().unwrap_or_default()} 
                                      portfolios={profile.portfolios.clone().unwrap_or_default()}
                                      educations={profile.educations.clone().unwrap_or_default()}
-                                
                                  />
                              </div>
                         }

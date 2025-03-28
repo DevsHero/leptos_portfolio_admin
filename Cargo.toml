@@ -44,6 +44,8 @@ icondata_core = "0.1.0"
 leptos_toaster = { version = "0.1.7"  , features = ["builtin_toast"] } 
 gotenberg_pdf = "0.5"
 base64 = "0.22.1"
+fast_qr = { version = "0.12.7", features = ["image"], optional = true }
+image = { version = "0.24", default-features = false, features = ["png"], optional = true } 
 
 [dependencies.uuid]
 version = "1.15.1"
@@ -60,7 +62,9 @@ ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",
-  "leptos_toaster/ssr", 
+  "leptos_toaster/ssr",
+  "dep:fast_qr",         
+ "dep:image"
 ]
 
 [profile.release]

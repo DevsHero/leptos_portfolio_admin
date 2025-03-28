@@ -1,82 +1,129 @@
 use leptos::*;
 use leptos::logging::log;
 use wasm_bindgen::JsValue;
-use web_sys::{ js_sys::{ self, Uint8Array }, Blob, BlobPropertyBag, MouseEvent, Url };
+use web_sys::{ js_sys::{ self, Uint8Array }, Blob, BlobPropertyBag, Url };
 use leptos_icons::Icon;
 use icondata as i;
-use crate::app::server::api::pdf_export;
-use crate::app::models::PDF;
+use crate::app::server::api::pdf_export; // Ensure this path is correct
+use crate::app::models::Profile; // Ensure this path is correct
+use base64::{ engine::general_purpose::STANDARD, Engine as _ }; // Use STANDARD directly
 
 #[component]
-pub fn PdfExportButton(pdf: PDF) -> impl IntoView {
-    let pdf_data = create_resource(
-        || (), // No input needed for this server function
-        |_| async move {
-            match pdf_export().await {
-                Ok(data) => Some(data),
-                Err(e) => {
-                    log!("Error fetching PDF data: {:?}", e);
-                    None
-                }
-            }
+pub fn PdfExportButton(profile: Profile) -> impl IntoView {
+    // 1. Define the action that calls the server function
+    // It takes the Profile as input when dispatched
+    let export_action = create_action(move |profile_to_export: &Profile| {
+        let profile_clone = profile_to_export.clone(); // Clone for the async block
+        async move {
+            log!("Calling pdf_export server function...");
+            pdf_export(profile_clone).await // Returns Result<String, ServerFnError>
         }
-    );
-
-    let mut url_pdf: Box<dyn FnMut(MouseEvent)> = Box::new(move |_| {
-        let window = web_sys::window().expect("REASON");
-        window
-            .open_with_url_and_target(&pdf.pdf_link.clone().unwrap(), "_blank")
-            .expect("Could not open new tab");
     });
 
-    let mut generate_pdf: Box<dyn FnMut(MouseEvent)> = Box::new(move |_| {
-        if let Some(Some(encoded_pdf)) = pdf_data.get() {
-            // Decode the base64 string
-            match base64::decode(encoded_pdf) {
-                Ok(decoded_pdf) => {
-                    // Create a Blob from the decoded bytes
-                    let parts = js_sys::Array::new();
-                    parts.push(&JsValue::from(Uint8Array::from(decoded_pdf.as_slice())));
-                    let options = BlobPropertyBag::new();
-                    options.set_type("application/pdf");
-                    match Blob::new_with_u8_array_sequence_and_options(&parts, &options) {
-                        Ok(blob) => {
-                            // Create a URL for the Blob
-                            match Url::create_object_url_with_blob(&blob) {
-                                Ok(url) => {
-                                    // Open the URL in a new tab
-                                    if let Some(window) = web_sys::window() {
-                                        match window.open_with_url_and_target(&url, "_blank") {
-                                            Ok(Some(new_window)) => {
-                                                match new_window.focus() {
-                                                    Ok(_) => log!("Opened PDF in new tab."),
+    // Optional: Signal to track loading state for disabling button
+    let is_generating = create_rw_signal(false);
+
+    // 2. Handle the *result* of the action reactively using create_effect
+    // This runs *after* the action completes successfully or errors out.
+    create_effect(move |_| {
+        // Get the latest value from the action
+        // export_action.value() gives Option<Result<String, ServerFnError>>
+        if let Some(result) = export_action.value().get() {
+            match result {
+                Ok(encoded_pdf) => {
+                    log!("PDF data received from action, processing...");
+                    // --- Decoding/Blob/URL logic ---
+                    match STANDARD.decode(encoded_pdf) {
+                        Ok(decoded_pdf) => {
+                            let parts = js_sys::Array::new();
+                            parts.push(&JsValue::from(Uint8Array::from(decoded_pdf.as_slice())));
+                            let options = BlobPropertyBag::new();
+                            options.set_type("application/pdf");
+                            match Blob::new_with_u8_array_sequence_and_options(&parts, &options) {
+                                Ok(blob) => {
+                                    match Url::create_object_url_with_blob(&blob) {
+                                        Ok(url) => {
+                                            if let Some(window) = web_sys::window() {
+                                                match
+                                                    window.open_with_url_and_target(&url, "_blank")
+                                                {
+                                                    Ok(Some(_)) => {
+                                                        // Don't need to focus usually
+                                                        log!("Opened PDF in new tab.");
+                                                        // Clean up the object URL after a short delay
+                                                        let url_clone = url.clone();
+                                                        set_timeout(move || {
+                                                            if
+                                                                let Err(e) = Url::revoke_object_url(
+                                                                    &url_clone
+                                                                )
+                                                            {
+                                                                log!(
+                                                                    "Failed to revoke Object URL: {:?}",
+                                                                    e
+                                                                );
+                                                            } else {
+                                                                log!("Revoked Object URL");
+                                                            }
+                                                        }, std::time::Duration::from_secs(10)); // Adjust delay as needed
+                                                    }
+                                                    Ok(None) =>
+                                                        log!("Browser blocked opening new tab."), // More likely scenario
                                                     Err(e) =>
-                                                        log!("Failed to focus new tab: {:?}", e),
+                                                        log!("Error opening new tab: {:?}", e),
                                                 }
                                             }
-                                            Ok(None) => log!("Failed to open new tab."),
-                                            Err(e) => log!("Error opening new tab: {:?}", e),
+                                            // No Url::revoke_object_url here, do it after opening
                                         }
+                                        Err(e) => log!("Error creating object URL: {:?}", e),
                                     }
                                 }
-                                Err(e) => log!("Error creating object URL: {:?}", e),
+                                Err(e) => log!("Error creating Blob: {:?}", e),
                             }
                         }
-                        Err(e) => log!("Error creating Blob: {:?}", e),
+                        Err(e) => log!("Error decoding base64 PDF data: {:?}", e),
                     }
+                    is_generating.set(false); // Set loading false on success
                 }
-                Err(e) => log!("Error decoding base64 PDF data: {:?}", e),
+                Err(e) => {
+                    // Handle the error from pdf_export
+                    log!("Error fetching PDF data via action: {:?}", e);
+                    is_generating.set(false); // Set loading false on error
+                    // Optionally display an error message to the user
+                }
             }
-        } else {
-            log!("PDF data not yet loaded or an error occurred.");
+            // Reset the action value so the effect doesn't re-run with old data if something else triggers it
+            export_action.value().set(None);
         }
     });
 
-    let handler = move |ev: MouseEvent| {
-        if pdf.use_generate {
-            generate_pdf(ev);
+    // --- Click Handler ---
+    let handler = move |_| {
+        // Check if we should generate or use the direct link
+        if profile.pdf.use_generate {
+            // Assuming `profile.pdf.use_generate` tells us which mode
+            log!("Generate button clicked.");
+            // Prevent multiple clicks while generating
+            if is_generating.get() {
+                log!("Already generating PDF, ignoring click.");
+                return;
+            }
+            is_generating.set(true); // Set loading state
+            // Dispatch the action, passing the current profile data
+            export_action.dispatch(profile.clone());
         } else {
-            url_pdf(ev);
+            // Open the direct PDF link
+            log!("Direct link button clicked.");
+            if let Some(link) = &profile.pdf.pdf_link {
+                // Check if link exists
+                if let Some(window) = web_sys::window() {
+                    if let Err(e) = window.open_with_url_and_target(link, "_blank") {
+                        log!("Could not open direct link tab: {:?}", e);
+                    }
+                }
+            } else {
+                log!("No direct PDF link available.");
+            }
         }
     };
 
@@ -84,9 +131,14 @@ pub fn PdfExportButton(pdf: PDF) -> impl IntoView {
         <button
             type="button"
             class="pdfIcon"
+            prop:disabled=is_generating 
             on:click=handler
         >
-            <Icon icon={i::FaFilePdfRegular} />
+           { move || if is_generating.get() {
+                view! { <Icon icon=i::FaSpinnerSolid class="animate-spin" />} // Example loading spinner
+           } else {
+                view! { <Icon icon=i::FaFilePdfRegular /> }
+           }}
         </button>
     }
 }

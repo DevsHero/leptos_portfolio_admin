@@ -49,7 +49,7 @@ cfg_if::cfg_if! {
                     (SELECT * FROM portfolio ORDER BY index ASC ) AS portfolios,
                     (SELECT * FROM education ORDER BY graduated_year ASC ) AS educations ,
                     (SELECT * FROM language ORDER BY name ASC ) AS languages ,
-                    (SELECT * FROM contact ORDER BY contact_icon ASC ) AS contacts 
+                    (SELECT * FROM contact ORDER BY use_link ASC ) AS contacts 
                 FROM profile 
                 LIMIT 1;
             "
@@ -165,17 +165,17 @@ cfg_if::cfg_if! {
                 ).await;
                 // println!("_contact_result: {:?}", _contact_result);
             }
-            let mut updateProfile = profile.clone();
-            updateProfile.skills = None;
-            updateProfile.experiences = None;
-            updateProfile.portfolios = None;
-            updateProfile.contacts = None;
-            updateProfile.educations = None;
-            updateProfile.languages = None;
+            let mut update_profile = profile.clone();
+            update_profile.skills = None;
+            update_profile.experiences = None;
+            update_profile.portfolios = None;
+            update_profile.contacts = None;
+            update_profile.educations = None;
+            update_profile.languages = None;
             let res: Result<Option<Profile>, Error> = DB.update((
                 "profile",
                 profile.id.clone(),
-            )).content(updateProfile).await;
+            )).content(update_profile).await;
             let _ = DB.invalidate().await;
             // println!("updated_user: {:?}", res);
             match res {

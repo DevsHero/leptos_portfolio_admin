@@ -22,6 +22,7 @@ pub fn App() -> impl IntoView {
     view! {
      
         <Stylesheet id="leptos" href="/pkg/leptos-portfolio-admin.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
         <link data-trunk rel="tailwind-css" href="/style/input.css" />
         <Title text={config.title}/>
         <link data-trunk rel="icon" href="public/favicon.ico" />

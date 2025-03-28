@@ -853,10 +853,9 @@ body {
 .avatar {
   display: flex;
   flex-direction: row;
-
   justify-content: space-evenly;
- 
 }
+
 .avatar > img {
   margin: auto;
   margin-top: 5;
@@ -867,7 +866,6 @@ body {
 }
 
 .details {
- 
   text-align: left;
 }
 .details > h1 {

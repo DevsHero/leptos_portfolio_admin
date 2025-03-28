@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Isabel Mercado - Graphics Designer</title>
+    <link rel='stylesheet' href='style.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'>
+    <link rel='preconnect' href='https://fonts.googleapis.com'>
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+    <link href='https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap' rel='stylesheet'>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f4f4f4; 
+            color: #333;
+            line-height: 1.6;
+            font-size: 10pt; 
+        }
+    
+        .resume-container {
+            max-width: 850px; 
+            margin: 30px auto;
+            background-color: #fff;
+            display: flex;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        
+        .left-column {
+            width: 35%; 
+            background-color: #fff; 
+            padding: 30px 20px;
+        }
+        
+        .right-column {
+            width: 65%; 
+            background-color: #fff;
+            padding: 30px 30px 30px 0; 
+        }
+     
+        .profile-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .profile-pic {
+            width: 150px; 
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .profile-section h1 {
+            font-size: 2.8em;
+            font-weight: 300; /* Light weight for first name */
+            color: #333;
+            margin-bottom: -10px; /* Adjust spacing between names */
+            letter-spacing: 1px;
+        }
+        
+        .profile-section .last-name {
+            font-weight: 900; /* Bold weight for last name */
+            font-size: 2.9em;
+            color: #000; /* Black for emphasis */
+            margin-bottom: 5px;
+        }
+        
+        .profile-section .job-title {
+            font-size: 0.9em;
+            color: #555;
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+        
+        /* Common Section Header Styling */
+        .section h2 {
+            background-color: #2c3e50; /* Dark blue-gray */
+            color: #fff;
+            padding: 5px 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            border-radius: 20px; /* Rounded corners */
+            font-size: 1.2em;
+            font-weight: 700;
+            display: inline-flex; /* Align icon and text */
+            align-items: center;
+            
+        }
+        
+        .section h2 i {
+            margin-right: 10px;
+            font-size: 1em;
+        }
+        
+        /* Specific Section Margins */
+        .left-column .section {
+            margin-bottom: 30px;
+        }
+        .right-column .section {
+            margin-bottom: 30px;
+            
+        }
+        .right-column .about-section {
+             padding-left: 0; /* No extra padding needed for about me */
+        }
+        .right-column .about-section h2 {
+            
+        }
+        .right-column .about-section p {
+       
+        }
+        
+        
+        /* Contact Section Styling */
+        .contact-section h2 {
+            background-color: #2c3e50;
+        }
+        .contact-list {
+            list-style: none;
+            padding-left: 10px; /* Indent list */
+        }
+        
+        .contact-list li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+            color: #444;
+        }
+        
+        .contact-list   li i {
+            color: #2c3e50; /* Match header color */
+            margin-right: 12px;
+            width: 16px; /* Fixed width for alignment */
+            text-align: center;
+        }
+        .b-class{
+            width: 70px;
+        
+        }
+        /* Skills Section Styling */
+        .skills-section h2 {
+            background-color: #2c3e50;
+        }
+        
+        .skill {
+            margin-bottom: 15px;
+            padding-left: 10px; /* Indent skills */
+        }
+        
+        .skill p {
+            margin-bottom: 5px;
+            font-weight: 700;
+            color: #333;
+            font-size: 1em;
+        }
+        
+        .dots {
+            display: flex; /* Align dots horizontally */
+        }
+        
+        .dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            background-color: #ccc; /* Default empty color */
+            margin-right: 5px;
+        }
+        
+        .dot.filled {
+            background-color: #555; /* Filled color */
+        }
+        
+        /* Right Column Content Styling */
+        .right-column h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+        
+        .right-column .date {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .right-column .institution,
+        .right-column .role {
+            font-size: 1em;
+            font-weight: 700;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        
+        .right-column ul {
+            list-style: disc;
+            margin-left: 20px; /* Indent bullet points */
+            padding-right: 15px; /* Space on right */
+        }
+        
+        .right-column ul li {
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        
+        /* Timeline Styling */
+        .timeline {
+            position: relative;
+            padding-left: 30px; /* Space for the line and dots */
+            margin-left: 0; /* Align with header indent */
+        }
+        
+        /* The vertical line */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px; /* Start below the first dot slightly */
+            bottom: 10px; /* End above the last dot slightly */
+            width: 2px;
+            background-color: #2c3e50; /* Line color */
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px; /* Space between items */
+        }
+        /* Last item no bottom margin */
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* The dots on the timeline */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -36px; /* Position dot on the line (padding-left + half dot width) */
+            top: 5px; /* Adjust vertical alignment */
+            width: 12px;
+            height: 12px;
+            background-color: #fff; /* White background */
+            border: 3px solid #2c3e50; /* Dot border color */
+            border-radius: 50%;
+            z-index: 1; /* Ensure dot is above the line */
+        }
+        
+        .timeline-content {
+            position: relative;
+        } </style>
+</head>
+<body>
+    <div class='resume-container'>
+        <!-- Left Column -->
+        <div class='left-column'>
+            <div class='profile-section'>
+                <img src='https://avatars.githubusercontent.com/u/7464728?v=4' alt='Avatar' class='profile-pic'>
+                 <!-- Replace placeholder.jpg with the actual image path -->
+               
+                <h1 class='last-name'>HERO</h1>
+                <p class='job-title'>LEAD SOFTWARE ENGINEER</p>
+            </div>
+            <div class='section contact-section'>
+                <h2><i class='fas fa-id-card'></i> Profile</h2>
+                <ul class='contact-list'>
+                    <li> <b class="b-class">Name</b>Thanon Aphithanawat</li>
+                    <li> <b class="b-class">Age</b> 38</li>
+                    <li> <b class="b-class">Nationality</b> Thai</li>
+                </ul>
+            </div>
+
+            <div class='section contact-section'>
+                <h2><i class='fas fa-envelope-open-text'></i> Contact</h2>
+                <ul class='contact-list'>
+                    <li><i class='fas fa-map-marker-alt'></i> 123 Anywhere St., Any City</li>
+                    <li><i class='fas fa-phone'></i> +123-456-7890</li>
+                    <li><i class='fas fa-desktop'></i> www.reallygreatsite.com</li>
+                    <li><i class='fas fa-envelope'></i> hello@reallygreatsite.com</li>
+                </ul>
+            </div>
+
+            <div class='section skills-section'>
+                <h2><i class='fas fa-cogs'></i> Skills</h2>
+                <div class='skill'>
+                    <p>Project Management</p>
+                    <div class='dots'>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot empty'></span>
+                        <span class='dot empty'></span>
+                        <span class='dot empty'></span>
+                    </div>
+                </div>
+                <div class='skill'>
+                    <p>Problem Solving</p>
+                     <div class='dots'>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot empty'></span>
+                        <span class='dot empty'></span>
+                    </div>
+                </div>
+                <div class='skill'>
+                    <p>Creativity</p>
+                    <div class='dots'>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot empty'></span>
+                    </div>
+                </div>
+                 <div class='skill'>
+                    <p>Leadership</p>
+                    <div class='dots'>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot filled'></span>
+                        <span class='dot empty'></span>
+                        <span class='dot empty'></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class='right-column'>
+            <div class='section about-section'>
+                 <h2><i class='fas fa-user'></i> About Me</h2>
+                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
+            </div>
+
+            <div class='section education-section'>
+                 <h2><i class='fas fa-graduation-cap'></i> Education</h2>
+                 <div class='timeline'>
+                     <div class='timeline-item'>
+                         <div class='timeline-content'>
+                             <h3>Masters in Product Design</h3>
+                             <span class='date'>2004 - 2008</span>
+                             <p class='institution'>Really Great University</p>
+                         </div>
+                     </div>
+                     <div class='timeline-item'>
+                         <div class='timeline-content'>
+                            <h3>BA in Product Design</h3>
+                            <span class='date'>2008 - 2010</span>
+                            <p class='institution'>Really Great University</p>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+
+            <div class='section work-experience-section'>
+                 <h2><i class='fas fa-briefcase'></i> Work Experience</h2>
+                 <div class='timeline'>
+                     <div class='timeline-item'>
+                         <div class='timeline-content'>
+                             <h3>Really Great Company</h3>
+                             <span class='date'>2018-2020</span>
+                             <p class='role'>Senior Graphic Designer</p>
+                             <ul>
+                                 <li>Manage website appearance, as well as SEO content and marketing, as well as brand and logo design.</li>
+                                 <li>Collaborate with other development teams.</li>
+                             </ul>
+                         </div>
+                     </div>
+                      <div class='timeline-item'>
+                         <div class='timeline-content'>
+                             <h3>Really Great Company</h3>
+                             <span class='date'>2017-2018</span>
+                             <p class='role'>Graphic Designer</p>
+                             <ul>
+                                 <li>Manage website appearance, as well as SEO content and marketing, as well as brand and logo design.</li>
+                                 <li>Collaborate with other development teams.</li>
+                             </ul>
+                         </div>
+                     </div>
+                      <div class='timeline-item'>
+                         <div class='timeline-content'>
+                             <h3>Really Great Company</h3>
+                             <span class='date'>2016-2017</span>
+                             <p class='role'>Junior Graphic Designer</p>
+                             <ul>
+                                 <li>Manage website appearance, as well as SEO content and marketing, as well as brand and logo design.</li>
+                                 <li>Collaborate with other development teams.</li>
+                             </ul>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

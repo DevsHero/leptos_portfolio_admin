@@ -3,7 +3,7 @@ use leptos::*;
 use web_sys::window;
 use leptos_icons::Icon;
 use icondata as i;
-use crate::app::utils::{ getLocalStorage, setLocalStorage };
+use crate::app::utils::utils::{ getLocalStorage, setLocalStorage };
 fn darkmode(enable: bool) {
     let window = window().expect("Failed to get window");
     let document = window.document().expect("Failed to get document");

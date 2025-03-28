@@ -1,4 +1,4 @@
-use crate::app::utils::get_icon_by_name;
+use crate::app::utils::utils::get_icon_by_name;
 use leptos::*;
 use leptos_icons::Icon;
 use icondata as i;

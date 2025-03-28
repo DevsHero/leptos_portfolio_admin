@@ -1,7 +1,7 @@
 use leptos::*;
 use leptos_icons::Icon;
 use icondata as i;
-use crate::app::utils::ICON_MAP;
+use crate::app::utils::utils::ICON_MAP;
 #[component]
 pub fn IconDropdown(
     label: impl Into<String>,
