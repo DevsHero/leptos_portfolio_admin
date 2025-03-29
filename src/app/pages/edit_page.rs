@@ -135,10 +135,23 @@ pub fn EditPage() -> impl IntoView {
                 let (nationality, set_nationality) = create_signal(profile.nationality);
                 let (avatar, set_avatar) = create_signal(profile.avatar);
                 let (address, set_address) = create_signal(profile.address);
+
+                //PDF
                 let (use_pdf, set_use_pdf) = create_signal(profile.pdf.use_pdf);
                 let (use_generate, set_use_generate) = create_signal(profile.pdf.use_generate);
                 let (pdf_link, set_pdf_link) = create_signal(profile.pdf.pdf_link.unwrap_or_default());
-               
+                let (use_about_pdf_version, set_use_about_pdf_version) = create_signal(profile.pdf.use_about_pdf_version);
+                let (about_pdf_data, set_about_pdf_data) = create_signal(profile.pdf.about_pdf_data.unwrap_or_default());
+                let (show_contact, set_show_contact) = create_signal(profile.pdf.show_contact);
+                let (show_language, set_show_language) = create_signal(profile.pdf.show_language);
+                let (show_about, set_show_about) = create_signal(profile.pdf.show_about);
+                let (show_education, set_show_education) = create_signal(profile.pdf.show_education);
+                let (show_experience, set_show_experience) = create_signal(profile.pdf.show_experience);
+                let (show_portfolio, set_show_portfolio) = create_signal(profile.pdf.show_portfolio);
+                let (show_skill, set_show_skill) = create_signal(profile.pdf.show_skill);
+                let (show_profile, set_show_profile) = create_signal(profile.pdf.show_profile);
+                let (show_avatar, set_show_avatar) = create_signal(profile.pdf.show_avatar);
+
                 //Language         
                 let (languages, set_languages) = create_signal(profile.languages.unwrap_or_else(Vec::new));
                 let (language_name, set_language_name) = create_signal(String::new());
@@ -162,7 +175,9 @@ pub fn EditPage() -> impl IntoView {
                 let (position_name, set_position_name) = create_signal(String::new());
                 let (start_date, set_start_date) = create_signal(String::new());
                 let (end_date, set_end_date) = create_signal(String::new());
-                let (describe, set_describe) = create_signal(String::new());      
+                let (describe, set_describe) = create_signal(String::new());   
+                let (use_describe_pdf_version, set_use_describe_pdf_version) = create_signal(bool::from(false));     
+                let (describe_pdf_data, set_describe_pdf_data) = create_signal(String::new());   
                 //Skill 
                 let (skills, set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new));
                 let (skill_name, set_skill_name) = create_signal(String::new());
@@ -176,6 +191,9 @@ pub fn EditPage() -> impl IntoView {
                 let (portfolio_detail, set_portfolio_detail) = create_signal(String::new());
                 let (screenshots_url, set_screenshots_url) = create_signal(vec!["".to_string()]);
                 let (stacks, set_stacks) = create_signal(vec!["".to_string()]);
+                let (use_portfolio_detail_pdf_version, set_use_portfolio_detail_pdf_version) = create_signal(bool::from(false));     
+                let (portfolio_detail_pdf_data, set_portfolio_detail_pdf_data) = create_signal(String::new());   
+                
                 //Contact
                 let (contacts, set_contacts) = create_signal(profile.contacts.unwrap_or_else(Vec::new));
                 let (contact_value, set_contact_value) = create_signal(String::new());
@@ -192,6 +210,7 @@ pub fn EditPage() -> impl IntoView {
                 let (is_saving, set_is_saving) = create_signal(false);
 
                 let (validate_profile, set_validate_profile) = create_signal(false);
+                let (validate_pdf, set_validate_pdf) = create_signal(false);
                 let (validate_skill, set_validate_skill) = create_signal(false);
                 let (validate_language, set_validate_language) = create_signal(false);
                 let (validate_experience, set_validate_experience) = create_signal(false);
@@ -249,6 +268,18 @@ pub fn EditPage() -> impl IntoView {
                         use_pdf: use_pdf.get(),
                         use_generate: use_generate.get(),
                         pdf_link:Some(pdf_link.get()) ,
+                        use_about_pdf_version: use_about_pdf_version.get(),
+                        about_pdf_data: Some(about_pdf_data.get()),
+                        show_contact: show_contact.get(),
+                        show_language: show_language.get(),
+                        show_about: show_about.get(),
+                        show_education:show_education.get(),
+                        show_experience: show_experience.get(),
+                        show_portfolio: show_portfolio.get(),
+                        show_skill: show_skill.get(),
+                        show_profile: show_profile.get(),
+                        show_avatar:show_avatar.get()
+
                     },
                     gender: gender.get(),
                     role: role.get(),
@@ -330,7 +361,9 @@ pub fn EditPage() -> impl IntoView {
                             start_date: start_date.get(),
                             end_date: end_date.get(),
                             describe: describe.get(),
-                            company_address: company_address.get()
+                            company_address: company_address.get(),
+                            use_describe_pdf_version: use_describe_pdf_version.get(),
+                            describe_pdf_data: Some( describe_pdf_data.get())
                         };
                         set_experiences.update(|experiences| experiences.push(new_experience));
                         set_validate_experience.set(false);
@@ -342,6 +375,8 @@ pub fn EditPage() -> impl IntoView {
                         set_end_date.set(String::new()); 
                         set_company_address.set(String::new()); 
                         set_describe.set(String::new()); 
+                        set_describe_pdf_data.set(String::new());
+                        set_use_describe_pdf_version.set(bool::from(false));
                         set_is_update_experience(true);
                     create_toast({view! {<p class="toastInfo">"Add Experience Success" </p>}}.into_view(), "Experience Added.".into_view(), ToastVariant::Success);
                     }
@@ -362,13 +397,17 @@ pub fn EditPage() -> impl IntoView {
                             portfolio_link: portfolio_link.get(),
                             is_opensource: is_opensource.get(),
                             screenshots_url: screenshots_url.get(),
-                            stacks: stacks.get()
+                            stacks: stacks.get(),
+                            use_portfolio_detail_pdf_version: use_portfolio_detail_pdf_version.get(),
+                            portfolio_detail_pdf_data: Some( portfolio_detail_pdf_data.get())
                         };
                         set_portfolios.update(|portfolio| portfolio.push(new_portfolio));
                         set_validate_portfolio.set(false);
                         set_portfolio_name.set(String::new());
                         set_portfolio_detail.set(String::new());
                         set_portfolio_icon_url.set(String::new());
+                        set_portfolio_detail_pdf_data.set(String::new());
+                        set_use_portfolio_detail_pdf_version.set(bool::from(false));
                         set_portfolio_link.set(String::new());
                         set_is_opensource.set(false);
                         set_screenshots_url.set(vec!["".to_string()]);
@@ -512,6 +551,8 @@ pub fn EditPage() -> impl IntoView {
                         set_describe.set(experience.describe);
                         set_company_address.set(experience.company_address);
                         set_company_url.set(experience.company_url);
+                        set_describe_pdf_data.set(experience.describe_pdf_data.unwrap_or(String::from("")));
+                        set_use_describe_pdf_version.set(experience.use_describe_pdf_version);
                         delete_experience(index);        
                     }  
               
@@ -536,10 +577,12 @@ pub fn EditPage() -> impl IntoView {
                     if let Some(portfolio) = list.iter().enumerate().find(|(i, _)| *i == index) {
                         let portfolio = portfolio.1.clone(); 
                         set_portfolio_name.set(portfolio.portfolio_name);
-                        set_company_logo_url.set(portfolio.portfolio_link);
+                        set_portfolio_link.set(portfolio.portfolio_link);
                         set_is_opensource.set(portfolio.is_opensource);
                         set_portfolio_detail.set(portfolio.portfolio_detail);
                         set_portfolio_icon_url.set(portfolio.portfolio_icon_url);
+                        set_portfolio_detail_pdf_data.set(portfolio.portfolio_detail_pdf_data.unwrap_or(String::from("")));
+                        set_use_portfolio_detail_pdf_version.set(portfolio.use_portfolio_detail_pdf_version);
                         set_stacks.set(portfolio.stacks);
                         set_screenshots_url.set(portfolio.screenshots_url);
                         delete_portfolio(index);        
@@ -551,7 +594,7 @@ pub fn EditPage() -> impl IntoView {
                     let list = contacts.get();
                     if let Some(contact) = list.iter().enumerate().find(|(i, _)| *i == index) {
                         let contact = contact.1.clone(); 
-                        set_contact_title.set(contact.contact_title.unwrap());
+                        set_contact_title.set(contact.contact_title.unwrap_or(String::from("")));
                         set_contact_value.set(contact.contact_value);
                         set_contact_icon.set(contact.contact_icon);
                         set_use_link.set(contact.use_link);
@@ -586,14 +629,7 @@ pub fn EditPage() -> impl IntoView {
                       <InputField input_type="text" id="nick_name" label="Nick Name" set_value=set_nick_name  get_value=nick_name require=false />
                       <InputField input_type="text" id="nationality" label="Nationality" validation=validate_profile set_value=set_nationality  get_value=nationality require=true />
                       </div>
-                      <div class="formRow">
-                      {move ||view! { <CheckBox id="use_pdf"  label= "Export CV PDF" set_value=set_use_pdf get_value=use_pdf />}}
-                      {move ||  if use_pdf.get() {Some(view! { <CheckBox id="use_generate"  label= "Html Generate (disable = pdf link)" set_value=set_use_generate get_value=use_generate />})} else {None}}
-                      </div>
-                      {move || if !use_generate.get() && use_pdf.get()
-                        {Some(view! { <InputField input_type="text" id="pdf_link" label="Pdf File Link" validation=validate_profile set_value=set_pdf_link  get_value=pdf_link require=true />})}
-                        else {None} } 
-                      
+                   
                       <div class="formRow">
                           <div class="formGroup" >
                               <label id="gender">"Gender"</label>
@@ -697,7 +733,26 @@ pub fn EditPage() -> impl IntoView {
                       view!{ <div></div> }
                   }
               }
-                   
+
+              <CheckBox id="use_describe_pdf_version"  label= "Use Job Describe PDF version" set_value=set_use_describe_pdf_version  get_value=use_describe_pdf_version />
+              { move ||
+                if select_tab() == 3  && use_describe_pdf_version.get() {
+              view!{
+                <div>  <TextEditor
+                label="Job Describe (PDF Version)"
+                id="describe_pdf_data"
+                validation=validate_experience
+                disabled=false
+                require=true
+                get_value=describe_pdf_data
+                set_value=set_describe_pdf_data
+            />
+            </div>
+                }
+                }else{
+                    view!{ <div></div> }
+                }
+            }
                           <button
                           type="button"
                           class="addButton"
@@ -747,6 +802,26 @@ pub fn EditPage() -> impl IntoView {
            
                   <InputArrayField  id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
                   <InputArrayField  id="stacks" label="Project Stack" set_fields=set_stacks  get_values=stacks require=false />
+                  <CheckBox id="use_portfolio_detail_pdf_version"  label= "Use Portfolio Detail PDF version" set_value=set_use_portfolio_detail_pdf_version get_value=use_portfolio_detail_pdf_version />
+                  { move ||
+                    if select_tab() == 4  && use_portfolio_detail_pdf_version.get() {
+                  view!{
+                    <div>  <TextEditor
+                    label="Portfolio Detail (PDF Version)"
+                    id="portfolio_detail_pdf_data"
+                    validation=validate_experience
+                    disabled=false
+                    require=true
+                    get_value=portfolio_detail_pdf_data
+                    set_value=set_portfolio_detail_pdf_data
+                />
+                </div>
+                    }
+                    }else{
+                        view!{ <div></div> }
+                    }
+                }
+                     
                          <button
                           type="button"
                           class="addButton"
@@ -783,7 +858,7 @@ pub fn EditPage() -> impl IntoView {
                       view! { <div></div> }
                   }}}
                   <InputField validation=validate_contact input_type="text" id="contact_value" label="Contact Value" set_value=set_contact_value  get_value=contact_value require=true />
-                  
+                 
                   <button
                           type="button"
                           class="addButton"
@@ -865,6 +940,56 @@ pub fn EditPage() -> impl IntoView {
               </Suspense>
               </Show>
                   </RenderTab>
+                  <RenderTab  no=8 active_page=select_tab > 
+                  <div class="editContainer ">
+                  <h1>"Edit PDF"</h1>
+                
+                      <div class="formRow">
+                      <CheckBox id="use_pdf"  label= "Export CV PDF" set_value=set_use_pdf get_value=use_pdf /> 
+                      {move ||  if use_pdf.get() {Some(view! { <CheckBox id="use_generate"  label= "Html Generate (disable = pdf link)" set_value=set_use_generate get_value=use_generate />})} else {None}}
+                      </div>
+                      {move || if !use_generate.get() && use_pdf.get()
+                        {Some(view! { <InputField input_type="text" id="pdf_link" label="Pdf File Link" validation=validate_profile set_value=set_pdf_link  get_value=pdf_link require=true />})}
+                        else {None} } 
+                        {move || if use_generate.get() && use_pdf.get() {
+               Some(view!{        
+               <h2 style="text-align:center; font-weight:bold; margin:15px;">  Generate PDF Configuration </h2>
+                
+                  <div class="formRow">
+               <CheckBox id="show_contact"  label= "Show Contact Section" set_value=set_show_contact get_value=show_contact />
+               <CheckBox id="show_language"  label= "Show Language Section" set_value=set_show_language get_value=show_language />
+               </div>
+               <div class="formRow">
+               <CheckBox id="show_about"  label= "Show About Section" set_value=set_show_about get_value=show_about />
+               <CheckBox id="show_education"  label= "Show Education Section" set_value=set_show_education get_value=show_education />
+               </div>
+               <div class="formRow">
+               <CheckBox id="show_experience"  label= "Show Experience Section" set_value=set_show_experience get_value=show_experience />
+               <CheckBox id="show_portfolio"  label= "Show Porfolio Section" set_value=set_show_portfolio get_value=show_portfolio />
+               </div>
+               <div class="formRow">
+               <CheckBox id="show_skill"  label= "Show Skill Section" set_value=set_show_skill get_value=show_skill />
+               <CheckBox id="show_profile"  label= "Show Profile Section" set_value=set_show_profile get_value=show_profile />
+               </div>
+               <CheckBox id="show_avatar"  label= "Show Avatar Section" set_value=set_show_avatar get_value=show_avatar />
+               <CheckBox id="use_about_pdf_version"  label= "Use About PDF Version" set_value=set_use_about_pdf_version get_value=use_about_pdf_version />
+               {move || if use_about_pdf_version.get()
+         {view! { <div> 
+        <TextEditor
+             label="About Me (PDF Version)"
+             id="about_pdf_data"
+             validation=validate_pdf
+             disabled=false
+             require=true
+             get_value=about_pdf_data
+             set_value=set_about_pdf_data
+         />  
+                  </div>  } }
+                   
+                    else {view! {<div> </div>}} } 
+         })}else {None} } 
+                      </div>
+                      </RenderTab>
                   {if is_verify.get()  {
                       view! {   <div class="bottomForm">
                   <button

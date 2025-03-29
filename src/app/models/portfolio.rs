@@ -31,6 +31,17 @@ pub struct PDF {
     pub use_pdf: bool,
     pub use_generate: bool,
     pub pdf_link: Option<String>,
+    pub use_about_pdf_version: bool,
+    pub about_pdf_data: Option<String>,
+    pub show_contact: bool,
+    pub show_language: bool,
+    pub show_about: bool,
+    pub show_education: bool,
+    pub show_experience: bool,
+    pub show_portfolio: bool,
+    pub show_skill: bool,
+    pub show_profile: bool,
+    pub show_avatar: bool,
 }
 impl Default for PDF {
     fn default() -> Self {
@@ -38,6 +49,17 @@ impl Default for PDF {
             use_pdf: bool::from(false),
             use_generate: bool::from(false),
             pdf_link: None,
+            use_about_pdf_version: bool::from(false),
+            about_pdf_data: None,
+            show_about: bool::from(true),
+            show_education: bool::from(true),
+            show_contact: bool::from(true),
+            show_experience: bool::from(true),
+            show_language: bool::from(true),
+            show_portfolio: bool::from(true),
+            show_profile: bool::from(true),
+            show_skill: bool::from(true),
+            show_avatar: bool::from(true),
         }
     }
 }
@@ -69,6 +91,8 @@ pub struct Portfolio {
     pub stacks: Vec<String>,
     pub screenshots_url: Vec<String>,
     pub index: u8,
+    pub use_portfolio_detail_pdf_version: bool,
+    pub portfolio_detail_pdf_data: Option<String>,
 }
 impl Default for Portfolio {
     fn default() -> Self {
@@ -92,6 +116,8 @@ impl Default for Portfolio {
                 String::from("Tailwind"),
                 String::from("SurrealDB")
             ],
+            use_portfolio_detail_pdf_version: bool::from(false),
+            portfolio_detail_pdf_data: None,
         }
     }
 }
@@ -105,6 +131,8 @@ pub struct Experience {
     pub describe: String,
     pub company_url: String,
     pub company_address: String,
+    pub use_describe_pdf_version: bool,
+    pub describe_pdf_data: Option<String>,
 }
 impl Default for Experience {
     fn default() -> Self {
@@ -118,6 +146,8 @@ impl Default for Experience {
             start_date: String::from("2000-01-01"),
             end_date: String::from("Now"),
             company_address: String::from("Hollywood USA"),
+            use_describe_pdf_version: bool::from(false),
+            describe_pdf_data: None,
             describe: String::from(
                 "Assisted in retrieving and securing dangerous alien technology (Captain America: Civil War).
 Engaged in high-stakes urban combat during Battle of New York (Infinity War).

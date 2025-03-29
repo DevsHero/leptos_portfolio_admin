@@ -23,6 +23,16 @@ INSERT INTO profile {
     first_name: "John",
     gender: "Male",
     pdf: {
+	    show_about: true,
+		show_contact: true,
+		show_education: true,
+		show_experience: true,
+		show_language: true,
+		show_portfolio: true,
+		show_profile: true,
+        show_avatar: true,
+		show_skill: true,
+		use_about_pdf_version: false,
 		use_generate: true,
 		use_pdf: true
 	},
@@ -61,11 +71,13 @@ INSERT INTO experience {
     end_date: "2004-01-01",
     position_name: "Spider Man",
     company_address:"Hollywood USA",
+
+    use_describe_pdf_version: false,
     start_date: "2000-01-01"
 };
 
 -- Insert data into the experience table
-INSERT INTO experience {
+INSERT INTO Education {
   	degree: "bachelor's degree",
 	gpa: "4.00",
 	graduated_year: "2010",
@@ -93,7 +105,8 @@ INSERT INTO portfolio {
         "ActixWeb",
         "Tailwind",
         "SurrealDB"
-    ]
+    ],
+    use_portfolio_detail_pdf_version: false
 };
 
 -- Insert data into the skill table

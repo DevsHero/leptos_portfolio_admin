@@ -1,4 +1,4 @@
-use leptos::{ logging, server, ServerFnError };
+use leptos::{ server, ServerFnError };
 use crate::app::models::{ Profile, SiteConfig, Skill };
 use std::env;
 
@@ -22,6 +22,7 @@ pub async fn pdf_export(profile: Profile) -> Result<String, ServerFnError> {
     use base64::{ engine::general_purpose::STANDARD, Engine as _ };
     use gotenberg_pdf::{ Client, WebOptions, PaperFormat, LinearDimention, Unit };
     use crate::app::utils::pdf_template::generate_html_string;
+    use leptos::logging;
     let html_string = match generate_html_string(&profile) {
         Ok(html) => html,
         Err(e) => {

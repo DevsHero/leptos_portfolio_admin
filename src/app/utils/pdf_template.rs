@@ -1,36 +1,27 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use std::fmt::Write;
-        use crate::app::models::Profile;
+        use crate::app::{ models::Profile, utils::utils::convert_date_format };
         use super::utils::FONT_AWESOME_MAP;
         mod qr_gen {
-            // --- Imports for fast_qr ---
             use fast_qr::{
-                qr::{QRBuilder }, // Use fast_qr's builder and ECC level
-                convert::{image::ImageBuilder, Builder, Shape, ConvertError}, // Use fast_qr's image converter and Error type
+                qr::{ QRBuilder },
+                convert::{ image::ImageBuilder, Builder, Shape, ConvertError },
             };
-            // --- Imports for image encoding and base64 ---
-            // NOTE: We don't directly use the `image` crate's types for rendering here,
-            // but we *do* need it to encode the final raw pixel data from fast_qr into PNG format.
-            use image::{ImageBuffer, Luma, ImageOutputFormat };
-            use base64::{engine::general_purpose::STANDARD, Engine as _};
+
+            use image::{ ImageBuffer, Luma, ImageOutputFormat };
+            use base64::{ engine::general_purpose::STANDARD, Engine as _ };
             use std::io::Cursor;
-        
+
             pub fn generate_qr_code_data_uri(text: &str) -> Result<String, String> {
-                // --- 1. Build QR data using fast_qr ---
-                let qrcode = QRBuilder::new(text.as_bytes())
-                    .build()
-                    .unwrap(); 
-        
+                let qrcode = QRBuilder::new(text.as_bytes()).build().unwrap();
                 let image_builder = ImageBuilder::default()
-                .shape(Shape::RoundedSquare)
-                .background_color([255, 255, 255, 0]) // Handles transparency
-                .fit_width(100) .to_bytes(&qrcode ).unwrap();;
-        
-                // --- 6. Encode the PNG bytes to base64 ---
+                    .shape(Shape::RoundedSquare)
+                    .background_color([255, 255, 255, 0]) // Handles transparency
+                    .fit_width(100)
+                    .to_bytes(&qrcode)
+                    .unwrap();
                 let base64_string = STANDARD.encode(image_builder);
-        
-                // --- 7. Format as a Data URI ---
                 Ok(format!("data:image/png;base64,{}", base64_string))
             }
         }
@@ -65,176 +56,182 @@ cfg_if::cfg_if! {
             )?;
 
             // --- Avatar Section ---
+            if profile.pdf.show_avatar {
+                write!(
+                    html,
+                    r#"<img src="{}" alt="{} {}" class="avatar-pic">"#,
+                    html_escape(&profile.avatar),
+                    html_escape(&profile.first_name),
+                    html_escape(&profile.last_name)
+                )?;
+            }
             write!(
                 html,
-                r#"<img src="{}" alt="{} {}" class="profile-pic">"#,
-                html_escape(&profile.avatar),
-                html_escape(&profile.first_name),
-                html_escape(&profile.last_name)
-            )?;
-
-            write!(
-                html,
-                r#"<h1 class="nick-name">{}</h1><p class="job-title">{}</p></div>"#,  
+                r#"<h1 class="nick-name">{}</h1><p class="job-title">{}</p></div>"#,
                 html_escape(&profile.nick_name.to_uppercase()),
                 html_escape(&profile.role.to_uppercase())
             )?;
 
             // --- Profile Section ---
-            write!(
-                html,
-                r#" <div class='section profile-section'>
-                <h2><i class='fas fa-id-card'></i> Profile</h2>
-                <ul class='profile-list'>
-                    <li> <b class="b-class">Name</b>Thanon Aphithanawat</li>
-                    <li> <b class="b-class">Age</b> 38</li>
-                    <li> <b class="b-class">Nationality</b> Thai</li>
-                </ul>
-            </div>"#
-            )?;
-            // --- Contact Section ---
-            if let Some(contacts) = &profile.contacts {
+            if profile.pdf.show_profile {
                 write!(
                     html,
-                    r#"<div class="section contact-section"><h2><i class="fas fa-envelope-open-text"></i> Contact</h2><ul class="contact-list">"#
+                    r#" <div class='section profile-section'>
+                <h2><i class='fas fa-id-card'></i> Profile</h2>
+                <div class='profile-list'>
+                    <p> <b class="b-class">Name</b>Thanon Aphithanawat</p>
+                    <p> <b class="b-class">Age</b> 38</p>
+                    <p> <b class="b-class">Nationality</b> Thai</p>
+                </div>
+            </div>"#
                 )?;
-
-                // Handle Address separately
-                if !profile.address.is_empty() {
-                    let address_icon = FONT_AWESOME_MAP.get("Address")
-                        .copied()
-                        .unwrap_or("fas fa-map-marker-alt");
+            }
+            // --- Contact Section ---
+            if profile.pdf.show_contact {
+                if let Some(contacts) = &profile.contacts {
                     write!(
                         html,
-                        r#"<li><i class="{}"></i> {}</li>"#,
-                        address_icon,
-                        html_escape(&profile.address)
+                        r#"<div class="section contact-section"><h2><i class="fas fa-envelope-open-text"></i> Contact</h2><ul class="contact-list">"#
                     )?;
-                }
 
-                // Loop through contacts
-                for contact in contacts {
-                    // Get icon class from map
-                    let icon_class = FONT_AWESOME_MAP.get(contact.contact_icon.as_str())
-                        .copied()
-                        .unwrap_or("fas fa-link"); // Fallback icon
+                    // Handle Address separately
+                    if !profile.address.is_empty() {
+                        let address_icon = FONT_AWESOME_MAP.get("Address")
+                            .copied()
+                            .unwrap_or("fas fa-map-marker-alt");
+                        write!(
+                            html,
+                            r#"<li><i class="{}"></i> {}</li>"#,
+                            address_icon,
+                            html_escape(&profile.address)
+                        )?;
+                    }
 
-                    // --- Check if value is an HTTP URL ---
-                    let value_is_http_url =
-                        contact.contact_value.starts_with("http://") ||
-                        contact.contact_value.starts_with("https://");
+                    // Loop through contacts
+                    for contact in contacts {
+                        // Get icon class from map
+                        let icon_class = FONT_AWESOME_MAP.get(contact.contact_icon.as_str())
+                            .copied()
+                            .unwrap_or("fas fa-link"); // Fallback icon
 
-                    // Write the list item start and icon
-                    write!(html, r#"<li><i class="{}"></i> "#, icon_class)?;
+                        // --- Check if value is an HTTP URL ---
+                        let value_is_http_url =
+                            contact.contact_value.starts_with("http://") ||
+                            contact.contact_value.starts_with("https://");
 
-                    // --- Logic Branching ---
-                    if value_is_http_url {
-                        // --- Attempt QR Code Generation (SSR only) ---
-                        #[cfg(feature = "ssr")]
-                        {
-                            match qr_gen::generate_qr_code_data_uri(&contact.contact_value) {
-                                Ok(qr_data_uri) => {
-                                    // Embed the QR code image (size set via CSS or attributes)
-                                    write!(
-                                        html,
-                                        r#"<img class="qr-code" src="{}" alt="QR Code for {}" width="50" height="50">"#, // Example with attributes
-                                        qr_data_uri,
-                                        html_escape(&contact.contact_value)
-                                    )?;
-                                }
-                                Err(e) => {
-                                    // Fallback: Log error and display the URL as a text link
-                                    eprintln!("SSR QR Generation Error: {}", e);
-                                    write!(
-                                        html,
-                                        r#"<a href="{}" target="_blank" rel="noopener noreferrer">{} (QR Error)</a>"#,
-                                        html_escape(&contact.contact_value),
-                                        html_escape(
-                                            contact.contact_title
-                                                .as_ref()
-                                                .unwrap_or(&contact.contact_value)
-                                        )
-                                    )?;
+                        // Write the list item start and icon
+                        write!(html, r#"<li><i class="{}"></i> "#, icon_class)?;
+
+                        // --- Logic Branching ---
+                        if value_is_http_url {
+                            // --- Attempt QR Code Generation (SSR only) ---
+                            #[cfg(feature = "ssr")]
+                            {
+                                match qr_gen::generate_qr_code_data_uri(&contact.contact_value) {
+                                    Ok(qr_data_uri) => {
+                                        // Embed the QR code image (size set via CSS or attributes)
+                                        write!(
+                                            html,
+                                            r#"<img class="qr-code" src="{}" alt="QR Code for {}" width="50" height="50">"#, // Example with attributes
+                                            qr_data_uri,
+                                            html_escape(&contact.contact_value)
+                                        )?;
+                                    }
+                                    Err(e) => {
+                                        // Fallback: Log error and display the URL as a text link
+                                        eprintln!("SSR QR Generation Error: {}", e);
+                                        write!(
+                                            html,
+                                            r#"<a href="{}" target="_blank" rel="noopener noreferrer">{} (QR Error)</a>"#,
+                                            html_escape(&contact.contact_value),
+                                            html_escape(
+                                                contact.contact_title
+                                                    .as_ref()
+                                                    .unwrap_or(&contact.contact_value)
+                                            )
+                                        )?;
+                                    }
                                 }
                             }
-                        }
-                        #[cfg(not(feature = "ssr"))]
-                        {
-                            // Non-SSR Fallback (client-side, shouldn't normally render this HTML, but good practice)
-                            // Just render as a link
+                            #[cfg(not(feature = "ssr"))]
+                            {
+                                // Non-SSR Fallback (client-side, shouldn't normally render this HTML, but good practice)
+                                // Just render as a link
+                                write!(
+                                    html,
+                                    r#"<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>"#,
+                                    html_escape(&contact.contact_value),
+                                    html_escape(
+                                        contact.contact_title
+                                            .as_ref()
+                                            .unwrap_or(&contact.contact_value)
+                                    )
+                                )?;
+                            }
+                            // --- End QR Code Logic ---
+                        } else if contact.use_link {
+                            // --- Not an HTTP URL, BUT use_link is TRUE: Render as a standard link (like original code) ---
+                            // This handles cases like mailto:, tel:, or other values intended as links
                             write!(
                                 html,
-                                r#"<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>"#,
-                                html_escape(&contact.contact_value),
+                                r#"<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>"#, // Modify href target if needed for mailto/tel
+                                html_escape(&contact.contact_value), // Consider prefixing mailto: or tel: if needed based on contact_icon
                                 html_escape(
                                     contact.contact_title.as_ref().unwrap_or(&contact.contact_value)
                                 )
                             )?;
+                        } else {
+                            // --- Not an HTTP URL and use_link is FALSE: Render as plain text ---
+                            write!(html, "{}", html_escape(&contact.contact_value))?;
                         }
-                        // --- End QR Code Logic ---
-                    } else if contact.use_link {
-                        // --- Not an HTTP URL, BUT use_link is TRUE: Render as a standard link (like original code) ---
-                        // This handles cases like mailto:, tel:, or other values intended as links
+
+                        // Close the list item
+                        write!(html, "</li>")?;
+                    }
+                    write!(html, "</ul></div>")?;
+                }
+            } // --- Languages Section ---
+            if profile.pdf.show_language {
+                if let Some(languages) = &profile.languages {
+                    if !languages.is_empty() {
                         write!(
                             html,
-                            r#"<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>"#, // Modify href target if needed for mailto/tel
-                            html_escape(&contact.contact_value), // Consider prefixing mailto: or tel: if needed based on contact_icon
-                            html_escape(
-                                contact.contact_title.as_ref().unwrap_or(&contact.contact_value)
-                            )
+                            r#"<div class="section skills-section"><h2><i class="fas fa-cogs"></i> Languages</h2>"#
                         )?;
-                    } else {
-                        // --- Not an HTTP URL and use_link is FALSE: Render as plain text ---
-                        write!(html, "{}", html_escape(&contact.contact_value))?;
+                        for language in languages {
+                            write!(
+                                html,
+                                r#"<div class="skill"><p>{}</p><div class="level level-{}">{}</div></div>"#,
+                                html_escape(&language.name),
+                                html_escape(&language.level.to_lowercase()),
+                                html_escape(&language.level)
+                            )?;
+                        }
+                        write!(html, r#"</div>"#)?; // Close skills section
                     }
-
-                    // Close the list item
-                    write!(html, "</li>")?;
                 }
-                write!(html, "</ul></div>")?;
             }
             // --- Skills Section ---
-            if let Some(skills) = &profile.skills {
-                if !skills.is_empty() {
-                    write!(
-                        html,
-                        r#"<div class="section skills-section"><h2><i class="fas fa-cogs"></i> Skills</h2>"#
-                    )?;
-                    for skill in skills {
-                        write!(html, r#"<div class="skill"><p>{}</p>"#, html_escape(&skill.name))?;
-                        // Simple Dot Logic: Assume level is "1" to "7"
-                        let level_num = skill.level.parse::<u8>().unwrap_or(0); // Default to 0 on parse error
-                        write!(html, r#"<div class="dots">"#)?;
-                        for i in 1..=7 {
-                            // Assuming max 7 dots
-                            let dot_class = if i <= level_num { "filled" } else { "empty" };
-                            write!(html, r#"<span class="dot {}"></span>"#, dot_class)?;
-                        }
-                        write!(html, r#"</div></div>"#)?; // Close dots and skill div
-                    }
-                    write!(html, r#"</div>"#)?; // Close skills section
-                }
-            }
-
-            // --- Languages Section ---
-            if let Some(languages) = &profile.languages {
-                if !languages.is_empty() {
-                    write!(
-                        html,
-                        r#"<div class="section skills-section"><h2><i class="fas fa-language"></i> Languages</h2>"#
-                    )?; // Reuse skills style
-                    for lang in languages {
+            if profile.pdf.show_skill {
+                if let Some(skills) = &profile.skills {
+                    if !skills.is_empty() {
                         write!(
                             html,
-                            r#"<div class="skill"><p>{}</p><p class="level-text">({})</p></div>"#,
-                            html_escape(&lang.name),
-                            html_escape(&lang.level)
+                            r#"<div class="section skills-section"><h2><i class="fas fa-cogs"></i> Skills</h2>"#
                         )?;
+                        for skill in skills {
+                            write!(
+                                html,
+                                r#"<div class="skill"><p>{}</p><div class="level level-{}">{}</div></div>"#,
+                                html_escape(&skill.name),
+                                html_escape(&skill.level.to_lowercase()),
+                                html_escape(&skill.level)
+                            )?;
+                        }
+                        write!(html, r#"</div>"#)?; // Close skills section
                     }
-                    write!(html, r#"</div>"#)?; // Close languages section
                 }
             }
-
             // --- Close Left Column ---
             write!(
                 html,
@@ -245,134 +242,134 @@ cfg_if::cfg_if! {
             write!(html, r#"<div class="right-column">"#)?;
 
             // --- About Me Section ---
-            if !profile.about.is_empty() {
-                write!(
-                    html,
-                    r#"<div class="section about-section"><h2><i class="fas fa-user"></i> About Me</h2><p>{}</p></div>"#,
-                    html_escape(&profile.about)
-                )?;
+            if profile.pdf.show_about {
+                if !profile.about.is_empty() {
+                    write!(
+                        html,
+                        r#"<div class="section about-section"><h2><i class="fas fa-user"></i> About Me</h2><p>{}</p></div>"#,
+                        html_escape(&profile.about)
+                    )?;
+                }
             }
-
             // --- Education Section ---
-            if let Some(educations) = &profile.educations {
-                if !educations.is_empty() {
-                    write!(
-                        html,
-                        r#"<div class="section education-section"><h2><i class="fas fa-graduation-cap"></i> Education</h2><div class="timeline">"#
-                    )?;
-                    for edu in educations {
+            if profile.pdf.show_education {
+                if let Some(educations) = &profile.educations {
+                    if !educations.is_empty() {
                         write!(
                             html,
-                            r#"<div class="timeline-item"><div class="timeline-content">"#
+                            r#"<div class="section education-section"><h2><i class="fas fa-graduation-cap"></i> Education</h2><div class="timeline">"#
                         )?;
-                        write!(
-                            html,
-                            r#"<h3>{} in {}</h3>"#,
-                            html_escape(&edu.degree),
-                            html_escape(&edu.major)
-                        )?;
-                        write!(
-                            html,
-                            r#"<span class="date">{}</span>"#,
-                            html_escape(&edu.graduated_year)
-                        )?;
-                        write!(
-                            html,
-                            r#"<p class="institution">{}</p>"#,
-                            html_escape(&edu.institute_name)
-                        )?;
-                        // Optionally add address/GPA if needed and available
-                        // write!(html, r#"<p>{}</p>"#, html_escape(&edu.institute_address))?;
-                        // write!(html, r#"<p>GPA: {}</p>"#, html_escape(&edu.gpa))?;
-                        write!(html, r#"</div></div>"#)?; // Close timeline-content and timeline-item
+                        for edu in educations {
+                            write!(
+                                html,
+                                r#"<div class="timeline-item"><div class="timeline-content">"#
+                            )?;
+                            write!(
+                                html,
+                                r#"<h3>{} in {}</h3>"#,
+                                html_escape(&edu.degree),
+                                html_escape(&edu.major)
+                            )?;
+                            write!(
+                                html,
+                                r#"<span class="date">{}</span>"#,
+                                html_escape(&edu.graduated_year)
+                            )?;
+                            write!(
+                                html,
+                                r#"<p class="institution">{}</p>"#,
+                                html_escape(&edu.institute_name)
+                            )?;
+                            write!(html, r#"</div></div>"#)?;
+                        }
+                        write!(html, r#"</div></div>"#)?;
                     }
-                    write!(html, r#"</div></div>"#)?; // Close timeline and section
                 }
             }
-
             // --- Work Experience Section ---
-            if let Some(experiences) = &profile.experiences {
-                if !experiences.is_empty() {
-                    write!(
-                        html,
-                        r#"<div class="section work-experience-section"><h2><i class="fas fa-briefcase"></i> Work Experience</h2><div class="timeline">"#
-                    )?;
-                    for exp in experiences {
+            if profile.pdf.show_experience {
+                if let Some(experiences) = &profile.experiences {
+                    if !experiences.is_empty() {
                         write!(
                             html,
-                            r#"<div class="timeline-item"><div class="timeline-content">"#
+                            r#"<div class="section work-experience-section"><h2><i class="fas fa-briefcase"></i> Work Experience</h2><div class="timeline">"#
                         )?;
-                        write!(html, r#"<h3>{}</h3>"#, html_escape(&exp.company_name))?;
-                        write!(
-                            html,
-                            r#"<span class="date">{} - {}</span>"#,
-                            html_escape(&exp.start_date),
-                            html_escape(&exp.end_date)
-                        )?;
-                        write!(html, r#"<p class="role">{}</p>"#, html_escape(&exp.position_name))?;
-                        write!(html, r#"<ul>"#)?;
-                        for line in exp.describe.lines() {
-                            let trimmed_line = line.trim();
-                            if !trimmed_line.is_empty() {
-                                write!(html, r#"<li>{}</li>"#, html_escape(trimmed_line))?;
-                            }
+                        for exp in experiences {
+                            write!(
+                                html,
+                                r#"<div class="timeline-item"><div class="timeline-content">"#
+                            )?;
+                            write!(html, r#"<h3>{}</h3>"#, html_escape(&exp.company_name))?;
+                            write!(
+                                html,
+                                r#"<span class="date">{} - {}</span>"#,
+                                {
+                                    convert_date_format(&exp.start_date)
+                                },
+                                {
+                                    convert_date_format(&exp.end_date)
+                                }
+                            )?;
+                            write!(
+                                html,
+                                r#"<p class="role">{}</p>"#,
+                                html_escape(&exp.position_name)
+                            )?;
+
+                            write!(html, r#"<p>{}</p>"#, if exp.use_describe_pdf_version {
+                                html_escape(&exp.describe_pdf_data.clone().unwrap())
+                            } else {
+                                html_escape(&exp.describe)
+                            })?;
+
+                            write!(html, r#"</div></div>"#)?;
                         }
-                        write!(html, r#"</ul>"#)?;
-                        write!(html, r#"</div></div>"#)?; // Close timeline-content and timeline-item
+                        write!(html, r#"</div></div>"#)?;
                     }
-                    write!(html, r#"</div></div>"#)?; // Close timeline and section
                 }
             }
-
             // --- Portfolio Section ---
-            if let Some(portfolios) = &profile.portfolios {
-                if !portfolios.is_empty() {
-                    // Reuse work-experience style or create a specific one if needed
-                    write!(
-                        html,
-                        r#"<div class="section work-experience-section"><h2><i class="fas fa-project-diagram"></i> Portfolio</h2><div class="timeline">"#
-                    )?;
-                    for portfolio in portfolios {
+            if profile.pdf.show_portfolio {
+                if let Some(portfolios) = &profile.portfolios {
+                    if !portfolios.is_empty() {
                         write!(
                             html,
-                            r#"<div class="timeline-item"><div class="timeline-content">"#
+                            r#"<div class="section work-experience-section"><h2><i class="fas fa-project-diagram"></i> Portfolio</h2><div class="timeline">"#
                         )?;
-                        write!(html, r#"<h3>{}</h3>"#, html_escape(&portfolio.portfolio_name))?;
-
-                        if !portfolio.portfolio_link.is_empty() {
+                        for portfolio in portfolios {
                             write!(
                                 html,
-                                r#"<p class="role"><a href="{}" target="_blank" rel="noopener noreferrer">View Project</a>"#,
-                                html_escape(&portfolio.portfolio_link)
+                                r#"<div class="timeline-item"><div class="timeline-content">"#
                             )?;
+                            write!(html, r#"<h3>{}</h3>"#, html_escape(&portfolio.portfolio_name))?;
+
                             if portfolio.is_opensource {
-                                write!(html, r#" (Open Source)"#)?;
+                                write!(html, r#"<p class="role"> (Open Source)</p>"#)?;
                             }
-                            write!(html, r#"</p>"#)?;
-                        }
 
-                        write!(html, r#"<ul>"#)?;
-                        if !portfolio.portfolio_detail.is_empty() {
-                            write!(
-                                html,
-                                r#"<li>{}</li>"#,
+                            write!(html, r#"<ul>"#)?;
+
+                            if !portfolio.stacks.is_empty() {
+                                write!(
+                                    html,
+                                    r#"<li>Stacks: {}</li>"#,
+                                    html_escape(&portfolio.stacks.join(", "))
+                                )?;
+                            }
+                            write!(html, r#"<p>{}</p>"#, if
+                                portfolio.use_portfolio_detail_pdf_version
+                            {
+                                html_escape(&portfolio.portfolio_detail_pdf_data.clone().unwrap())
+                            } else {
                                 html_escape(&portfolio.portfolio_detail)
-                            )?;
+                            })?;
+                            write!(html, r#"</ul>"#)?;
+                            write!(html, r#"</div></div>"#)?; // Close timeline-content and timeline-item
                         }
-                        if !portfolio.stacks.is_empty() {
-                            write!(
-                                html,
-                                r#"<li>Stacks: {}</li>"#,
-                                html_escape(&portfolio.stacks.join(", "))
-                            )?;
-                        }
-                        write!(html, r#"</ul>"#)?;
-                        write!(html, r#"</div></div>"#)?; // Close timeline-content and timeline-item
+                        write!(html, r#"</div></div>"#)?; // Close timeline and section
                     }
-                    write!(html, r#"</div></div>"#)?; // Close timeline and section
                 }
             }
-
             // --- Close Right Column ---
             write!(
                 html,
@@ -402,11 +399,9 @@ cfg_if::cfg_if! {
         color: #333;
         line-height: 1.6;
         font-size: 10pt;
-        /* background-color: #fff; <-- Can be removed if set on html, body above */
   
     }
-    
-          .resume-container {
+       .resume-container {
         max-width: 100%; 
         min-height: 100vh; 
         margin: 0 !important;
@@ -420,35 +415,27 @@ cfg_if::cfg_if! {
             width: 35%; 
             background-color: #fff; 
            padding-left : 10px;
-      
-         
-           
         }
-        
         .right-column {
             width: 65%; 
             background-color: #fff;
-         
         }
-     
         .avatar-section {
         
             text-align: center;
         margin-top: 15px;
         }
         
-        .profile-pic {
+        .avatar-pic {
             width: 180px; 
             height: 180px;
             object-fit: cover;
-         
             display: block;
             margin-left: auto;
             margin-right: auto;
             border-radius: 20px;
            
         }
-        
         .avatar-section h1 {
             font-size: 2.8em;
             font-weight: 300; /* Light weight for first name */
@@ -456,28 +443,22 @@ cfg_if::cfg_if! {
             margin-bottom: -10px; /* Adjust spacing between names */
             letter-spacing: 1px;
         }
-        
         .avatar-section .nick-name {
             font-weight: 900; /* Bold weight for last name */
             font-size: 2.9em;
             color: #000; /* Black for emphasis */
      
         }
-        
         .avatar-section .job-title {
             font-size: 0.9em;
             color: #555;
             letter-spacing: 2px;
             font-weight: 400;
         }
-        
- 
         .section h2 {
             background-color: #2c3e50; /* Dark blue-gray */
             color: #fff;
-       
             padding: 5px 10px;
-     
             width: 95%;
             border-radius: 20px; /* Rounded corners */
             font-size: 1.2em;
@@ -486,150 +467,170 @@ cfg_if::cfg_if! {
             align-items: center;
             
         }
-        
         .section h2 i {
             margin-right: 10px;
             font-size: 1em;
         }
-        
-    
         .left-column .section {
                  margin-right:15px
         }
-        .right-column .section {
        
-            
-        }
-        .right-column .about-section {
- 
-        }
-        .right-column .about-section h2 {
-            
-        }
+code{
+   font-family: 'Courier New', Courier, monospace;
+  color: hsl(107, 100%, 50%);
+  display: block;
+  padding: 1rem;
+  margin: auto;
+  background: hsl(0, 0%, 0%);      /* Light background for code */
+  overflow-x: auto;         /* Horizontal scroll if needed */
+  white-space: pre-wrap; 
+  width:88%;
+}
+       
         .right-column .about-section p {
-       
+            padding-left:15px;
+            padding-right:15px;
         }
         /* Contact Section Styling */
         .contact-section h2 {
-            background-color: #2c3e50;
+            background-color: #2c3e50;.
+           
         }
        .profile-section h2 {
             background-color: #2c3e50;
         }
         .contact-list {
             list-style: none;
-            padding-left: 20px; /* Indent list */
+            padding-left: 20px;
+           margin: 0;
         }
         
         .contact-list li {
-            margin-bottom: 12px;
+            height: 55px;
             display: flex;
             align-items: center;
-            font-size: 0.9em;
+            font-size: 1em;
             color: #444;
         }
         
         .contact-list   li i {
             color: #2c3e50; /* Match header color */
-             font-size: 20px; 
+          font-size: 22px;
             margin-right: 15px;
             width: 16px; /* Fixed width for alignment */
             text-align: center;
         }
-               .profile-list li {
+        .profile-list p {
             margin-bottom: 12px;
-            display: flex;
-           
-            font-size: 0.9em;
+                display: flex;
+            flex-direction: row;
+            font-size: 1em;
             color: #444;
         }
-        
-        .profile-list   li b {
-            color: #2c3e50; /* Match header color */
-          
-        }
         .b-class{
-            width: 70px;
-        
+            width: 75px;
+         color: #2c3e50;
+             margin-left : 20px
         }
+            .skills-section{
+             margin-top: 10px;
+            }
         /* Skills Section Styling */
         .skills-section h2 {
-            background-color: #2c3e50;
+            background-color: #2c3e50; 
         }
-        
         .skill {
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
             padding-left: 20px; /* Indent skills */
         }
-        
+.level{
+font-weight: bold;
+ text-align: center;   
+padding: 5px 15px;
+ width: 100px;
+border-radius : 20px;
+ 
+}
+
+.level-basic {
+  background: hwb(59 1% 34%);
+  color: white;
+}
+.level-middle {
+  background: hwb(33 5% 20%);
+  color: white;
+}
+.level-expert {
+  background: rgb(10, 143, 191);
+  color: white;
+}
+.level-intermediate {
+  background: hwb(33 5% 20%);
+  color: white;
+}
+.level-proficiency {
+  background:rgb(10, 143, 191);
+  color: white;
+}
+.level-native {
+  background: #0abf28;
+  color: white;
+}
         .skill p {
             margin-bottom: 5px;
             font-weight: 700;
             color: #333;
             font-size: 1em;
         }
-        
-        .dots {
-            display: flex; 
-        }
-        
-        .dot {
-            height: 10px;
-            width: 10px;
-            border-radius: 50%;
-            background-color: #ccc;
-            margin-right: 5px;
-        }
-        
-        .dot.filled {
-            background-color: #555; 
-        }
-        
+
        
         .right-column h3 {
             font-size: 1.1em;
             font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 2px;
+            color: #2c3e50; 
+            margin:0 ;
+        }
+        
+         .right-column p {
+           margin:0;
         }
         
         .right-column .date {
-            font-size: 0.85em;
+            font-size: 0.9em;
             color: #666;
             font-weight: 700;
-            display: block;
-            margin-bottom: 5px;
+            display: block; 
         }
         .right-column .institution,
         .right-column .role {
             font-size: 1em;
             font-weight: 700;
-            color: #444;
-            margin-bottom: 10px;
+            color: #444; 
         }
         
         .right-column ul {
             list-style: disc;
-            margin-left: 20px; /* Indent bullet points */
-            padding-right: 15px; /* Space on right */
+            padding-left: 10px; /* Indent bullet points */
+            padding-right: 10px; /* Space on right */
             
         }
         
         .right-column ul li {
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-size: 0.9em;
             color: #555;
             
         }
-        
-    
         .timeline {
             position: relative;
-            padding-left: 30px; /* Space for the line and dots */
+            padding-left: 28px; /* Space for the line and dots */
             margin-left: 0; /* Align with header indent */
         }
-     
         .timeline::before {
+      
             content: '';
             position: absolute;
             left: 0;
@@ -638,16 +639,13 @@ cfg_if::cfg_if! {
             width: 2px;
             background-color: #2c3e50; /* Line color */
         }
-        
         .timeline-item {
             position: relative;
             margin-bottom: 30px;
         }
-   
         .timeline-item:last-child {
             margin-bottom: 0;
         }
-
         .timeline-item::before {
             content: '';
             position: absolute;
