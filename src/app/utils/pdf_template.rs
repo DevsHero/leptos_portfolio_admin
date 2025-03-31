@@ -1,17 +1,96 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use std::fmt::Write;
         use crate::app::{ models::Profile, utils::utils::convert_date_format };
         use super::utils::FONT_AWESOME_MAP;
-        mod qr_gen {
-            use fast_qr::{
-                qr::{ QRBuilder },
-                convert::{ image::ImageBuilder, Builder, Shape, ConvertError },
-            };
+        use std::process::{ Command, Stdio };
 
-            use image::{ ImageBuffer, Luma, ImageOutputFormat };
+        pub fn generate_pdf_with_html2pdf(html_content: &str) -> Result<Vec<u8>, String> {
+            use std::io::{ Write, Read, Error as IoError, ErrorKind as IoErrorKind };
+            use std::process::{ Command, Stdio };
+            use std::fs::{ self, File };
+            use std::env;
+            use leptos::logging; // Assuming logging is available here
+            use uuid::Uuid;
+
+            let temp_dir = env::temp_dir();
+            let unique_id = Uuid::new_v4();
+            let input_html_path = temp_dir.join(format!("input_{}.html", unique_id));
+            let output_pdf_path = temp_dir.join(format!("output_{}.pdf", unique_id));
+
+            let input_path_str = input_html_path
+                .to_str()
+                .ok_or("Failed to create valid input path string")?;
+            let output_path_str = output_pdf_path
+                .to_str()
+                .ok_or("Failed to create valid output path string")?;
+
+            // --- Write HTML to Temporary File ---
+            {
+                let mut input_file = File::create(&input_html_path).map_err(|e|
+                    format!("Failed to create temp HTML file '{}': {}", input_path_str, e)
+                )?;
+                input_file
+                    .write_all(html_content.as_bytes())
+                    .map_err(|e|
+                        format!("Failed to write to temp HTML file '{}': {}", input_path_str, e)
+                    )?;
+            }
+
+            // --- Execute html2pdf Command ---
+            let mut cmd = Command::new("html2pdf");
+            cmd.arg(input_path_str)
+                .arg("-o")
+                .arg(output_path_str)
+                .arg("--paper")
+                .arg("A4")
+                // --- CORRECTED MARGIN ARGUMENT ---
+                .arg("--margin")
+                .arg("0.2 0 0.2 0") // Use only numbers (Top Right Bottom Left in inches)
+                .arg("--background")
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped());
+
+            let output = cmd
+                .output()
+                .map_err(|e|
+                    format!("Failed to execute html2pdf command: {}. Is it installed and in PATH? Is Chrome/Chromium installed?", e)
+                )?;
+
+            // --- Check Status and Read Output PDF ---
+            let pdf_bytes: Result<Vec<u8>, String>;
+            if output.status.success() {
+                pdf_bytes = fs
+                    ::read(&output_pdf_path)
+                    .map_err(|e|
+                        format!(
+                            "Successfully ran html2pdf, but failed to read output PDF '{}': {}",
+                            output_path_str,
+                            e
+                        )
+                    );
+            } else {
+                let stderr_output = String::from_utf8_lossy(&output.stderr);
+                let stdout_output = String::from_utf8_lossy(&output.stdout);
+                logging::error!("html2pdf stdout: {}", stdout_output);
+                logging::error!("html2pdf stderr: {}", stderr_output);
+                pdf_bytes = Err(
+                    format!(
+                        "html2pdf failed with status {}. Check logs for details.",
+                        output.status
+                    )
+                );
+            }
+
+            // --- Clean up Temporary Files ---
+            let _ = fs::remove_file(&input_html_path);
+            let _ = fs::remove_file(&output_pdf_path);
+
+            pdf_bytes
+        }
+        mod qr_gen {
+            use fast_qr::{ qr::{ QRBuilder }, convert::{ image::ImageBuilder, Builder, Shape } };
+
             use base64::{ engine::general_purpose::STANDARD, Engine as _ };
-            use std::io::Cursor;
 
             pub fn generate_qr_code_data_uri(text: &str) -> Result<String, String> {
                 let qrcode = QRBuilder::new(text.as_bytes()).build().unwrap();
@@ -26,6 +105,7 @@ cfg_if::cfg_if! {
             }
         }
         pub fn generate_html_string(profile: &Profile) -> Result<String, std::fmt::Error> {
+            use std::fmt::Write;
             let mut html = String::with_capacity(16384); // Increased capacity slightly
             // --- HEAD ---
             write!(

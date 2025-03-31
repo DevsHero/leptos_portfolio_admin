@@ -74,12 +74,15 @@ An all-in-one portfolio solution with dynamic content management through an admi
   rustup target add wasm32-unknown-unknown
   cargo install cargo-leptos
   ```
-  3. run letpos
+  3. install gotenberg pdf server
   ```
-  cargo leptos watch
+    docker run --rm -d -p 4000:3000 gotenberg/gotenberg 
   ```
-  4. The site already served at localhost:3000
-
+  4. run letpos
+  ```
+    cargo leptos watch
+  ```
+  5. The site already served at localhost:3000
 - **Via Local Docker:**
   1. Build image (From macbook m4 cpu 12core 512gb the build time estimate 850 sec.)
   ```
@@ -87,7 +90,7 @@ An all-in-one portfolio solution with dynamic content management through an admi
   ```
   2. run image with .env file
   ```
-  docker run -d -p 3000:3000 --platform linux/amd64 --env-file '.env' leptos-portfolio-admin:latest
+  docker run -d -p 3000:8080 --platform linux/amd64 --env-file '.env' leptos-portfolio-admin:latest
   ```
   3. The site already served at localhost:3000
 
@@ -98,7 +101,7 @@ An all-in-one portfolio solution with dynamic content management through an admi
   ```
   2. run image with .env file
   ```
-  docker run -d -p 3000:3000 --platform linux/amd64 --env-file '.env' leptos-portfolio-admin:latest
+  docker run -d -p 3000:8080 --platform linux/amd64 --env-file '.env' leptos-portfolio-admin:latest
   ```
   3. The site already served at localhost:3000
 ## **Planning features** 

@@ -46,6 +46,7 @@ gotenberg_pdf = "0.5"
 base64 = "0.22.1"
 fast_qr = { version = "0.12.7", features = ["image"], optional = true }
 image = { version = "0.24", default-features = false, features = ["png"], optional = true } 
+ 
 
 [dependencies.uuid]
 version = "1.15.1"
@@ -63,7 +64,7 @@ ssr = [
   "leptos_meta/ssr",
   "leptos_router/ssr",
   "leptos_toaster/ssr",
-  "dep:fast_qr",         
+  "dep:fast_qr",        
  "dep:image"
 ]
 

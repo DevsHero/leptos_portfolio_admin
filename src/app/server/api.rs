@@ -20,8 +20,7 @@ pub async fn verify(password: String) -> Result<bool, ServerFnError> {
 #[server(PdfExport, "/api")]
 pub async fn pdf_export(profile: Profile) -> Result<String, ServerFnError> {
     use base64::{ engine::general_purpose::STANDARD, Engine as _ };
-    use gotenberg_pdf::{ Client, WebOptions, PaperFormat, LinearDimention, Unit };
-    use crate::app::utils::pdf_template::generate_html_string;
+    use crate::app::utils::pdf_template::{ generate_html_string, generate_pdf_with_html2pdf };
     use leptos::logging;
     let html_string = match generate_html_string(&profile) {
         Ok(html) => html,
@@ -30,40 +29,30 @@ pub async fn pdf_export(profile: Profile) -> Result<String, ServerFnError> {
             return Err(ServerFnError::ServerError(format!("HTML generation failed: {}", e)));
         }
     };
+    #[cfg(feature = "ssr")]
+    let _pdf_bytes_result = generate_pdf_with_html2pdf(&html_string);
+    #[cfg(not(feature = "ssr"))]
+    let _pdf_bytes_result: Result<Vec<u8>, String> = Err(
+        "PDF generation is only available on the server.".to_string()
+    );
 
-    let gotenberg_url = std::env
-        ::var("GOTENBERG_URL")
-        .unwrap_or_else(|_| "http://localhost:4000".to_string());
-    logging::log!("Using Gotenberg URL: {}", gotenberg_url);
-    let client = Client::new(&gotenberg_url);
-
-    let mut options = WebOptions::default();
-    options.set_paper_format(PaperFormat::A4);
-
-    options.margin_bottom = Some(LinearDimention::new(0.5, Unit::Cm));
-    options.margin_top = Some(LinearDimention::new(0.5, Unit::Cm));
-    options.margin_right = Some(LinearDimention::new(0.0, Unit::Cm));
-    options.margin_left = Some(LinearDimention::new(0.0, Unit::Cm));
-
-    logging::log!("Sending HTML to Gotenberg...");
-
-    // --- Call Gotenberg ---
-    // Pass a slice (&) of the String to pdf_from_html
-    let pdf_bytes = match client.pdf_from_html(&html_string, options).await {
-        //                                         ^ Use &html_string here
-        Ok(bytes) => bytes,
-        Err(e) => {
-            logging::error!("Gotenberg PDF generation failed: {}", e);
-            return Err(ServerFnError::ServerError(format!("PDF generation failed: {}", e)));
+    // --- Process result ---
+    match _pdf_bytes_result {
+        Ok(pdf_bytes) => {
+            logging::log!(
+                "PDF generated successfully via html2pdf ({} bytes), encoding...",
+                pdf_bytes.len()
+            );
+            // Encode to Base64
+            let encoded_pdf = STANDARD.encode(&pdf_bytes);
+            Ok(encoded_pdf)
         }
-    };
-
-    logging::log!("PDF generated successfully ({} bytes), encoding to base64...", pdf_bytes.len());
-
-    let encoded_pdf = STANDARD.encode(&pdf_bytes);
-    Ok(encoded_pdf)
+        Err(e) => {
+            logging::error!("html2pdf PDF generation failed: {}", e);
+            Err(ServerFnError::ServerError(e))
+        }
+    }
 }
-
 #[server(SiteConfigs, "/api")]
 pub async fn site_config() -> Result<SiteConfig, ServerFnError> {
     let title = std::env::var("SITE_TITLE").unwrap();
