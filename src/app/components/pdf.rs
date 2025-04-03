@@ -4,30 +4,21 @@ use wasm_bindgen::JsValue;
 use web_sys::{ js_sys::{ self, Uint8Array }, Blob, BlobPropertyBag, Url };
 use leptos_icons::Icon;
 use icondata as i;
-use crate::app::server::api::pdf_export; // Ensure this path is correct
-use crate::app::models::Profile; // Ensure this path is correct
-use base64::{ engine::general_purpose::STANDARD, Engine as _ }; // Use STANDARD directly
+use crate::app::server::api::pdf_export;
+use crate::app::models::Profile;
+use base64::{ engine::general_purpose::STANDARD, Engine as _ };
 
 #[component]
 pub fn PdfExportButton(profile: Profile) -> impl IntoView {
-    // 1. Define the action that calls the server function
-    // It takes the Profile as input when dispatched
     let export_action = create_action(move |profile_to_export: &Profile| {
-        let profile_clone = profile_to_export.clone(); // Clone for the async block
+        let profile_clone = profile_to_export.clone();
         async move {
             log!("Calling pdf_export server function...");
-            pdf_export(profile_clone).await // Returns Result<String, ServerFnError>
+            pdf_export(profile_clone).await
         }
     });
-
-    // Optional: Signal to track loading state for disabling button
     let is_generating = create_rw_signal(false);
-
-    // 2. Handle the *result* of the action reactively using create_effect
-    // This runs *after* the action completes successfully or errors out.
     create_effect(move |_| {
-        // Get the latest value from the action
-        // export_action.value() gives Option<Result<String, ServerFnError>>
         if let Some(result) = export_action.value().get() {
             match result {
                 Ok(encoded_pdf) => {
@@ -135,7 +126,7 @@ pub fn PdfExportButton(profile: Profile) -> impl IntoView {
             on:click=handler
         >
            { move || if is_generating.get() {
-                view! { <Icon icon=i::FaSpinnerSolid class="animate-spin" />} // Example loading spinner
+                view! { <Icon icon=i::FaSpinnerSolid class="logo-animate" />} // Example loading spinner
            } else {
                 view! { <Icon icon=i::FaFilePdfRegular /> }
            }}

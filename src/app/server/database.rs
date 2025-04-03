@@ -190,7 +190,7 @@ cfg_if::cfg_if! {
                             "expected a string, found $surrealdb::private::sql::Thing"
                         )
                     {
-                        return Ok(true); // Treat this specific error as success
+                        return Ok(true);
                     }
                     Err(ServerFnError::from(e)) // Re-throw other errors
                 }

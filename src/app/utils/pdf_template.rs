@@ -8,23 +8,18 @@ cfg_if::cfg_if! {
             use std::env;
             use std::process::Command;
             use std::fs::{ self, File };
-
             use leptos::logging;
             use uuid::Uuid;
-
             let temp_dir = env::temp_dir();
             let unique_id = Uuid::new_v4();
             let input_html_path = temp_dir.join(format!("input_{}.html", unique_id));
             let output_pdf_path = temp_dir.join(format!("output_{}.pdf", unique_id));
-            let chromium_prod = env::var("CHROMIUM_PATH_PROD").unwrap();
-            let chromium_dev = env::var("CHROMIUM_PATH_DEV").unwrap();
             let input_path_str = input_html_path
                 .to_str()
                 .ok_or("Failed to create valid input path string")?;
             let output_path_str = output_pdf_path
                 .to_str()
                 .ok_or("Failed to create valid output path string")?;
-
             // --- Write HTML to Temporary File ---
             {
                 let mut input_file = File::create(&input_html_path).map_err(|e|
@@ -36,14 +31,7 @@ cfg_if::cfg_if! {
                         format!("Failed to write to temp HTML file '{}': {}", input_path_str, e)
                     )?;
             }
-
-            let mut cmd = Command::new(
-                if cfg!(debug_assertions) {
-                    chromium_dev
-                } else {
-                    chromium_prod
-                }
-            );
+            let mut cmd = Command::new("chromium");
             cmd.arg("--no-sandbox")
                 .arg("--headless")
                 .arg("--disable-gpu ")
@@ -105,6 +93,7 @@ cfg_if::cfg_if! {
         }
         pub fn generate_html_string(profile: &Profile) -> Result<String, std::fmt::Error> {
             use std::fmt::Write;
+            use super::utils::calculate_age;
             let mut html = String::with_capacity(16384); // Increased capacity slightly
             // --- HEAD ---
             write!(
@@ -153,16 +142,21 @@ cfg_if::cfg_if! {
 
             // --- Profile Section ---
             if profile.pdf.show_profile {
+                let age = calculate_age(&profile.birth_date);
                 write!(
                     html,
                     r#" <div class='section profile-section'>
                 <h2><i class='fas fa-id-card'></i> Profile</h2>
                 <div class='profile-list'>
-                    <p> <b class="b-class">Name</b>Thanon Aphithanawat</p>
-                    <p> <b class="b-class">Age</b> 38</p>
-                    <p> <b class="b-class">Nationality</b> Thai</p>
+                    <p> <b class="b-class">Name</b>{} {}</p>
+                    <p> <b class="b-class">Age</b>{}</p>
+                    <p> <b class="b-class">Nationality</b>{}</p>
                 </div>
-            </div>"#
+            </div>"#,
+                    &profile.first_name,
+                    &profile.last_name,
+                    &age,
+                    &profile.nationality
                 )?;
             }
             // --- Contact Section ---

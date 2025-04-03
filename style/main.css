@@ -1921,7 +1921,7 @@ width: 100%;
 
 /* Apply animation to logo */
 .logo-animate {
-  animation: logo-spin 20s linear infinite;
+  animation: logo-spin 10s linear infinite;
   transition: opacity 0.3s ease;
   transform-origin: 50% 50%;
 }
