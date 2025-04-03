@@ -1394,27 +1394,20 @@ button:hover {
   border-radius: 20px;
   font-size: small;
 }
-.level-basic {
+.level-1 {
   background: hwb(59 1% 34%);
   color: white;
 }
-.level-middle {
+.level-2 {
   background: hwb(33 5% 20%);
   color: white;
 }
-.level-expert {
+.level-3 {
   background: rgb(10, 143, 191);
   color: white;
 }
-.level-intermediate {
-  background: hwb(33 5% 20%);
-  color: white;
-}
-.level-proficiency {
-  background:rgb(10, 143, 191);
-  color: white;
-}
-.level-native {
+
+.level-4 {
   background: #0abf28;
   color: white;
 }

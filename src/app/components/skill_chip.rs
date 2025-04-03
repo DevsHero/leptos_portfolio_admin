@@ -1,4 +1,4 @@
-use crate::app::models::Skill;
+use crate::app::{ constants::constant::SKILL_LEVELS, models::Skill };
 use leptos::*;
 use leptos_icons::Icon;
 use icondata as i;
@@ -12,12 +12,16 @@ pub fn SkillChips(
     view! {
         <div class="skillList" style={if is_edit {"height:100%"} else {""}}>
             {move || skills.get().into_iter().enumerate().map(|(index, skill)| {
+                let level_info = SKILL_LEVELS
+                .iter()
+                .find(|&&(value, _)| value == skill.level)
+                .unwrap_or(&("0", "Unknown"));
                 let level_class = skill.level.to_lowercase();
                 view! {
                     <div class="skillChip">
                         <span class="skillName">{skill.name}</span>
                         <span class=format!("levelBadge level-{}", level_class)>
-                            {skill.level}
+                        {level_info.1}
                         </span>
                         {
 

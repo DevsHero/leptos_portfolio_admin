@@ -1,4 +1,4 @@
-use crate::app::models::Language;
+use crate::app::{ constants::constant::LANGUAGE_LEVELS, models::Language };
 use leptos::*;
 use leptos_icons::Icon;
 use icondata as i;
@@ -11,13 +11,17 @@ pub fn LanguageChips(
 ) -> impl IntoView {
     view! {
         <div class="languageList" style={if is_edit {"height:100%"} else {""}}>
-            {move || languages.get().into_iter().enumerate().map(|(index, skill)| {
-                let level_class = skill.level.to_lowercase();
+            {move || languages.get().into_iter().enumerate().map(|(index, language)| {
+                let level_info = LANGUAGE_LEVELS
+                .iter()
+                .find(|&&(value, _)| value == language.level)
+                .unwrap_or(&("0", "Unknown"));
+                let level_class = language.level.to_lowercase();
                 view! {
                     <div class="skillChip">
-                        <span class="skillName">{skill.name}</span>
+                        <span class="skillName">{language.name}</span>
                         <span class=format!("levelBadge level-{}", level_class)>
-                            {skill.level}
+                            {level_info.1}
                         </span>
                         {
 

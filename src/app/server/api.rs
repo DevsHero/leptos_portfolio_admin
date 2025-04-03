@@ -1,5 +1,5 @@
 use leptos::{ server, ServerFnError };
-use crate::app::models::{ Profile, SiteConfig, Skill };
+use crate::app::models::{ Profile, SiteConfig };
 use std::env;
 
 #[server(GetProfile, "/api")]
@@ -20,7 +20,7 @@ pub async fn verify(password: String) -> Result<bool, ServerFnError> {
 #[server(PdfExport, "/api")]
 pub async fn pdf_export(profile: Profile) -> Result<String, ServerFnError> {
     use base64::{ engine::general_purpose::STANDARD, Engine as _ };
-    use crate::app::utils::pdf_template::{ generate_html_string, generate_pdf_with_html2pdf };
+    use crate::app::utils::pdf_template::{ generate_html_string, generate_pdf };
     use leptos::logging;
     let html_string = match generate_html_string(&profile) {
         Ok(html) => html,
@@ -30,7 +30,7 @@ pub async fn pdf_export(profile: Profile) -> Result<String, ServerFnError> {
         }
     };
     #[cfg(feature = "ssr")]
-    let _pdf_bytes_result = generate_pdf_with_html2pdf(&html_string);
+    let _pdf_bytes_result = generate_pdf(&html_string);
     #[cfg(not(feature = "ssr"))]
     let _pdf_bytes_result: Result<Vec<u8>, String> = Err(
         "PDF generation is only available on the server.".to_string()
@@ -39,16 +39,13 @@ pub async fn pdf_export(profile: Profile) -> Result<String, ServerFnError> {
     // --- Process result ---
     match _pdf_bytes_result {
         Ok(pdf_bytes) => {
-            logging::log!(
-                "PDF generated successfully via html2pdf ({} bytes), encoding...",
-                pdf_bytes.len()
-            );
+            logging::log!("PDF generated successfully  ({} bytes), encoding...", pdf_bytes.len());
             // Encode to Base64
             let encoded_pdf = STANDARD.encode(&pdf_bytes);
             Ok(encoded_pdf)
         }
         Err(e) => {
-            logging::error!("html2pdf PDF generation failed: {}", e);
+            logging::error!("generate pdf failed: {}", e);
             Err(ServerFnError::ServerError(e))
         }
     }
@@ -69,7 +66,7 @@ pub async fn update_portfolio(
     _is_update_language: bool,
     _is_update_education: bool,
     _is_update_contact: bool
-) -> Result<Option<Profile>, ServerFnError> {
+) -> Result<bool, ServerFnError> {
     let updated = update_portfolio_api(
         profile,
         _is_update_skill,
@@ -79,17 +76,9 @@ pub async fn update_portfolio(
         _is_update_education,
         _is_update_contact
     ).await;
-    match updated {
-        Ok(updated_result) => Ok(updated_result),
-        Err(e) => Err(ServerFnError::from(e)),
-    }
-}
 
-#[server(UpdateSkill, "/api")]
-pub async fn update_skill(_skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
-    let updated = update_skill_api(_skills).await;
     match updated {
-        Ok(updated_result) => Ok(updated_result),
+        Ok(_updated_result) => Ok(_updated_result),
         Err(e) => Err(ServerFnError::from(e)),
     }
 }
@@ -109,7 +98,7 @@ cfg_if::cfg_if! {
             _is_update_language: bool,
             _is_update_education: bool,
             _is_update_contact: bool
-        ) -> Result<Option<Profile>, ServerFnError> {
+        ) -> Result<bool, ServerFnError> {
             database::update_all_tables(
                 profile,
                 _is_update_skill,
@@ -119,9 +108,6 @@ cfg_if::cfg_if! {
                 _is_update_education,
                 _is_update_contact
             ).await
-        }
-        pub async fn update_skill_api(_skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
-            database::update_skill(_skills).await
         }
     }
 }

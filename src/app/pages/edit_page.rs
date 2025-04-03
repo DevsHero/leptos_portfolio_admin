@@ -14,6 +14,7 @@ use crate::app::components::{
     SkillChips,
     TextEditor,
 };
+use crate::app::constants::constant::{ LANGUAGE_LEVELS, SKILL_LEVELS };
 use crate::app::models::portfolio::{ Contact, Experience };
 use crate::app::models::{ Education, Language, Portfolio, Profile, Skill, PDF };
 use crate::app::server::api::{ get_profile, update_portfolio, verify };
@@ -181,7 +182,7 @@ pub fn EditPage() -> impl IntoView {
                 //Skill 
                 let (skills, set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new));
                 let (skill_name, set_skill_name) = create_signal(String::new());
-                let (skill_level, set_skill_level) = create_signal(String::from("Basic"));
+                let (skill_level, set_skill_level) = create_signal(String::from("1"));
                 //Portfolio
                 let (portfolios, set_portfolios) = create_signal(profile.portfolios.unwrap_or_else(Vec::new));   
                 let (portfolio_name, set_portfolio_name) = create_signal(String::new());
@@ -210,7 +211,7 @@ pub fn EditPage() -> impl IntoView {
                 let (is_saving, set_is_saving) = create_signal(false);
 
                 let (validate_profile, set_validate_profile) = create_signal(false);
-                let (validate_pdf, set_validate_pdf) = create_signal(false);
+                let (validate_pdf, _set_validate_pdf) = create_signal(false);
                 let (validate_skill, set_validate_skill) = create_signal(false);
                 let (validate_language, set_validate_language) = create_signal(false);
                 let (validate_experience, set_validate_experience) = create_signal(false);
@@ -314,7 +315,7 @@ pub fn EditPage() -> impl IntoView {
                         set_skills.update(|skills| skills.push(new_skill));
                         set_validate_skill.set(false);
                         set_skill_name.set(String::new());
-                        set_skill_level.set(String::from("Basic"));
+                        set_skill_level.set(String::from("1"));
                  
                     set_is_update_skill(true);
                     
@@ -675,15 +676,22 @@ pub fn EditPage() -> impl IntoView {
                           <label id="skill_level">"Level"</label>
                           <select
                           class="selectDropdown"
-                              id="skill_level"
-                              prop:value=skill_level
-                              on:change=move |ev| {
-                                  set_skill_level(event_target_value(&ev));
-                              }>
-                              <option value="Basic">"Basic"</option>
-                              <option value="Middle">"Middle"</option>
-                              <option value="Expert">"Expert"</option>
-                          </select>
+                          id="skill_level"
+                          prop:value=skill_level
+                          on:change=move |ev| {
+                              set_skill_level(event_target_value(&ev));
+                          }
+                      >
+                          <For
+                              each=move || SKILL_LEVELS.to_vec()
+                              key=|&(value, _)| value
+                              children=move |(value, label)| {
+                                  view! {
+                                      <option value=value>{label}</option>
+                                  }
+                              }
+                          />
+                      </select>
                           <button
                           type="button"
                               class="addButton"
@@ -918,10 +926,15 @@ pub fn EditPage() -> impl IntoView {
                               on:change=move |ev| {
                                   set_language_level(event_target_value(&ev));
                               }>
-                              <option value="Basic">"Basic"</option>
-                              <option value="Intermediate">"Intermediate"</option>
-                              <option value="Proficiency">"Proficiency"</option>
-                              <option value="Native">"Native"</option>
+                              <For
+                              each=move || LANGUAGE_LEVELS.to_vec()
+                              key=|&(value, _)| value
+                              children=move |(value, label)| {
+                                  view! {
+                                      <option value=value>{label}</option>
+                                  }
+                              }
+                          />
                           </select>
                           <button
                           type="button"

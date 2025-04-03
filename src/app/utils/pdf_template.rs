@@ -1,22 +1,25 @@
+use crate::app::constants::constant::{ LANGUAGE_LEVELS, SKILL_LEVELS };
+
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use crate::app::{ models::Profile, utils::utils::convert_date_format };
         use super::utils::FONT_AWESOME_MAP;
-        use std::process::{ Command, Stdio };
 
-        pub fn generate_pdf_with_html2pdf(html_content: &str) -> Result<Vec<u8>, String> {
-            use std::io::{ Write, Read, Error as IoError, ErrorKind as IoErrorKind };
-            use std::process::{ Command, Stdio };
-            use std::fs::{ self, File };
+        pub fn generate_pdf(html_content: &str) -> Result<Vec<u8>, String> {
+            use std::io::Write;
             use std::env;
-            use leptos::logging; // Assuming logging is available here
+            use std::process::Command;
+            use std::fs::{ self, File };
+
+            use leptos::logging;
             use uuid::Uuid;
 
             let temp_dir = env::temp_dir();
             let unique_id = Uuid::new_v4();
             let input_html_path = temp_dir.join(format!("input_{}.html", unique_id));
             let output_pdf_path = temp_dir.join(format!("output_{}.pdf", unique_id));
-
+            let chromium_prod = env::var("CHROMIUM_PATH_PROD").unwrap();
+            let chromium_dev = env::var("CHROMIUM_PATH_DEV").unwrap();
             let input_path_str = input_html_path
                 .to_str()
                 .ok_or("Failed to create valid input path string")?;
@@ -36,34 +39,34 @@ cfg_if::cfg_if! {
                     )?;
             }
 
-            // --- Execute html2pdf Command ---
-            let mut cmd = Command::new("html2pdf");
-            cmd.arg(input_path_str)
-                .arg("-o")
-                .arg(output_path_str)
-                .arg("--paper")
-                .arg("A4")
-                // --- CORRECTED MARGIN ARGUMENT ---
-                .arg("--margin")
-                .arg("0.2 0 0.2 0") // Use only numbers (Top Right Bottom Left in inches)
-                .arg("--background")
-                .stdout(Stdio::piped())
-                .stderr(Stdio::piped());
+            let mut cmd = Command::new(
+                if cfg!(debug_assertions) {
+                    chromium_dev
+                } else {
+                    chromium_prod
+                }
+            );
+            cmd.arg("--no-sandbox")
+                .arg("--headless")
+                .arg("--disable-gpu ")
+                .arg("--no-pdf-header-footer")
+                .arg("--virtual-time-budget=10000")
+                .arg("--print-to-pdf=".to_owned() + output_path_str)
+                .arg(input_path_str);
 
             let output = cmd
                 .output()
                 .map_err(|e|
-                    format!("Failed to execute html2pdf command: {}. Is it installed and in PATH? Is Chrome/Chromium installed?", e)
+                    format!("Failed to execute generate pdf command: {}. Is it installed and in PATH? Is Chrome/Chromium installed?", e)
                 )?;
 
-            // --- Check Status and Read Output PDF ---
             let pdf_bytes: Result<Vec<u8>, String>;
             if output.status.success() {
                 pdf_bytes = fs
                     ::read(&output_pdf_path)
                     .map_err(|e|
                         format!(
-                            "Successfully ran html2pdf, but failed to read output PDF '{}': {}",
+                            "Successfully ran generate pdf, but failed to read output PDF '{}': {}",
                             output_path_str,
                             e
                         )
@@ -71,17 +74,15 @@ cfg_if::cfg_if! {
             } else {
                 let stderr_output = String::from_utf8_lossy(&output.stderr);
                 let stdout_output = String::from_utf8_lossy(&output.stdout);
-                logging::error!("html2pdf stdout: {}", stdout_output);
-                logging::error!("html2pdf stderr: {}", stderr_output);
+                logging::error!("generate pdf stdout: {}", stdout_output);
+                logging::error!("generate pdf stderr: {}", stderr_output);
                 pdf_bytes = Err(
                     format!(
-                        "html2pdf failed with status {}. Check logs for details.",
+                        "generate pdf failed with status {}. Check logs for details.",
                         output.status
                     )
                 );
             }
-
-            // --- Clean up Temporary Files ---
             let _ = fs::remove_file(&input_html_path);
             let _ = fs::remove_file(&output_pdf_path);
 
@@ -279,12 +280,15 @@ cfg_if::cfg_if! {
                             r#"<div class="section skills-section"><h2><i class="fas fa-cogs"></i> Languages</h2>"#
                         )?;
                         for language in languages {
+                            let level_info = LANGUAGE_LEVELS.iter()
+                                .find(|&&(value, _)| value == language.level)
+                                .unwrap_or(&("0", "Unknown"));
                             write!(
                                 html,
                                 r#"<div class="skill"><p>{}</p><div class="level level-{}">{}</div></div>"#,
                                 html_escape(&language.name),
                                 html_escape(&language.level.to_lowercase()),
-                                html_escape(&language.level)
+                                html_escape(&level_info.1)
                             )?;
                         }
                         write!(html, r#"</div>"#)?; // Close skills section
@@ -300,12 +304,15 @@ cfg_if::cfg_if! {
                             r#"<div class="section skills-section"><h2><i class="fas fa-cogs"></i> Skills</h2>"#
                         )?;
                         for skill in skills {
+                            let level_info = SKILL_LEVELS.iter()
+                                .find(|&&(value, _)| value == skill.level)
+                                .unwrap_or(&("0", "Unknown"));
                             write!(
                                 html,
                                 r#"<div class="skill"><p>{}</p><div class="level level-{}">{}</div></div>"#,
                                 html_escape(&skill.name),
                                 html_escape(&skill.level.to_lowercase()),
-                                html_escape(&skill.level)
+                                html_escape(&level_info.1)
                             )?;
                         }
                         write!(html, r#"</div>"#)?; // Close skills section
@@ -327,7 +334,11 @@ cfg_if::cfg_if! {
                     write!(
                         html,
                         r#"<div class="section about-section"><h2><i class="fas fa-user"></i> About Me</h2><p>{}</p></div>"#,
-                        html_escape(&profile.about)
+                        if profile.pdf.use_about_pdf_version {
+                            html_escape(&profile.pdf.about_pdf_data.clone().unwrap())
+                        } else {
+                            html_escape(&profile.about)
+                        }
                     )?;
                 }
             }
@@ -474,6 +485,10 @@ cfg_if::cfg_if! {
         height: 100%;          /* Ensure they take full height */
         box-sizing: border-box;  /* Consistent box model */
     }  
+    @page {
+      size: 8.5in 11in; 
+        margin: 0.1in;
+}
         body {
         font-family: 'Lato', sans-serif;
         color: #333;
@@ -635,27 +650,20 @@ border-radius : 20px;
  
 }
 
-.level-basic {
+.level-1 {
   background: hwb(59 1% 34%);
   color: white;
 }
-.level-middle {
+.level-2 {
   background: hwb(33 5% 20%);
   color: white;
 }
-.level-expert {
+.level-3 {
   background: rgb(10, 143, 191);
   color: white;
 }
-.level-intermediate {
-  background: hwb(33 5% 20%);
-  color: white;
-}
-.level-proficiency {
-  background:rgb(10, 143, 191);
-  color: white;
-}
-.level-native {
+
+.level-4 {
   background: #0abf28;
   color: white;
 }

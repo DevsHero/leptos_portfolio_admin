@@ -15,7 +15,11 @@ async fn main() -> std::io::Result<()> {
     let conf = get_configuration(None).await.unwrap();
     let addr = conf.leptos_options.site_addr;
     let routes = generate_route_list(App);
-    // println!("listening on http://{}", &addr);
+    if cfg!(debug_assertions) {
+        println!("Running in development mode");
+    } else {
+        println!("Running in production mode");
+    }
     HttpServer::new(move || {
         let leptos_options = &conf.leptos_options;
         let site_root = &leptos_options.site_root;

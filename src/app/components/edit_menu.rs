@@ -91,14 +91,14 @@ pub fn EditMenu(
                 {move || if languages.get().len() > 0 {view! {<p class="badget">  {languages.get().len()}</p>}}else{view! {<p></p>}}}  </span>
                </button>
                <button
-               type="button"
-               class=move || {
-                 if select_tab() == 8{ "tabsTitle active" } else { "tabsTitle" }
-               }
-               on:click=move |_| set_select_tab(8)  >
-               <span class="editTabRowBadget">    {move || if is_mobile.get() {view! { <p class="editTabIcon" >    <Icon icon={i::BsFiletypePdf} />  </p>} } else { view! {  <p> PDF </p>   } }}
-               {move || if languages.get().len() > 0 {view! {<p class="badget">  {languages.get().len()}</p>}}else{view! {<p></p>}}}  </span>
-              </button>
+                      type="button"
+                          class=move || {
+                              if select_tab() ==8 { "tabsTitle active" } else { "tabsTitle" }
+                          }
+                          on:click=move |_| set_select_tab(8)  >
+                          {move || if is_mobile.get() {view! { <span class="editTabIcon" >    <Icon icon={i::BsFiletypePdf} />  </span>} } else { view! {<span class="editTabRowBadget"> PDF  </span>} }}
+                         
+                      </button>
                   </div>
     }
 }

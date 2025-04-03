@@ -44,11 +44,11 @@ cfg_if::cfg_if! {
             let query = DB.query(
                 "
                 SELECT *,
-                    (SELECT * FROM skill ORDER BY name ASC) AS skills, 
+                    (SELECT * FROM skill ORDER BY level DESC) AS skills, 
                     (SELECT * FROM experience ORDER BY start_date DESC) AS experiences,
                     (SELECT * FROM portfolio ORDER BY index ASC ) AS portfolios,
                     (SELECT * FROM education ORDER BY graduated_year ASC ) AS educations ,
-                    (SELECT * FROM language ORDER BY name ASC ) AS languages ,
+                    (SELECT * FROM language ORDER BY level DESC ) AS languages ,
                     (SELECT * FROM contact ORDER BY use_link ASC ) AS contacts 
                 FROM profile 
                 LIMIT 1;
@@ -99,7 +99,7 @@ cfg_if::cfg_if! {
                                 about: temp_profile.about,
                                 avatar: temp_profile.avatar,
                                 address: temp_profile.address,
-                                id: temp_profile.id.id.to_string(), // Convert Thing to String
+                                id: Some(temp_profile.id.id.to_string()), // Convert Thing to String
                                 skills: temp_profile.skills,
                                 experiences: temp_profile.experiences,
                                 portfolios: temp_profile.portfolios,
@@ -126,7 +126,7 @@ cfg_if::cfg_if! {
             _is_update_language: bool,
             _is_update_education: bool,
             _is_update_contact: bool
-        ) -> Result<Option<Profile>, ServerFnError> {
+        ) -> Result<bool, ServerFnError> {
             let _ = open_db_connection().await;
 
             if _is_update_skill {
@@ -172,16 +172,28 @@ cfg_if::cfg_if! {
             update_profile.contacts = None;
             update_profile.educations = None;
             update_profile.languages = None;
+            update_profile.id = None;
+
             let res: Result<Option<Profile>, Error> = DB.update((
                 "profile",
-                profile.id.clone(),
+                profile.id.clone().unwrap(),
             )).content(update_profile).await;
             let _ = DB.invalidate().await;
-            // println!("updated_user: {:?}", res);
+
             match res {
-                Ok(user) => Ok(user),
-                // let _ = DB.invalidate().await;
-                Err(e) => Err(ServerFnError::from(e)),
+                Ok(user) => Ok(true),
+                Err(e) => {
+                    let error_string = e.to_string();
+                    if
+                        error_string.contains("failed to deserialize") &&
+                        error_string.contains(
+                            "expected a string, found $surrealdb::private::sql::Thing"
+                        )
+                    {
+                        return Ok(true); // Treat this specific error as success
+                    }
+                    Err(ServerFnError::from(e)) // Re-throw other errors
+                }
             }
         }
 

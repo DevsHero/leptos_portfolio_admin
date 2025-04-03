@@ -186,6 +186,7 @@ impl Default for Education {
 }
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Profile {
+    pub id: Option<String>,
     pub first_name: String,
     pub last_name: String,
     pub nick_name: String,
@@ -196,7 +197,6 @@ pub struct Profile {
     pub nationality: String,
     pub about: String,
     pub avatar: String,
-    pub id: String,
     pub address: String,
     pub skills: Option<Vec<Skill>>,
     pub experiences: Option<Vec<Experience>>,
@@ -208,7 +208,7 @@ pub struct Profile {
 impl Default for Profile {
     fn default() -> Self {
         Self {
-            id: String::from("portfolio_id"),
+            id: None,
             first_name: String::from("John"),
             last_name: String::from("Doe"),
             gender: String::from("Male"),
