@@ -1,0 +1,38 @@
+# docker-compose.yml
+
+# Use a specific version or omit for the latest supported by your Docker install
+# version: '3.8'
+
+services:
+  # Service for DragonflyDB (acting as Redis)
+  redis:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly # The image for DragonflyDB
+    container_name: dragonfly_redis # Optional: A specific name for the container
+    ports:
+      - "6379:6379" # Map host port 6379 to container port 6379
+    ulimits:
+      memlock: -1 # Set memory lock ulimit, often needed by Dragonfly/Redis variants
+    restart: unless-stopped # Restart policy
+
+  # Service for the Leptos SSR Web App
+  app:
+    # Use the specific image and tag from your docker pull command
+    image: hero0ncloud/leptos-portfolio-admin:v6
+    container_name: leptos_portfolio_app # Optional: A specific name for the container
+    platform: linux/amd64 # Specify the platform (matches linux/x86_64)
+    ports:
+      - "8080:8080" # Map host port 8080 to container port 8080
+    env_file:
+      - .env # Load environment variables from a .env file in the same directory
+    depends_on:
+      - redis # Ensure the redis service starts before the app service
+    restart: unless-stopped # Restart policy
+
+# Optional: Define networks if needed, otherwise default bridge network is used
+# networks:
+#   default:
+#     driver: bridge
+
+# Optional: Define volumes if needed
+# volumes:
+#   redis_data:

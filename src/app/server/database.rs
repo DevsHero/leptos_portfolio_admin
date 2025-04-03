@@ -181,7 +181,7 @@ cfg_if::cfg_if! {
             let _ = DB.invalidate().await;
 
             match res {
-                Ok(user) => Ok(true),
+                Ok(_user) => Ok(true),
                 Err(e) => {
                     let error_string = e.to_string();
                     if

@@ -1,10 +1,8 @@
-use crate::app::constants::constant::{ LANGUAGE_LEVELS, SKILL_LEVELS };
-
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use crate::app::{ models::Profile, utils::utils::convert_date_format };
         use super::utils::FONT_AWESOME_MAP;
-
+        use crate::app::constants::constant::{ LANGUAGE_LEVELS, SKILL_LEVELS };
         pub fn generate_pdf(html_content: &str) -> Result<Vec<u8>, String> {
             use std::io::Write;
             use std::env;
