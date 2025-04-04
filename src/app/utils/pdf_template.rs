@@ -13,11 +13,11 @@ cfg_if::cfg_if! {
             let temp_dir = env::temp_dir();
             let unique_id = Uuid::new_v4();
             let input_html_path = temp_dir.join(format!("input_{}.html", unique_id));
-            let output_pdf_path = temp_dir.join(format!("output_{}.pdf", unique_id));
+            let output_pdf_dir = temp_dir.join(format!("output_{}.pdf", unique_id));
             let input_path_str = input_html_path
                 .to_str()
                 .ok_or("Failed to create valid input path string")?;
-            let output_path_str = output_pdf_path
+            let output_path_str = output_pdf_dir
                 .to_str()
                 .ok_or("Failed to create valid output path string")?;
             // --- Write HTML to Temporary File ---
@@ -49,7 +49,7 @@ cfg_if::cfg_if! {
             let pdf_bytes: Result<Vec<u8>, String>;
             if output.status.success() {
                 pdf_bytes = fs
-                    ::read(&output_pdf_path)
+                    ::read(&output_pdf_dir)
                     .map_err(|e|
                         format!(
                             "Successfully ran generate pdf, but failed to read output PDF '{}': {}",
@@ -70,7 +70,7 @@ cfg_if::cfg_if! {
                 );
             }
             let _ = fs::remove_file(&input_html_path);
-            let _ = fs::remove_file(&output_pdf_path);
+            let _ = fs::remove_file(&output_pdf_dir);
 
             pdf_bytes
         }

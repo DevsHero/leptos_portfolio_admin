@@ -17,14 +17,27 @@ pub async fn verify(password: String) -> Result<bool, ServerFnError> {
     Ok(admin_password == password)
 }
 
-#[server(PdfExport, "/api")]
-pub async fn pdf_export(profile: Profile) -> Result<String, ServerFnError> {
+#[server(CreatePDF, "/api")]
+pub async fn pdf_create(profile: Profile) -> Result<String, ServerFnError> {
     let data = generate_pdf(profile).await;
     match data {
-        Ok(pdf_bytes) => Ok(pdf_bytes),
-
+        Ok(encode) => Ok(encode),
         Err(e) => Err(ServerFnError::from(e)),
     }
+}
+#[server(ReadPDF, "/api")]
+pub async fn get_pdf_file() -> Result<String, ServerFnError> {
+    let data = read_pdf_file().await;
+    match data {
+        Ok(encode) => Ok(encode.expect("REASON")),
+        Err(e) => Err(ServerFnError::from(e)),
+    }
+}
+#[server(CheckPDF, "/api")]
+pub async fn check_pdf_exits() -> Result<bool, ServerFnError> {
+    let pdf_file = get_pdf_dir().await;
+
+    Ok(pdf_file?.exists())
 }
 #[server(SiteConfigs, "/api")]
 pub async fn site_config() -> Result<SiteConfig, ServerFnError> {
@@ -61,50 +74,38 @@ pub async fn update_portfolio(
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use redis::AsyncCommands;
         use super::database;
-        use super::redis::{ get_redis_client, update_cache };
-        const CACHE_KEY: &str = "profile";
-        const CACHE_TTL: u64 = 2592000;
-
+        use super::redis::{ update_cache, get_cache };
+        use crate::app::{
+            constants::constant::{
+                PROFILE_CACHE_KEY,
+                CACHE_TTL,
+                PDF_FILE_NAME,
+                PDF_DIR,
+                PDF_FULL_PATH,
+            },
+        };
+        use std::path::PathBuf;
+        use std::fs;
+        use base64::{ engine::general_purpose::STANDARD, Engine as _ };
         pub async fn retrieve_profile_api() -> Result<Option<Profile>, ServerFnError> {
-            let client = get_redis_client();
-            let mut redis_client = client
-                .get_multiplexed_async_connection().await
-                .map_err(|e| -> ServerFnError {
-                    eprintln!("Redis connection failed: {}", e); // Log error
-                    ServerFnError::ServerError(format!("Redis connection failed: {}", e))
-                })?;
-
-            // Try to get cached profile
-            let cached: Option<String> = redis_client
-                .get(CACHE_KEY).await
-                .map_err(|e| -> ServerFnError {
-                    eprintln!(
-                        "Redis GET failed for key '{}': {}. Proceeding as cache miss.",
-                        CACHE_KEY,
-                        e
-                    );
-
-                    ServerFnError::ServerError(format!("Redis GET failed: {}", e))
-                })?;
-
+            let cached: Option<String> = get_cache(PROFILE_CACHE_KEY).await;
             if let Some(cached_json) = cached {
                 match serde_json::from_str::<Option<Profile>>(&cached_json) {
                     Ok(profile_opt) => {
-                        println!("Cache hit for key: {}", CACHE_KEY);
+                        println!("Get profile from cache");
                         return Ok(profile_opt);
                     }
                     Err(e) => {
                         eprintln!(
                             "Redis cache deserialization failed for key '{}': {}. Fetching fresh data.",
-                            CACHE_KEY,
+                            PROFILE_CACHE_KEY,
                             e
                         );
                     }
                 }
             } else {
-                println!("Cache miss for key: {}", CACHE_KEY);
+                println!("Cache miss for key: {}", PROFILE_CACHE_KEY);
             }
 
             // --- Cache Miss or Deserialization Failure ---
@@ -112,7 +113,11 @@ cfg_if::cfg_if! {
             let data = database::fetch_profile().await?;
             match serde_json::to_string(&data) {
                 Ok(data_json) => {
-                    let _redis_update = update_cache(CACHE_KEY, &data_json, CACHE_TTL).await;
+                    let _redis_update = update_cache(
+                        PROFILE_CACHE_KEY,
+                        &data_json,
+                        CACHE_TTL
+                    ).await;
                 }
                 Err(e) => {
                     eprintln!("Failed to serialize profile for caching: {}", e); // Log serialization error but continue
@@ -143,7 +148,11 @@ cfg_if::cfg_if! {
             let data = database::fetch_profile().await?;
             match serde_json::to_string(&data) {
                 Ok(data_json) => {
-                    let _redis_update = update_cache(CACHE_KEY, &data_json, CACHE_TTL).await;
+                    let _redis_update = update_cache(
+                        PROFILE_CACHE_KEY,
+                        &data_json,
+                        CACHE_TTL
+                    ).await;
                     Ok(true)
                 }
                 Err(e) => {
@@ -152,40 +161,65 @@ cfg_if::cfg_if! {
             }
         }
         pub async fn generate_pdf(profile: Profile) -> Result<String, ServerFnError> {
-            use base64::{ engine::general_purpose::STANDARD, Engine as _ };
             use crate::app::utils::pdf_template::{ generate_html_string, generate_pdf };
-            use leptos::logging;
+
+            println!("Generate new pdf");
             let html_string = match generate_html_string(&profile) {
                 Ok(html) => html,
                 Err(e) => {
-                    logging::error!("Failed to generate HTML string: {}", e);
                     return Err(
                         ServerFnError::ServerError(format!("HTML generation failed: {}", e))
                     );
                 }
             };
-            #[cfg(feature = "ssr")]
+
             let _pdf_bytes_result = generate_pdf(&html_string);
             #[cfg(not(feature = "ssr"))]
             let _pdf_bytes_result: Result<Vec<u8>, String> = Err(
                 "PDF generation is only available on the server.".to_string()
             );
 
-            // --- Process result ---
             match _pdf_bytes_result {
                 Ok(pdf_bytes) => {
-                    logging::log!(
-                        "PDF generated successfully  ({} bytes), encoding...",
-                        pdf_bytes.len()
-                    );
-                    // Encode to Base64
                     let encoded_pdf = STANDARD.encode(&pdf_bytes);
+                    let _ = store_pdf_file(pdf_bytes.clone()).await;
                     Ok(encoded_pdf)
                 }
-                Err(e) => {
-                    logging::error!("generate pdf failed: {}", e);
-                    Err(ServerFnError::ServerError(e))
+                Err(e) => { Err(ServerFnError::ServerError(e)) }
+            }
+        }
+
+        pub async fn get_pdf_dir() -> Result<PathBuf, ServerFnError> {
+            let public_dir = PathBuf::from(PDF_DIR);
+            let target_file_path = public_dir.join(PDF_FILE_NAME);
+            Ok(target_file_path)
+        }
+        async fn store_pdf_file(data: Vec<u8>) -> Result<bool, ServerFnError> {
+            use std::path::PathBuf;
+            let public_dir = PathBuf::from(PDF_DIR);
+            let target_file_path = public_dir.join(PDF_FILE_NAME);
+            use std::fs;
+            let _ = fs::create_dir_all(PDF_DIR);
+            match fs::write(&target_file_path, &data) {
+                Ok(_) => {
+                    println!("Store pdf file success");
+                    Ok(true)
                 }
+                Err(_e) => { Ok(false) }
+            }
+        }
+        pub async fn read_pdf_file() -> Result<Option<String>, ServerFnError> {
+            let _pdf_bytes_result = fs::read(PDF_FULL_PATH.to_string()); // Use ? for cleaner error propagation
+            #[cfg(not(feature = "ssr"))]
+            let _pdf_bytes_result: Result<Vec<u8>, String> = Err(
+                "PDF generation is only available on the server.".to_string()
+            );
+            match _pdf_bytes_result {
+                Ok(pdf_bytes) => {
+                    let encoded_pdf = STANDARD.encode(&pdf_bytes);
+                    Ok(Some(encoded_pdf))
+                }
+                Err(e) => { Ok(None) }
             }
         }
     }
