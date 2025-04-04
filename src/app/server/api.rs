@@ -113,11 +113,7 @@ cfg_if::cfg_if! {
             let data = database::fetch_profile().await?;
             match serde_json::to_string(&data) {
                 Ok(data_json) => {
-                    let _redis_update = update_cache(
-                        PROFILE_CACHE_KEY,
-                        &data_json,
-                        CACHE_TTL
-                    ).await;
+                    let _ = update_cache(PROFILE_CACHE_KEY, &data_json, CACHE_TTL).await;
                 }
                 Err(e) => {
                     eprintln!("Failed to serialize profile for caching: {}", e); // Log serialization error but continue
@@ -148,11 +144,8 @@ cfg_if::cfg_if! {
             let data = database::fetch_profile().await?;
             match serde_json::to_string(&data) {
                 Ok(data_json) => {
-                    let _redis_update = update_cache(
-                        PROFILE_CACHE_KEY,
-                        &data_json,
-                        CACHE_TTL
-                    ).await;
+                    let _ = update_cache(PROFILE_CACHE_KEY, &data_json, CACHE_TTL).await;
+                    let _ = fs::remove_file(PDF_FULL_PATH);
                     Ok(true)
                 }
                 Err(e) => {
@@ -219,7 +212,7 @@ cfg_if::cfg_if! {
                     let encoded_pdf = STANDARD.encode(&pdf_bytes);
                     Ok(Some(encoded_pdf))
                 }
-                Err(e) => { Ok(None) }
+                Err(_e) => { Ok(None) }
             }
         }
     }
