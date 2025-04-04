@@ -62,7 +62,8 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
 -   **Form Validation:** Ensure that all required fields are validated and prevent updates if any required fields are missing.
 -   **Toast Notifications:** Provides feedback for actions performed on the admin page.
 -   **Backend Server:** A simple Actix Web API server that interacts with the SurrealDB database.
--   **Responsive UI:** Adapts to both desktop and mobile layouts using Tailwind CSS.
+-   **Responsive UI:** The user interface adapts smoothly to all devices screen sizes using Tailwind CSS.
+-   **Caching:** Utilizes Redis to cache profile data and generated PDF files, improving website performance by reducing database queries and server processing.
 -   **Site Configuration:**
     -   Set the website title.
     -   *Meta Tags: Under development.*
@@ -193,10 +194,11 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     -   Answering questions intelligently (Q&A).
     -   Providing deeper insights into profile details or projects.
 -   **One-Script Setup:** Develop a shell script for automated setup of all prerequisites and dependencies.
+-   **Migration Leptos 0.7:** Migrated to branch migration-leptos-v7 but encountered several bugs and performance issues that I couldn't resolve. Maybe I'll try again next time.
 
 ## Contributing
 
-This is my first open-source project, and contributions are highly welcome! If you find any bugs, have suggestions for improvements, or want to add new features, please feel free to open an issue or submit a pull request.
+Contributions are highly welcome! If you find any bugs, have suggestions for improvements, or want to add new features, please feel free to open an issue or submit a pull request.
 
 *Note: This project has been primarily tested on Linux (Ubuntu) and macOS. While it may work on Windows (especially with Docker or WSL), its stability on that platform is not guaranteed.*
 
