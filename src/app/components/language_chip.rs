@@ -24,7 +24,6 @@ pub fn LanguageChips(
                             {level_info.1}
                         </span>
                         {
-
                             view! {
                                 <>
                                     {if is_edit {

@@ -7,7 +7,6 @@ pub fn RenderTab(no: i32, active_page: ReadSignal<i32>, children: Children) -> i
     view! {
         <div class=class id=no>
             {children()}
-       
         </div>
         }
 }

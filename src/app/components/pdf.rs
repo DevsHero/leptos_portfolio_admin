@@ -10,9 +10,7 @@ use base64::{ engine::general_purpose::STANDARD, Engine as _ };
 #[component]
 pub fn PdfExportButton(profile: Profile) -> impl IntoView {
     let profile_for_handler = profile.clone();
-
     let is_generating = create_rw_signal(false);
-
     let open_new_tab = async move |encoded_pdf: String| {
         match STANDARD.decode(encoded_pdf) {
             Ok(decoded_pdf) => {
@@ -37,13 +35,12 @@ pub fn PdfExportButton(profile: Profile) -> impl IntoView {
                                                 } else {
                                                     println!("Revoked Object URL");
                                                 }
-                                            }, std::time::Duration::from_secs(10)); // Adjust delay as needed
+                                            }, std::time::Duration::from_secs(10)); // Adjust delay for delete blob
                                         }
-                                        Ok(None) => println!("Browser blocked opening new tab."), // More likely scenario
+                                        Ok(None) => println!("Browser blocked opening new tab."),
                                         Err(e) => println!("Error opening new tab: {:?}", e),
                                     }
                                 }
-                                // No Url::revoke_object_url here, do it after opening
                             }
                             Err(e) => println!("Error creating object URL: {:?}", e),
                         }
@@ -64,7 +61,6 @@ pub fn PdfExportButton(profile: Profile) -> impl IntoView {
                     if is_generating.get() {
                         return;
                     }
-
                     is_generating.set(true);
                     let check_pdf_exits = check_pdf_exits().await;
                     if !check_pdf_exits.unwrap() {

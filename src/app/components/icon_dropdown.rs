@@ -13,7 +13,6 @@ pub fn IconDropdown(
 ) -> impl IntoView {
     let label = label.into();
     let label_for_error = label.clone();
-    // Store the selected icon as a String instead of &'static str
     let (selected_icon, set_selected_icon) = create_signal(String::new());
     let (is_open, set_is_open) = create_signal(false);
     let (error, set_error) = create_signal(None::<String>);
@@ -43,7 +42,6 @@ pub fn IconDropdown(
 
     if let Some(trigger) = validation {
         create_effect(move |_| {
-            // When the trigger changes, perform validation
             if trigger.get() {
                 validate();
             }
@@ -65,7 +63,6 @@ pub fn IconDropdown(
                             move || {
                                 let icon_name = selected_icon.get();
                                 if !get_value.get().is_empty()   && !icon_name.is_empty() {
-                                    // Look up the icon using the string name
                                     if let Some(&icon) = ICON_MAP.get(icon_name.as_str()) {
                                         view! { 
                                             <div class="aLinkRow"> 
@@ -96,7 +93,6 @@ pub fn IconDropdown(
                                                 set_selected_icon.set(name_string.clone());
                                                 set_is_open.set(false);
                                                 set_value.set(name_string.clone());
-                                                // Clear error if a value is selected
                                                 set_error.set(None);
                                             }
                                             class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"

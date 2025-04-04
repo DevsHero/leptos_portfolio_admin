@@ -11,7 +11,6 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4", optional = true, features = ["macros"] }
- 
 http = { version = "1.0.0", optional = true }
 leptos = { version = "0.6", features = ["nightly" ] }
 leptos_meta = { version = "0.6", features = ["nightly"] }
@@ -42,7 +41,6 @@ leptos_icons = "0.3.1"
 phf = { version = "0.11.3", features = ["macros"] }
 icondata_core = "0.1.0"
 leptos_toaster = { version = "0.1.7"  , features = ["builtin_toast"] } 
-gotenberg_pdf = "0.5"
 base64 = "0.22.1"
 fast_qr = { version = "0.12.7", features = ["image"], optional = true }
 image = { version = "0.24", default-features = false, features = ["png"], optional = true } 

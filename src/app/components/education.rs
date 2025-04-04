@@ -26,12 +26,12 @@ pub fn Education(
                         <div class="educationContainer">
                             <span class="experienceRow">
                                 <span class="educationRowFirstItem">
-                                    <img src=url alt="Company Icon" />
+                                    <img src=url alt="Institute Icon" />
                                     <div class="experienceRowFirstItemText">
-                                        <h3><b>Company</b>: {education.institute_name}</h3>
-                                        <h3><b>Position</b>: {education.degree}</h3>
+                                        <h3><b>Institute Name</b>: {education.institute_name}</h3>
+                                        <h3><b>Degree</b>: {education.degree}</h3>
                                         <h3> <b>Major</b>:{education.major} </h3>
-                                        <h3><b>Address</b>: {education.institute_address}</h3> 
+                                        <h3><b>Institute Address</b>: {education.institute_address}</h3> 
                                         <div class="rowItem">
                                         <h3 class="experienceh3" style="margin-right:10px;" > <b>GPA</b>:{education.gpa} </h3>
                                         <h3 class="experienceh3"> <b>Graduated Year</b>:{education.graduated_year} </h3>

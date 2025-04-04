@@ -2,7 +2,6 @@ use leptos::*;
 use leptos_router::A;
 use leptos_icons::Icon;
 use icondata as i;
-
 use crate::app::components::ThemeButton;
 
 #[component]

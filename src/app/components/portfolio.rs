@@ -133,7 +133,6 @@ pub fn Portfolio(
                 <div class="stackRow">
                 {if portfolio.stacks.len() > 1 {
                 Some( view!{
-                  
                     <b  >Stack:</b> {let stacks = portfolio.stacks.clone();
                         move || stacks.iter().enumerate().map(|(index, stack)| {
                             view! { <p style="margin-left:5px"  >{index +1}.{stack} </p> }
@@ -141,8 +140,7 @@ pub fn Portfolio(
                 })
                 } else { 
                  None} }
-                    </div>
-                 
+                    </div>    
             </div>}
                 })
                 .collect::<Vec<_>>()

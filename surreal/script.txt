@@ -13,6 +13,8 @@ DEFINE TABLE profile;
 DEFINE TABLE contact;
 DEFINE TABLE experience;
 DEFINE TABLE portfolio;
+DEFINE TABLE education;
+DEFINE TABLE language;
 DEFINE TABLE skill;
 
 -- Insert data into the profile table

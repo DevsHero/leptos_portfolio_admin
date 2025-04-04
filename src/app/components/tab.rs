@@ -15,12 +15,10 @@ pub fn SelectTab(
     let (experiences, _set_experiences) = create_signal(experiences);
     let (portfolios, _set_portfolios) = create_signal(portfolios);
     let (educations, _set_educations) = create_signal(educations);
-
     let count_experience = experiences.get().len();
     let count_portfolio = portfolios.get().len();
     let count_education = educations.get().len();
     view! {
-     
         <section class="tabSection">
             <div class="tabSectionSelector">
                 <button

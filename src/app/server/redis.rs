@@ -7,8 +7,8 @@ cfg_if! {
         use redis::Client as RedisClient;
         use redis::AsyncCommands;
         use leptos::{ ServerFnError };
-
         static REDIS_CLIENT: OnceLock<RedisClient> = OnceLock::new();
+
         fn init_redis() -> RedisClient {
             let redis_url = if cfg!(debug_assertions) {
                 env::var("REDIS_URL_DEV").unwrap_or_else(|_| "redis://localhost:6379".to_string())
