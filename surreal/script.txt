@@ -79,7 +79,7 @@ INSERT INTO experience {
 };
 
 -- Insert data into the experience table
-INSERT INTO Education {
+INSERT INTO education {
   	degree: "bachelor's degree",
 	gpa: "4.00",
 	graduated_year: "2010",

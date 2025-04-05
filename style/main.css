@@ -1,4 +1,7 @@
- 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 *,
 ::before,
 ::after {
@@ -764,16 +767,16 @@ body {
 
 .info {
   display: flex;
-  height: 34.5rem;
+  height: 35rem;
   flex-direction: column;
-  gap: 0.5em;
+  gap: 1em;
   color: var(--subtext0);
 }
 .info > * {
   height: -webkit-fill-available;
 }
 .profile {
-  border-radius: 1.5rem;
+  border-radius: 1rem;
  
   box-shadow: var(--shadow0);
 }
@@ -833,7 +836,7 @@ body {
   color:red
 }
 .about {
-  border-radius: 1.5rem;
+  border-radius: 1rem;
   padding: 0 0.4rem 0.4rem 0.4rem;
   box-shadow: var(--shadow0);
 
@@ -857,10 +860,10 @@ body {
 }
 
 .skills {
-  margin-top: 0.2rem;
+ 
   display: flex;
   flex-direction: column;
-  border-radius: 1.5rem;
+  border-radius: 1rem;
   padding: 0 0.4rem 0.4rem 0.4rem;
   background: var(--background);
   box-shadow: var(--shadow0);
@@ -904,7 +907,7 @@ body {
   display: flex;
   flex-direction: column;
   margin-left : 1rem;
-  margin-top: 0.5rem;
+ 
 
 }
 .editPage {
@@ -948,8 +951,8 @@ body {
 .tabContainer {
   margin-top: 15;
   position: relative;
-  height: 32rem;
-  border-radius: 1.5rem;
+  height: 33.5rem;
+  border-radius: 1rem;
   padding: 1rem;
   display: none;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1544,12 +1547,11 @@ width: 100%;
 }
 
 .loading{
-  margin-top: 3rem;
+  margin-top: 10rem;
  
   justify-content: center;
   align-items: center;
-  display: flex;
-  flex-direction: column;
+ 
 
 }
 
@@ -1643,6 +1645,7 @@ width: 100%;
   .profile {
     grid-column: span 1 / span 1;
     grid-row: span 2 / span 2;
+    
   }
   .editPage {
  
@@ -1695,9 +1698,7 @@ width: 100%;
   .tabsTitle {
     margin-top: 10px;
   }
-  .profile{
-    margin-top: 0.5rem;
-  }
+ 
   .portfolioDescriptions{
     height: 8rem;
   }
@@ -1852,4 +1853,42 @@ body.hydrating button::after {
   justify-content: center; 
   align-items: center;
   gap: 0.5rem;
+}
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: #3b82f6 }
+}
+
+.typing-text {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #3b82f6;
+  animation: 
+      typing 2s steps(60, end),
+      blink-caret 0.75s step-end infinite;
+}
+
+.typing-subtext {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #64748b;
+  animation: 
+      typing 2s steps(60, end),
+      blink-caret 0.75s step-end infinite;
+  }
+
+/* Flash-bang effect */
+@keyframes flash {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+.animate-flash {
+  animation: flash 7s cubic-bezier(0.4, 0, 0.6, 1) forwards;
 }

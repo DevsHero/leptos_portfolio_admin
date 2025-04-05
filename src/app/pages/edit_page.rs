@@ -1030,7 +1030,7 @@ pub fn EditPage() -> impl IntoView {
             view! {
                 <div class="selectMode" > <b><h1 style="font-size: 1.5rem;">"Edit Page"</h1></b>
             <div style="display: flex; flex-direction: column; margin-top: 15px; gap: 1rem">
-             <b style="font-size: 18px;">Select Access Mode</b>
+             <b style="font-size: 18px; text-align:center">Select Access Mode</b>
                 <button 
                 type="button"
                 style="width: 20rem; height: 2.5rem; margin-top: 1rem; color:green;   border-width: 1px;  border-color: green;"

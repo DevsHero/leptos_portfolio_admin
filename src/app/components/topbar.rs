@@ -16,7 +16,7 @@ pub fn Topbar() -> impl IntoView {
                     href="/edit"   
                     class="topbarButton"
                 >
-                    <Icon icon={i::OcGearSm} />
+                    <Icon icon={i::BiEditSolid} />
                 </A> 
                 <ThemeButton />
             </div>

@@ -31,7 +31,7 @@ pub fn App() -> impl IntoView {
             <Toaster 
 	    position=leptos_toaster::ToasterPosition::BottomCenter
 	>
-		// ...
+	
         <Topbar/>
                 <Routes>
                     <Route path="/"  ssr=SsrMode::Async  view=move || {

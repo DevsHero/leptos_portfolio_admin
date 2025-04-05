@@ -4,7 +4,7 @@
 
 ## Overview
 
-Leptos Portfolio Admin is a comprehensive, full-stack portfolio website solution built entirely in Rust. It leverages the Leptos framework for server-side rendering (SSR) and interactive frontend components, coupled with an Actix Web backend API.
+Leptos Portfolio Admin is a comprehensive, full-stack portfolio website solution built entirely in Rust. It leverages the Leptos framework for server-side rendering (SSR) and interactive frontend components, coupled with an Actix Web backend API. You can visit my **[website](https://thanon.dev/)** to check it out.
 
 **Key Highlights:**
 
@@ -69,6 +69,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     -   *Meta Tags: Under development.*
     -   *Other SEO Tags: Planned.*
 -   **Dark Mode:** Toggle between light and dark themes.
+-   **Intro Animation:** Welcome intro animation using Tailwind CSS..
 
 ## Prerequisites
 
