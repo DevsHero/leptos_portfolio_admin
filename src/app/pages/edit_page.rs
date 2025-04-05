@@ -13,6 +13,7 @@ use crate::app::components::{
     RenderTab,
     SkillChips,
     TextEditor,
+    Topbar,
 };
 use crate::app::constants::constant::{ LANGUAGE_LEVELS, SKILL_LEVELS };
 use crate::app::models::portfolio::{ Contact, Experience };
@@ -113,6 +114,7 @@ pub fn EditPage() -> impl IntoView {
     });
     view! {     
         <head> <script src="/assets/tinymce-integration.js"></script> </head>
+     
         <main class="editPage"  >
      
      
@@ -604,7 +606,7 @@ pub fn EditPage() -> impl IntoView {
                     }  
                 };
                 view! {
-                  <div> 
+                  <div> <Topbar/>
                  <EditMenu  select_tab=select_tab set_select_tab=set_select_tab
                  experiences=experiences
                  portfolios=portfolios
@@ -1028,7 +1030,8 @@ pub fn EditPage() -> impl IntoView {
                 }
             }   else{
             view! {
-                <div class="selectMode" > <b><h1 style="font-size: 1.5rem;">"Edit Page"</h1></b>
+                <div>    <Topbar/>
+                <div class="selectMode" >  <b><h1 style="font-size: 1.5rem;">"Edit Page"</h1></b>
             <div style="display: flex; flex-direction: column; margin-top: 15px; gap: 1rem">
              <b style="font-size: 18px; text-align:center">Select Access Mode</b>
                 <button 
@@ -1063,15 +1066,14 @@ pub fn EditPage() -> impl IntoView {
                             Verify
                         </button>   
                     </div>  
-                        </div>         
+                        </div>        
                 } }
              else{
                 view! {
  <div></div>
                 }} }                       
-                </div>
+                </div>  </div>  
             } }}  }else {
-                // Fallback state: No data available
                 view! { <div>"No profile data available."</div> }
             }}}
         </main>

@@ -4,7 +4,6 @@ pub mod pages;
 pub mod server;
 pub mod utils;
 pub mod constants;
-use components::Topbar;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::{ Route, Router, Routes, SsrMode };
@@ -32,7 +31,7 @@ pub fn App() -> impl IntoView {
 	    position=leptos_toaster::ToasterPosition::BottomCenter
 	>
 	
-        <Topbar/>
+      
                 <Routes>
                     <Route path="/"  ssr=SsrMode::Async  view=move || {
                         view! {

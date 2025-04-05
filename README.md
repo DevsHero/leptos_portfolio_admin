@@ -199,7 +199,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
 
 ## Contributing
 
-Contributions are highly welcome! If you find any bugs, have suggestions for improvements, or want to add new features, please feel free to open an issue or submit a pull request.
+This is my first Rust project, Contributions are highly welcome! If you find any bugs, have suggestions for improvements, or want to add new features, please feel free to open an issue or submit a pull request.
 
 *Note: This project has been primarily tested on Linux (Ubuntu) and macOS. While it may work on Windows (especially with Docker or WSL), its stability on that platform is not guaranteed.*
 

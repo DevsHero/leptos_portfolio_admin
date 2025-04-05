@@ -1,5 +1,5 @@
 use crate::app::{
-    components::{ Dialog, HomeContacts, LanguageChips, Loading, SelectTab, SkillChips },
+    components::{ Topbar, Dialog, HomeContacts, LanguageChips, Loading, SelectTab, SkillChips },
     server::api::get_profile,
     utils::utils::calculate_age,
 };
@@ -17,12 +17,12 @@ pub fn HomePage() -> impl IntoView {
     let (timer_finished, set_timer_finished) = create_signal(false);
     const LOCAL_STORAGE_VISIT_KEY: &str = "last_visit_time_ms";
 
-    //This effect is used to set a loading intro timeout and display it once every 24 hours based on the time of the last visit.
+    //This effect is used to set a loading intro timeout and display it once after 24 hours based on the time of the last visit.
     create_effect(move |_| {
         let now_dt: DateTime<Utc> = Utc::now();
         let now_ms = now_dt.timestamp_millis();
-        let twenty_four_hours_ms = 24 * 60 * 60 * 1000;
-        let mut delay_seconds = 7;
+        let twenty_four_hours_ms = 24 * 60 * 60 * 1000; //   repeat intro after 24 hours
+        let mut delay_seconds = 5;
         let visit_time_js_value = getLocalStorage(LOCAL_STORAGE_VISIT_KEY);
         if visit_time_js_value.is_null() || visit_time_js_value.is_undefined() {
         } else {
@@ -31,11 +31,7 @@ pub fn HomePage() -> impl IntoView {
                     match visit_time_str.parse::<i64>() {
                         Ok(last_visit_ms) => {
                             let time_since_last_visit_ms = now_ms.saturating_sub(last_visit_ms);
-                            leptos::logging::log!(
-                                "Last visit was {} ms ago ({} hours)",
-                                time_since_last_visit_ms,
-                                time_since_last_visit_ms / (60 * 60 * 1000)
-                            );
+
                             if time_since_last_visit_ms < twenty_four_hours_ms {
                                 delay_seconds = 0;
                             } else {
@@ -69,7 +65,7 @@ pub fn HomePage() -> impl IntoView {
             {move || { 
                 match get_profile_info.get() {
                     Some(Ok(profile)) => {
-                        if timer_finished.get() {
+                    
                         let (skills, _) = create_signal(profile.skills.clone().unwrap_or_default());
                         let (languages, _) = create_signal(profile.languages.clone().unwrap_or_default());
                         let (birth_date, set_birth_date) = create_signal(String::new());
@@ -80,8 +76,11 @@ pub fn HomePage() -> impl IntoView {
                         let age = calculate_age(&profile.birth_date);
                             set_birth_date.set(age.to_string());
                         });
+                        if timer_finished.get() {
                         view! {
-                            <div class="indexLayout">
+                            
+                        <div>
+                        <Topbar/>
                             { move || { 
                              if open_dialog.get() { 
                                  let clone_avatar =  profile.avatar.clone();
@@ -95,7 +94,8 @@ pub fn HomePage() -> impl IntoView {
                                  view! {<div></div>}
                              } 
                             }  }
-                              <div></div>
+                        
+                            <div class="indexLayout">
                                  <section class="info">
                                      <div class="profile">
                                          <span class="avatar">
@@ -147,12 +147,11 @@ pub fn HomePage() -> impl IntoView {
                                      portfolios={profile.portfolios.clone().unwrap_or_default()}
                                      educations={profile.educations.clone().unwrap_or_default()}
                                  />
-                             </div>
+                             </div> </div>
                                                  }
                         }
                         else {
-                            // Data loaded, but timer not finished -> show loading
-                             leptos::logging::log!("Profile loaded, waiting for timer...");
+                    
                             view! { <div><Loading /></div> } 
                         } },
                     Some(Err(e)) => view! { 
