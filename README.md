@@ -4,7 +4,7 @@
 
 ## Overview
 
-Leptos Portfolio Admin is a comprehensive, full-stack portfolio website solution built entirely in Rust. It leverages the Leptos framework for server-side rendering (SSR) and interactive frontend components, coupled with an Actix Web backend API. You can visit my **[website](https://thanon.dev/)** to check it out.
+Leptos Portfolio Admin is a comprehensive, full-stack portfolio website solution built entirely in Rust. It leverages the Leptos framework for server-side rendering (SSR) and interactive frontend components, coupled with an Actix Web backend API. You can see a demo of the project by visiting my **[website](https://thanon.dev/)**. Check it out!
 
 **Key Highlights:**
 
@@ -76,7 +76,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
 
 1.  **Clone Project:**
     ```bash
-    git clone [https://github.com/DevsHero/leptos_portfolio_admin.git](https://github.com/DevsHero/leptos_portfolio_admin.git)
+    git clone https://github.com/DevsHero/leptos_portfolio_admin.git
     cd leptos_portfolio_admin
     ```
 2.  **Prepare `.env` file:**
@@ -113,8 +113,6 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     REDIS_URL_DEV="redis://localhost:6379"
     # Redis connection URL used in the production Docker environment (connects to the 'redis' service).
     REDIS_URL_PROD="redis://redis:6379"
-
-    # --- Other (Add any other necessary variables here) ---
     ```
     **Important:** Replace the default values (like `SURREAL_USER`, `SURREAL_PASS`, `ADMIN_MODE_PASSWORD`) with your own secure settings before deployment.
 
@@ -181,8 +179,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     Make sure your `.env` file is configured.
     ```bash
     # Ensure your docker-compose.yml points to the Docker Hub image for the leptos-portfolio-admin service
-    docker compose -f docker-compose.yml pull leptos-portfolio-admin redis
-    docker compose -f docker-compose.yml up -d --force-recreate
+    docker compose pull && docker compose up -d --force-recreate
     ```
 2.  Access the site at `http://localhost:8080` (or the port mapped in your `docker-compose.yml`).
 
