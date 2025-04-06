@@ -48,12 +48,12 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     -   **Admin Mode:** Requires a password (set in `.env`) to enable adding, editing, and deleting content.
 -   **Editable Sections:**
     -   **Profile:** Edit profile details and the "About Me" section using TinyMCE.
-    -   **Skills:** Add or remove skills.
-    -   **Experiences:** Add or remove work experiences.
-    -   **Portfolio:** Add or remove portfolio projects.
-    -   **Contact:** Add or remove contact methods.
-    -   **Education:** Add or remove education entries.
-    -   **Language:** Add or remove language proficiencies.
+    -   **Skills:** Add/Edit/Remove skills order by high level.
+    -   **Experiences:** Add/Edit/Remove work experiences order by job start date.
+    -   **Portfolio:** Add/Edit/Remove portfolio projects order by index (can reindex).
+    -   **Contact:** Add/Edit/Remove contact and dynamic icon order by button type.
+    -   **Education:** Add/Edit/Remove education entries order by graduated year .
+    -   **Language:** Add/Edit/Remove language proficiencies order by high level.
     -   **PDF:** Configure PDF generation (e.g., use generated HTML or a custom PDF link) and other related settings.
 
 ### General Features
@@ -70,6 +70,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     -   *Other SEO Tags: Planned.*
 -   **Dark Mode:** Toggle between light and dark themes.
 -   **Intro Animation:** Welcome intro animation using Tailwind CSS..
+-   **Other:** Dialog Popup , Text Field Array,
 
 ## Prerequisites
 
@@ -201,9 +202,10 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
 
 This is my first Rust project, Contributions are highly welcome! If you find any bugs, have suggestions for improvements, or want to add new features, please feel free to open an issue or submit a pull request.
 
-*Note: This project has been primarily tested on Linux (Ubuntu) and macOS. While it may work on Windows (especially with Docker or WSL), its stability on that platform is not guaranteed.*
+*Note: This project has been primarily tested on macOS and debian server. While it may work on Windows (especially with Docker or WSL), its stability on that platform is not guaranteed.*
 
 ## Contact Me
 
 Thanon Aphithanawat (Hero)
-**mail@thanon.dev**
+-   **mail@thanon.dev** 
+-   **thanon@aphithanawat.me**  
