@@ -8,7 +8,7 @@ use crate::app::components::{
     InputArrayField,
     InputField,
     LanguageChips,
-    Loading,
+    LoadingIntro,
     Portfolio,
     RenderTab,
     SkillChips,
@@ -16,10 +16,9 @@ use crate::app::components::{
     Topbar,
 };
 use crate::app::constants::constant::{ LANGUAGE_LEVELS, SKILL_LEVELS };
-use crate::app::models::portfolio::{ Contact, Experience };
+use crate::app::models::profile::{ Contact, Experience };
 use crate::app::models::{ Education, Language, Portfolio, Profile, Skill, PDF };
 use crate::app::server::api::{ get_profile, update_portfolio, verify };
-
 use leptos::*;
 use leptos_toaster::{ Theme, Toast, ToastId, ToastOptions, ToastVariant, ToasterPosition, Toasts };
 use web_sys::SubmitEvent;
@@ -39,11 +38,9 @@ pub fn EditPage() -> impl IntoView {
     let (use_password, set_use_password) = create_signal(false);
     let (input_password, set_input_password) = create_signal(String::new());
     let (is_incorrect, set_is_incorrect) = create_signal(false);
-
     let create_toast = move |title: View, detail: View, varaint: ToastVariant| {
         let toast_id = ToastId::new();
         let toast_context = expect_context::<Toasts>();
-
         toast_context.toast(
             view! {
                 <Toast
@@ -114,16 +111,11 @@ pub fn EditPage() -> impl IntoView {
     });
     view! {     
         <head> <script src="/assets/tinymce-integration.js"></script> </head>
-     
         <main class="editPage"  >
-     
-     
         { move || {    
             if !is_ready.get() {
-                // Loading state
-                view! { <div> <Loading /></div> }
+                view! { <div> <LoadingIntro /></div> }
             } else if let Some(error) = error.get() {
-                // Error state
                 view! { <div>"Error loading profile: " {error}</div> }
             } else if let Some(profile) = profile.get() {              
                 {if is_init.get() { 
@@ -138,13 +130,14 @@ pub fn EditPage() -> impl IntoView {
                 let (nationality, set_nationality) = create_signal(profile.nationality);
                 let (avatar, set_avatar) = create_signal(profile.avatar);
                 let (address, set_address) = create_signal(profile.address);
-
                 //PDF
                 let (use_pdf, set_use_pdf) = create_signal(profile.pdf.use_pdf);
                 let (use_generate, set_use_generate) = create_signal(profile.pdf.use_generate);
                 let (pdf_link, set_pdf_link) = create_signal(profile.pdf.pdf_link.unwrap_or_default());
                 let (use_about_pdf_version, set_use_about_pdf_version) = create_signal(profile.pdf.use_about_pdf_version);
                 let (about_pdf_data, set_about_pdf_data) = create_signal(profile.pdf.about_pdf_data.unwrap_or_default());
+                let (use_avatar_pdf_version, set_use_avatar_pdf_version) = create_signal(profile.pdf.use_avatar_pdf_version);
+                let (avatar_pdf_url, set_avatar_pdf_url) = create_signal(profile.pdf.avatar_pdf_url.unwrap_or_default());
                 let (show_contact, set_show_contact) = create_signal(profile.pdf.show_contact);
                 let (show_language, set_show_language) = create_signal(profile.pdf.show_language);
                 let (show_about, set_show_about) = create_signal(profile.pdf.show_about);
@@ -154,12 +147,10 @@ pub fn EditPage() -> impl IntoView {
                 let (show_skill, set_show_skill) = create_signal(profile.pdf.show_skill);
                 let (show_profile, set_show_profile) = create_signal(profile.pdf.show_profile);
                 let (show_avatar, set_show_avatar) = create_signal(profile.pdf.show_avatar);
-
                 //Language         
                 let (languages, set_languages) = create_signal(profile.languages.unwrap_or_else(Vec::new));
                 let (language_name, set_language_name) = create_signal(String::new());
                 let (language_level, set_language_level) = create_signal(String::from("Intermediate"));
-
                 //Education         
                 let (educations, set_educations) = create_signal(profile.educations.unwrap_or_else(Vec::new));
                 let (institute_name, set_institute_name) = create_signal(String::new());
@@ -196,7 +187,6 @@ pub fn EditPage() -> impl IntoView {
                 let (stacks, set_stacks) = create_signal(vec!["".to_string()]);
                 let (use_portfolio_detail_pdf_version, set_use_portfolio_detail_pdf_version) = create_signal(bool::from(false));     
                 let (portfolio_detail_pdf_data, set_portfolio_detail_pdf_data) = create_signal(String::new());   
-                
                 //Contact
                 let (contacts, set_contacts) = create_signal(profile.contacts.unwrap_or_else(Vec::new));
                 let (contact_value, set_contact_value) = create_signal(String::new());
@@ -211,7 +201,6 @@ pub fn EditPage() -> impl IntoView {
                 let (_is_update_education, set_is_update_education) = create_signal(false);
                 let (_is_update_language, set_is_update_language) = create_signal(false);
                 let (is_saving, set_is_saving) = create_signal(false);
-
                 let (validate_profile, set_validate_profile) = create_signal(false);
                 let (validate_pdf, _set_validate_pdf) = create_signal(false);
                 let (validate_skill, set_validate_skill) = create_signal(false);
@@ -219,7 +208,7 @@ pub fn EditPage() -> impl IntoView {
                 let (validate_experience, set_validate_experience) = create_signal(false);
                 let (validate_portfolio, set_validate_portfolio) = create_signal(false);
                 let (validate_contact, set_validate_contact) = create_signal(false);
-               let (validate_education, set_validate_education) = create_signal(false);
+                let (validate_education, set_validate_education) = create_signal(false);
                 let update_profile_action = Action::new(move |profile: &Profile| {
                     set_is_saving.set(true);
                     let profile = profile.clone();
@@ -240,7 +229,6 @@ pub fn EditPage() -> impl IntoView {
                         set_is_update_portfolio(false);
                         set_is_update_contact(false);
                         create_toast({view! {<p class="toastSuccess">"Update Success" </p>}}.into_view(), "All information has been updated.".into_view(), ToastVariant::Success);
-                     
                         result
                     }
                 });
@@ -272,7 +260,9 @@ pub fn EditPage() -> impl IntoView {
                         use_generate: use_generate.get(),
                         pdf_link:Some(pdf_link.get()) ,
                         use_about_pdf_version: use_about_pdf_version.get(),
+                        use_avatar_pdf_version: use_avatar_pdf_version.get(),
                         about_pdf_data: Some(about_pdf_data.get()),
+                        avatar_pdf_url: Some(avatar_pdf_url.get()),
                         show_contact: show_contact.get(),
                         show_language: show_language.get(),
                         show_about: show_about.get(),
@@ -282,7 +272,6 @@ pub fn EditPage() -> impl IntoView {
                         show_skill: show_skill.get(),
                         show_profile: show_profile.get(),
                         show_avatar:show_avatar.get()
-
                     },
                     gender: gender.get(),
                     role: role.get(),
@@ -339,10 +328,8 @@ pub fn EditPage() -> impl IntoView {
                         set_validate_language.set(false);
                         set_language_name.set(String::new());
                         set_language_level.set(String::from("Intermediate"));
-                 
-                    set_is_update_language(true);
-                    
-                    create_toast({view! {<p class="toastInfo">"Add Language Success" </p>}}.into_view(), "Language Added.".into_view(), ToastVariant::Success);
+                        set_is_update_language(true);
+                        create_toast({view! {<p class="toastInfo">"Add Language Success" </p>}}.into_view(), "Language Added.".into_view(), ToastVariant::Success);
                     }
                     else{
                         create_toast( {view! {<p class="toastFail">"Add Language Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
@@ -381,7 +368,7 @@ pub fn EditPage() -> impl IntoView {
                         set_describe_pdf_data.set(String::new());
                         set_use_describe_pdf_version.set(bool::from(false));
                         set_is_update_experience(true);
-                    create_toast({view! {<p class="toastInfo">"Add Experience Success" </p>}}.into_view(), "Experience Added.".into_view(), ToastVariant::Success);
+                        create_toast({view! {<p class="toastInfo">"Add Experience Success" </p>}}.into_view(), "Experience Added.".into_view(), ToastVariant::Success);
                     }
                     else{
                         create_toast( {view! {<p class="toastFail">"Add Experience Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
@@ -415,10 +402,8 @@ pub fn EditPage() -> impl IntoView {
                         set_is_opensource.set(false);
                         set_screenshots_url.set(vec!["".to_string()]);
                         set_stacks.set(vec!["".to_string()]);
-                  
-                    set_is_update_portfolio(true);
-
-                    create_toast({view! {<p class="toastInfo">"Add Portfolio Success" </p>}}.into_view(), "Portfolio Added.".into_view(), ToastVariant::Success);
+                        set_is_update_portfolio(true);
+                        create_toast({view! {<p class="toastInfo">"Add Portfolio Success" </p>}}.into_view(), "Portfolio Added.".into_view(), ToastVariant::Success);
                     }
                     else{
                         create_toast( {view! {<p class="toastFail">"Add Portfolio Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
@@ -450,9 +435,8 @@ pub fn EditPage() -> impl IntoView {
                         set_degree.set(String::new());
                         set_major.set(String::new());
                         set_gpa.set(String::new());
-                    set_is_update_education(true);
-
-                    create_toast({view! {<p class="toastInfo">"Add Education Success" </p>}}.into_view(), "Education Added.".into_view(), ToastVariant::Success);
+                        set_is_update_education(true);
+                        create_toast({view! {<p class="toastInfo">"Add Education Success" </p>}}.into_view(), "Education Added.".into_view(), ToastVariant::Success);
                     }
                     else{
                         create_toast( {view! {<p class="toastFail">"Add Education Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
@@ -475,16 +459,13 @@ pub fn EditPage() -> impl IntoView {
                         set_contact_value.set(String::new());
                         set_contact_title.set(String::new());
                         set_use_link.set(false);
-                  
-                set_is_update_contact(true);
-             
-                create_toast({view! {<p class="toastInfo">"Add Contact Success" </p>}}.into_view(), "Contact Added.".into_view(), ToastVariant::Success);
+                        set_is_update_contact(true);
+                        create_toast({view! {<p class="toastInfo">"Add Contact Success" </p>}}.into_view(), "Contact Added.".into_view(), ToastVariant::Success);
                     }
                     else{
                         create_toast( {view! {<p class="toastFail">"Add Contact Failed" </p>}}.into_view() , "Missing required field.".into_view(), ToastVariant::Error);
                     }
                 };
-
                 let delete_skill = move |index: usize| {
                     set_skills.update(|skills| {
                         skills.remove(index);
@@ -558,7 +539,6 @@ pub fn EditPage() -> impl IntoView {
                         set_use_describe_pdf_version.set(experience.use_describe_pdf_version);
                         delete_experience(index);        
                     }  
-              
                 };
                 let edit_education = move |index: usize| {
                     let list = educations.get();
@@ -573,7 +553,6 @@ pub fn EditPage() -> impl IntoView {
                         set_gpa.set(education.gpa);
                         delete_education(index);        
                     }  
-              
                 };
                 let edit_portfolio = move |index: usize| {
                     let list = portfolios.get();
@@ -590,7 +569,6 @@ pub fn EditPage() -> impl IntoView {
                         set_screenshots_url.set(portfolio.screenshots_url);
                         delete_portfolio(index);        
                     }  
-                
                 };
              
                 let edit_contact = move |index: usize| {
@@ -601,8 +579,7 @@ pub fn EditPage() -> impl IntoView {
                         set_contact_value.set(contact.contact_value);
                         set_contact_icon.set(contact.contact_icon);
                         set_use_link.set(contact.use_link);
-                        delete_contact(index);
-                       
+                        delete_contact(index); 
                     }  
                 };
                 view! {
@@ -615,8 +592,7 @@ pub fn EditPage() -> impl IntoView {
                  educations=educations
                  languages=languages
                  />
-                  <form on:submit=on_submit >
-        
+                <form on:submit=on_submit >
                   <RenderTab  no=1 active_page=select_tab > 
                   <div class="editContainer ">
                   <h1>"Edit Profile"</h1>
@@ -665,10 +641,11 @@ pub fn EditPage() -> impl IntoView {
                   />
                       </div>
                       </RenderTab>
+
                    
                   <RenderTab  no=2 active_page=select_tab>    
                   <Show when=move || select_tab() == 2>
-                  <Suspense fallback=move || view! { <p>"Loading..."</p> }> 
+                  <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }> 
               
                   <div class="editContainer">
                   <h1>"Edit Skill"</h1>             
@@ -707,13 +684,14 @@ pub fn EditPage() -> impl IntoView {
                   on_delete=Callback::new(move |index| delete_skill(index))
                   on_edit=Callback::new(move |index| edit_skill(index))
                  is_edit=true />
-              </div>
-              </Suspense>
-              </Show>
+                    </div>
+                    </Suspense>
+                    </Show>
                   </RenderTab>
+
                   <RenderTab  no=3 active_page=select_tab>
                   <Show when=move || select_tab() == 3>
-                  <Suspense fallback=move || view! { <p>"Loading..."</p> }> 
+                  <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }> 
                   <div class="editContainer">
                   <h1>"Edit Experience"</h1> 
                   <InputField input_type="text" id="company_name" label="Company Name" validation=validate_experience set_value=set_company_name  get_value=company_name require=true />
@@ -743,7 +721,6 @@ pub fn EditPage() -> impl IntoView {
                       view!{ <div></div> }
                   }
               }
-
               <CheckBox id="use_describe_pdf_version"  label= "Use Job Describe PDF version" set_value=set_use_describe_pdf_version  get_value=use_describe_pdf_version />
               { move ||
                 if select_tab() == 3  && use_describe_pdf_version.get() {
@@ -756,13 +733,13 @@ pub fn EditPage() -> impl IntoView {
                 require=true
                 get_value=describe_pdf_data
                 set_value=set_describe_pdf_data
-            />
-            </div>
+                />
+                </div>
                 }
                 }else{
                     view!{ <div></div> }
                 }
-            }
+                 }
                           <button
                           type="button"
                           class="addButton"
@@ -775,20 +752,20 @@ pub fn EditPage() -> impl IntoView {
                         on_edit=Callback::new(move |index| edit_experience(index))
                         is_edit=true
                             />                      
-              </div>
-              </Suspense>
-              </Show>
+                    </div>
+                    </Suspense>
+                    </Show>
                   </RenderTab>
+
                   <RenderTab  no=4 active_page=select_tab>
                   <Show when=move || select_tab() == 4>
-                  <Suspense fallback=move || view! { <p>"Loading..."</p> }>
+                  <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }>
                   <div class="editContainer">
                   <h1>"Edit Portfolio"</h1>              
                   <InputField input_type="text" id="portfolio_name" label="Project Name" validation=validate_portfolio set_value=set_portfolio_name  get_value=portfolio_name require=true />
                   {move ||view! { <CheckBox id="is_opensource"  label= "Opensource" set_value=set_is_opensource  get_value=is_opensource />}}
                   <InputField input_type="text" id="portfolio_link" label="Project Link Url" set_value=set_portfolio_link  get_value=portfolio_link require=false />
-                  <InputField input_type="text" id="portfolio_icon_url" label="Project Icon Url" set_value=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />
-                
+                  <InputField input_type="text" id="portfolio_icon_url" label="Project Icon Url" set_value=set_portfolio_icon_url  get_value=portfolio_icon_url require=false />       
                   { move ||
                       if select_tab() == 4  {
                     view!{
@@ -808,8 +785,6 @@ pub fn EditPage() -> impl IntoView {
                           view!{ <div></div> }
                       }
                   }
-                     
-           
                   <InputArrayField  id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
                   <InputArrayField  id="stacks" label="Project Stack" set_fields=set_stacks  get_values=stacks require=false />
                   <CheckBox id="use_portfolio_detail_pdf_version"  label= "Use Portfolio Detail PDF version" set_value=set_use_portfolio_detail_pdf_version get_value=use_portfolio_detail_pdf_version />
@@ -824,14 +799,13 @@ pub fn EditPage() -> impl IntoView {
                     require=true
                     get_value=portfolio_detail_pdf_data
                     set_value=set_portfolio_detail_pdf_data
-                />
-                </div>
+                     />
+                     </div>
                     }
                     }else{
                         view!{ <div></div> }
                     }
-                }
-                     
+                    }  
                          <button
                           type="button"
                           class="addButton"
@@ -846,16 +820,16 @@ pub fn EditPage() -> impl IntoView {
                     on_delete=Callback::new(move |index| delete_portfolio(index))
                     on_edit=Callback::new(move |index| edit_portfolio(index))
                     />
-              </div>
-              </Suspense>
-              </Show>
+                    </div>
+                    </Suspense>
+                    </Show>
                   </RenderTab>
+
                   <RenderTab  no=5 active_page=select_tab>
                   <Show when=move || select_tab() == 5>
-                  <Suspense fallback=move || view! { <p>"Loading..."</p> }>
+                  <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }>
                   <div class="editContainer">
                   <h1>"Edit Contact"</h1>
-                
                   {move ||view! { <CheckBox id="use_link"  label= "Use link (disable dialog)" set_value=set_use_link  get_value=use_link />}}
                   <IconDropdown validation=validate_contact label="Contact Icon"  get_value=contact_icon  set_value=set_contact_icon require=true  / >
                   {move || {if !use_link.get() {
@@ -867,8 +841,7 @@ pub fn EditPage() -> impl IntoView {
                   } else {
                       view! { <div></div> }
                   }}}
-                  <InputField validation=validate_contact input_type="text" id="contact_value" label="Contact Value" set_value=set_contact_value  get_value=contact_value require=true />
-                 
+                  <InputField validation=validate_contact input_type="text" id="contact_value" label="Contact Value" set_value=set_contact_value  get_value=contact_value require=true />  
                   <button
                           type="button"
                           class="addButton"
@@ -880,13 +853,14 @@ pub fn EditPage() -> impl IntoView {
                       on_delete=Callback::new(move |index| delete_contact(index))
                       on_edit=Callback::new(move |index| edit_contact(index))
                       is_edit=true/ >
-              </div>
-              </Suspense>
-              </Show>
+                    </div>
+                    </Suspense>
+                    </Show>
                   </RenderTab>
+
                   <RenderTab  no=6 active_page=select_tab>
                   <Show when=move || select_tab() == 6>
-                  <Suspense fallback=move || view! { <p>"Loading..."</p> }>
+                  <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }>
                   <div class="editContainer">
                   <h1>"Edit Education"</h1>
                   <InputField validation=validate_education input_type="text" id="institute_name" label="Institute Name" set_value=set_institute_name  get_value=institute_name require=true />
@@ -911,10 +885,10 @@ pub fn EditPage() -> impl IntoView {
               </Suspense>
               </Show>
                   </RenderTab>
+
                   <RenderTab  no=7 active_page=select_tab>    
                   <Show when=move || select_tab() == 7>
-                  <Suspense fallback=move || view! { <p>"Loading..."</p> }> 
-              
+                  <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }> 
                   <div class="editContainer">
                   <h1>"Edit Language"</h1>             
                   <div class="formRow">   
@@ -955,6 +929,7 @@ pub fn EditPage() -> impl IntoView {
               </Suspense>
               </Show>
                   </RenderTab>
+
                   <RenderTab  no=8 active_page=select_tab > 
                   <div class="editContainer ">
                   <h1>"Edit PDF"</h1>
@@ -987,24 +962,41 @@ pub fn EditPage() -> impl IntoView {
                <CheckBox id="show_profile"  label= "Show Profile Section" set_value=set_show_profile get_value=show_profile />
                </div>
                <CheckBox id="show_avatar"  label= "Show Avatar Section" set_value=set_show_avatar get_value=show_avatar />
-               <CheckBox id="use_about_pdf_version"  label= "Use About PDF Version" set_value=set_use_about_pdf_version get_value=use_about_pdf_version />
+               {move || if use_avatar_pdf_version.get()
+                {view! { <div> 
+                        {move || if !avatar_pdf_url.get().is_empty()  {                  
+                         Some( view! {<img src=avatar_pdf_url class="avatar-preview  mx-auto items-center justify-center align-center" alt="PDF Avatar preview" />})}
+                        else{None} }
+                    <InputField validation=validate_pdf input_type="text" id="avatar" label="Avatar PDF URL" set_value=set_avatar_pdf_url  get_value=avatar_pdf_url require=false />  
+                    
+                         </div>  } }
+                          
+                           else {view! {<div> </div>}} } 
+               <CheckBox id="use_avatar_pdf_version"  label= "Use Avatar PDF Version" set_value=set_use_avatar_pdf_version get_value=use_avatar_pdf_version />
                {move || if use_about_pdf_version.get()
-         {view! { <div> 
-        <TextEditor
-             label="About Me (PDF Version)"
-             id="about_pdf_data"
-             validation=validate_pdf
-             disabled=false
-             require=true
-             get_value=about_pdf_data
-             set_value=set_about_pdf_data
-         />  
+                {view! { <div> 
+                <TextEditor
+                label="About Me (PDF Version)"
+                id="about_pdf_data"
+                validation=validate_pdf
+                disabled=false
+                require=true
+                get_value=about_pdf_data
+                set_value=set_about_pdf_data
+                />  
                   </div>  } }
                    
                     else {view! {<div> </div>}} } 
-         })}else {None} } 
+                })}else {None} } 
+               
+               <CheckBox id="use_about_pdf_version"  label= "Use About PDF Version" set_value=set_use_about_pdf_version get_value=use_about_pdf_version />
+               
+             
+               
+              
                       </div>
                       </RenderTab>
+
                   {if is_verify.get()  {
                       view! {   <div class="bottomForm">
                   <button
@@ -1020,20 +1012,20 @@ pub fn EditPage() -> impl IntoView {
                       on:click=reset_form  >
                       "Cancel"
                   </button>
-              </div>
+                </div>
                        } }
-               else{
+                else{
                   view! {
                           <div> </div>
                   } }}
                   </form></div>
                 }
-            }   else{
-            view! {
+                }   else{
+                view! {
                 <div>    <Topbar/>
                 <div class="selectMode" >  <b><h1 style="font-size: 1.5rem;">"Edit Page"</h1></b>
-            <div style="display: flex; flex-direction: column; margin-top: 15px; gap: 1rem">
-             <b style="font-size: 18px; text-align:center">Select Access Mode</b>
+                <div style="display: flex; flex-direction: column; margin-top: 15px; gap: 1rem">
+                <b style="font-size: 18px; text-align:center">Select Access Mode</b>
                 <button 
                 type="button"
                 style="width: 20rem; height: 2.5rem; margin-top: 1rem; color:green;   border-width: 1px;  border-color: green;"
@@ -1067,10 +1059,10 @@ pub fn EditPage() -> impl IntoView {
                         </button>   
                     </div>  
                         </div>        
-                } }
-             else{
+                    } }
+                else{
                 view! {
- <div></div>
+                <div></div>
                 }} }                       
                 </div>  </div>  
             } }}  }else {

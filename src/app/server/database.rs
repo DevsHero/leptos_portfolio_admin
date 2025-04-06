@@ -2,7 +2,7 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use std::env;
         use leptos::ServerFnError;
-        use crate::app::models::portfolio::{
+        use crate::app::models::profile::{
             Experience,
             Portfolio,
             Profile,

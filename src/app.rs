@@ -4,6 +4,7 @@ pub mod pages;
 pub mod server;
 pub mod utils;
 pub mod constants;
+use constants::constant::INTRO_LOGO_URL;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::{ Route, Router, Routes, SsrMode };
@@ -18,7 +19,6 @@ pub fn App() -> impl IntoView {
         move |_| async move { site_config().await }
     );
     let config = get_config.get().and_then(Result::ok).unwrap_or_default().clone();
-
     view! {
         <Stylesheet id="leptos" href="/pkg/leptos-portfolio-admin.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
@@ -30,8 +30,6 @@ pub fn App() -> impl IntoView {
             <Toaster 
 	    position=leptos_toaster::ToasterPosition::BottomCenter
 	>
-	
-      
                 <Routes>
                     <Route path="/"  ssr=SsrMode::Async  view=move || {
                         view! {
@@ -44,7 +42,7 @@ pub fn App() -> impl IntoView {
                             <EditPage />
                         }
                     }/>
-                    // <Route path="/*any" view=NotFound/>
+                    <Route path="/*any" view=NotFound/>
                 </Routes>
 
                 </Toaster>
@@ -62,6 +60,14 @@ fn NotFound() -> impl IntoView {
         resp.set_status(actix_web::http::StatusCode::NOT_FOUND);
     }
     view! {
-        <h1>"Not Found"</h1>
+     
+ <img
+alt="loading "
+src=   {INTRO_LOGO_URL}
+style="margin-top : 1rem;"
+class="logo-animate animate-spin-slow  "
+/>
+<div class="notFound">   Url Link Not Found  </div> 
+        
     }
 }

@@ -128,7 +128,11 @@ cfg_if::cfg_if! {
                 write!(
                     html,
                     r#"<img src="{}" alt="{} {}" class="avatar-pic">"#,
-                    html_escape(&profile.avatar),
+                    if profile.pdf.use_avatar_pdf_version {
+                        html_escape(&profile.pdf.avatar_pdf_url.clone().unwrap())
+                    } else {
+                        html_escape(&profile.avatar)
+                    },
                     html_escape(&profile.first_name),
                     html_escape(&profile.last_name)
                 )?;

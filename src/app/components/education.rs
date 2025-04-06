@@ -1,5 +1,5 @@
 use leptos::*;
-use crate::app::models::portfolio::Education;
+use crate::app::{ constants::constant::EDUCATION_NONE_ICON, models::profile::Education };
 use leptos_icons::Icon;
 use icondata as i;
 #[component]
@@ -17,7 +17,7 @@ pub fn Education(
                 .enumerate()
                 .map(|(index, education)| {
                     let url = if education.institute_logo_url.is_empty() {
-                        "https://cdn-icons-png.flaticon.com/512/4729/4729436.png".to_string()
+                        EDUCATION_NONE_ICON.to_string()
                     } else {
                         education.institute_logo_url.clone()
                     };

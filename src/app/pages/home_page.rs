@@ -1,12 +1,18 @@
 use crate::app::{
-    components::{ Topbar, Dialog, HomeContacts, LanguageChips, Loading, SelectTab, SkillChips },
+    components::{
+        Topbar,
+        Dialog,
+        HomeContacts,
+        LanguageChips,
+        LoadingIntro,
+        SelectTab,
+        SkillChips,
+    },
     server::api::get_profile,
     utils::utils::calculate_age,
 };
 use leptos::*;
 use std::time::Duration;
-use crate::app::utils::utils::{ getLocalStorage, setLocalStorage };
-use chrono::{ DateTime, Utc };
 #[component]
 pub fn HomePage() -> impl IntoView {
     let get_profile_info = Resource::new(
@@ -15,45 +21,16 @@ pub fn HomePage() -> impl IntoView {
     );
     let (is_ready, set_is_ready) = create_signal(false);
     let (timer_finished, set_timer_finished) = create_signal(false);
-    const LOCAL_STORAGE_VISIT_KEY: &str = "last_visit_time_ms";
 
-    //This effect is used to set a loading intro timeout and display it once after 24 hours based on the time of the last visit.
+    //This effect is used to set a loading intro timeout
     create_effect(move |_| {
-        let now_dt: DateTime<Utc> = Utc::now();
-        let now_ms = now_dt.timestamp_millis();
-        let twenty_four_hours_ms = 24 * 60 * 60 * 1000; //   repeat intro after 24 hours
-        let mut delay_seconds = 5;
-        let visit_time_js_value = getLocalStorage(LOCAL_STORAGE_VISIT_KEY);
-        if visit_time_js_value.is_null() || visit_time_js_value.is_undefined() {
-        } else {
-            match visit_time_js_value.as_string() {
-                Some(visit_time_str) => {
-                    match visit_time_str.parse::<i64>() {
-                        Ok(last_visit_ms) => {
-                            let time_since_last_visit_ms = now_ms.saturating_sub(last_visit_ms);
-
-                            if time_since_last_visit_ms < twenty_four_hours_ms {
-                                delay_seconds = 0;
-                            } else {
-                            }
-                        }
-                        Err(_) => {}
-                    }
-                }
-                None => {}
-            }
-        }
-
         let handle = set_timeout(move || {
             set_timer_finished.set(true);
-        }, Duration::from_secs(delay_seconds));
+        }, Duration::from_secs(3));
 
         on_cleanup(move || {
             let _ = handle;
         });
-        // --- Update the last visit time in localStorage ---
-
-        setLocalStorage(LOCAL_STORAGE_VISIT_KEY, &now_ms.to_string());
     });
 
     create_effect(move |_| {
@@ -61,11 +38,10 @@ pub fn HomePage() -> impl IntoView {
     });
     view! {
         
-        <Suspense fallback=Loading>
+        <Suspense fallback=LoadingIntro>
             {move || { 
                 match get_profile_info.get() {
                     Some(Ok(profile)) => {
-                    
                         let (skills, _) = create_signal(profile.skills.clone().unwrap_or_default());
                         let (languages, _) = create_signal(profile.languages.clone().unwrap_or_default());
                         let (birth_date, set_birth_date) = create_signal(String::new());
@@ -76,10 +52,14 @@ pub fn HomePage() -> impl IntoView {
                         let age = calculate_age(&profile.birth_date);
                             set_birth_date.set(age.to_string());
                         });
-                        if timer_finished.get() {
-                        view! {
-                            
+                        
+                        view! {         
+                       
                         <div>
+                        { move || { if timer_finished.get() {view! { <div> </div> } }
+                        else {    
+                            view! { <div><LoadingIntro /></div> } 
+                        } }}
                         <Topbar/>
                             { move || { 
                              if open_dialog.get() { 
@@ -93,8 +73,7 @@ pub fn HomePage() -> impl IntoView {
                              else {
                                  view! {<div></div>}
                              } 
-                            }  }
-                        
+                            }  }                 
                             <div class="indexLayout">
                                  <section class="info">
                                      <div class="profile">
@@ -148,12 +127,7 @@ pub fn HomePage() -> impl IntoView {
                                      educations={profile.educations.clone().unwrap_or_default()}
                                  />
                              </div> </div>
-                                                 }
-                        }
-                        else {
-                    
-                            view! { <div><Loading /></div> } 
-                        } },
+                        }   },
                     Some(Err(e)) => view! { 
                         <div class="indexLayout">
                             <div>"Error loading profile: "{e.to_string()}</div>
@@ -161,7 +135,7 @@ pub fn HomePage() -> impl IntoView {
                     },
                     None => view! { 
                         <div class="indexLayout">
-                            <div>"Loading..."</div>
+                            <div>"LoadingIntro..."</div>
                         </div> 
                     }
                 }

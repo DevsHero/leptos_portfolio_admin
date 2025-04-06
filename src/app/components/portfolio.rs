@@ -1,5 +1,9 @@
 use leptos::*;
-use crate::app::{ components::ImageSlider, models::portfolio::Portfolio };
+use crate::app::{
+    components::ImageSlider,
+    constants::constant::PORTFOLIO_NONE_ICON,
+    models::profile::Portfolio,
+};
 use leptos_icons::Icon;
 use icondata as i;
 #[component]
@@ -102,8 +106,9 @@ pub fn Portfolio(
                         <Icon  icon={i::TbWorldWww} /> 
                         </a></div> }
                     };
+
                     let url = if portfolio.portfolio_icon_url.is_empty() {
-                        "https://cdn-icons-png.flaticon.com/512/7867/7867852.png".to_string()
+                        PORTFOLIO_NONE_ICON.to_string()
                     } else {
                         portfolio.portfolio_icon_url.clone()
                     };

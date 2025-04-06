@@ -1,5 +1,9 @@
 use leptos::*;
-use crate::app::{ models::portfolio::Experience, utils::utils::convert_date_format };
+use crate::app::{
+    constants::constant::EXPERIENCE_NONE_ICON,
+    models::profile::Experience,
+    utils::utils::convert_date_format,
+};
 use leptos_icons::Icon;
 use icondata as i;
 #[component]
@@ -17,7 +21,7 @@ pub fn Experience(
                 .enumerate()
                 .map(|(index, experience)| {
                     let url = if experience.company_logo_url.is_empty() {
-                        "https://cdn-icons-png.flaticon.com/512/6214/6214253.png".to_string()
+                        EXPERIENCE_NONE_ICON.to_string()
                     } else {
                         experience.company_logo_url.clone()
                     };

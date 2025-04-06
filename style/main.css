@@ -738,6 +738,12 @@ body {
   background-color: var(--background);
   z-index: 1000;
 }
+.notFound {
+  margin-top: 1rem;
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+}
 .pill {
   display: flex;
   flex-direction: row;
@@ -1549,12 +1555,15 @@ width: 100%;
 }
 
 .loading{
-  margin-top: 10rem;
+  top:0;
+  left: 0;
+  position: fixed; 
+   background-color: var(--background);
+   height: 100%;
+   width: 100%;
  
-  justify-content: center;
-  align-items: center;
- 
-
+ z-index: 9999;
+ animation: flash 4s cubic-bezier(0.4, 0, 0.6, 1) forwards;
 }
 
 .dialogContainer {
@@ -1563,10 +1572,10 @@ width: 100%;
 }
 .dialogChildren {
   position: fixed; 
-  top: 50%;
+  top: 75%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1000; 
+  z-index: 1000;  
 }
 .dialog-trigger {
  height: 2rem;
@@ -1638,14 +1647,14 @@ width: 100%;
     width: 100%;
   }
   .logo-animate {
-    width: 25%;
-    height: 25%;
+    width: 35%;
+    
 }
 .typing-text {
-  font-size: 14;
+  font-size: 13;
 }
 .typing-subtext {
-  font-size: 12;
+  font-size: 11;
 }
   .topbar {
     grid-column: span 1 / span 1;
@@ -1658,6 +1667,11 @@ width: 100%;
     grid-column: span 1 / span 1;
     grid-row: span 2 / span 2;
     
+  }
+  .dialogChildren {
+    top: 50%;
+ 
+    width: 100%;
   }
   .editPage {
  
@@ -1687,6 +1701,9 @@ width: 100%;
   }
   .educationContainer{
     height: 6rem;
+  }
+  .loading{
+    top: -50;
   }
   .avatar > img {
     width: 6.5rem;
@@ -1810,6 +1827,7 @@ width: 100%;
 
 /* Apply animation to logo */
 .logo-animate {
+  margin: 0 auto;
   animation: logo-spin 10s linear infinite;
   transition: opacity 0.3s ease;
   transform-origin: 50% 50%;
@@ -1902,5 +1920,5 @@ body.hydrating button::after {
 }
 
 .animate-flash {
-  animation: flash 6s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  animation: flash 4s cubic-bezier(0.4, 0, 0.6, 1) forwards;
 }

@@ -1,6 +1,6 @@
 use crate::app::{
     components::{ Experience, RenderTab, Portfolio, Education },
-    models::portfolio::{ Experience, Portfolio, Education },
+    models::profile::{ Experience, Portfolio, Education },
 };
 use leptos::*;
 
@@ -57,7 +57,7 @@ pub fn SelectTab(
             </RenderTab>
             <RenderTab  no=2 active_page=select_tab>    
             <Show when=move || select_tab() == 2>
-            <Suspense fallback=move || view! { <p>"Loading ..."</p> }>
+            <Suspense fallback=move || view! { <p>"LoadingIntro ..."</p> }>
             <Portfolio  
             portfolios=portfolios
             is_edit=false
@@ -67,7 +67,7 @@ pub fn SelectTab(
             </RenderTab>
             <RenderTab  no=3 active_page=select_tab>    
             <Show when=move || select_tab() == 3>
-            <Suspense fallback=move || view! { <p>"Loading ..."</p> }>
+            <Suspense fallback=move || view! { <p>"LoadingIntro ..."</p> }>
             <Education  
             educations=educations
             is_edit=false

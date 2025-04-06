@@ -2,7 +2,7 @@ use crate::app::utils::utils::get_icon_by_name;
 use leptos::*;
 use leptos_icons::Icon;
 use icondata as i;
-use crate::app::models::portfolio::Contact;
+use crate::app::models::profile::Contact;
 #[component]
 pub fn EditContacts(
     contacts: ReadSignal<Vec<Contact>>,
