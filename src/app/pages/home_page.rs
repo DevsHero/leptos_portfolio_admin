@@ -8,16 +8,16 @@ use crate::app::{
         SelectTab,
         SkillChips,
     },
-    server::api::get_profile,
+    server::api::get_profile_api,
     utils::utils::calculate_age,
 };
 use leptos::*;
 use std::time::Duration;
 #[component]
 pub fn HomePage() -> impl IntoView {
-    let get_profile_info = Resource::new(
+    let get_profile_api_info = Resource::new(
         || (),
-        move |_| async move { get_profile().await }
+        move |_| async move { get_profile_api().await }
     );
     let (is_ready, set_is_ready) = create_signal(false);
     let (timer_finished, set_timer_finished) = create_signal(false);
@@ -40,7 +40,7 @@ pub fn HomePage() -> impl IntoView {
         
         <Suspense fallback=LoadingIntro>
             {move || { 
-                match get_profile_info.get() {
+                match get_profile_api_info.get() {
                     Some(Ok(profile)) => {
                         let (skills, _) = create_signal(profile.skills.clone().unwrap_or_default());
                         let (languages, _) = create_signal(profile.languages.clone().unwrap_or_default());

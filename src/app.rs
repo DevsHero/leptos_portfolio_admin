@@ -10,13 +10,13 @@ use leptos_meta::*;
 use leptos_router::{ Route, Router, Routes, SsrMode };
 use leptos_toaster::Toaster;
 use pages::{ HomePage, EditPage };
-use server::api::site_config;
+use server::api::site_config_api;
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
     let get_config = Resource::new(
         || (),
-        move |_| async move { site_config().await }
+        move |_| async move { site_config_api().await }
     );
     let config = get_config.get().and_then(Result::ok).unwrap_or_default().clone();
     view! {

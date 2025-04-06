@@ -18,7 +18,7 @@ use crate::app::components::{
 use crate::app::constants::constant::{ LANGUAGE_LEVELS, SKILL_LEVELS };
 use crate::app::models::profile::{ Contact, Experience };
 use crate::app::models::{ Education, Language, Portfolio, Profile, Skill, PDF };
-use crate::app::server::api::{ get_profile, update_portfolio, verify };
+use crate::app::server::api::{ get_profile_api, update_profile_api, verify_password_api };
 use leptos::*;
 use leptos_toaster::{ Theme, Toast, ToastId, ToastOptions, ToastVariant, ToasterPosition, Toasts };
 use web_sys::SubmitEvent;
@@ -29,9 +29,9 @@ pub fn EditPage() -> impl IntoView {
     let (profile, set_profile) = create_signal(None);
     let (error, set_error) = create_signal(None);
     let (select_tab, set_select_tab) = create_signal(1);
-    let get_profile_info = Resource::new(
+    let get_profile_api_info = Resource::new(
         || (),
-        |_| async move { get_profile().await }
+        |_| async move { get_profile_api().await }
     );
     let (is_init, set_is_init) = create_signal(false);
     let (is_verify, set_is_verify) = create_signal(false);
@@ -63,7 +63,7 @@ pub fn EditPage() -> impl IntoView {
     };
     let verify_action = Action::new(move |_| {
         async move {
-            let result = verify(input_password.get()).await;
+            let result = verify_password_api(input_password.get()).await;
             match result {
                 Ok(true) => {
                     set_is_incorrect(false);
@@ -97,7 +97,7 @@ pub fn EditPage() -> impl IntoView {
     });
     create_effect(move |_| {
         spawn_local(async move {
-            match get_profile().await {
+            match get_profile_api().await {
                 Ok(data) => {
                     set_profile.set(Some(data));
                     set_is_ready.set(true);
@@ -213,7 +213,7 @@ pub fn EditPage() -> impl IntoView {
                     set_is_saving.set(true);
                     let profile = profile.clone();
                     async move {
-                        let result = update_portfolio(
+                        let result = update_profile_api(
                             profile , 
                             _is_update_skill.get() ,
                             _is_update_portfolio.get(),
@@ -233,7 +233,7 @@ pub fn EditPage() -> impl IntoView {
                     }
                 });
                 let reset_form = move |_: web_sys::MouseEvent| {  // Add type annotation here
-                    get_profile_info.refetch();
+                    get_profile_api_info.refetch();
                 };
                 let profile_id = profile.id.clone();
                 let on_submit = move |ev: SubmitEvent| {
@@ -292,7 +292,7 @@ pub fn EditPage() -> impl IntoView {
             create_effect(move |_| {
                     if let Some(Ok(_)) = update_profile_action.value().get() {
                         // Refresh data after successful update
-                        get_profile_info.refetch();
+                        get_profile_api_info.refetch();
                     }
                 });
                 let add_skill = move |_| {

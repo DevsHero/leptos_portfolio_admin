@@ -2714,6 +2714,7 @@ version = "0.1.1"
 dependencies = [
  "actix-files",
  "actix-web",
+ "argon2",
  "base64 0.22.1",
  "cfg-if",
  "chrono",
@@ -2731,6 +2732,7 @@ dependencies = [
  "leptos_router",
  "leptos_toaster",
  "once_cell",
+ "password-hash",
  "phf",
  "redis",
  "serde",

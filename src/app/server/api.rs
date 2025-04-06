@@ -3,7 +3,7 @@ use crate::app::models::{ Profile, SiteConfig };
 use std::env;
 
 #[server(GetProfile, "/api")]
-pub async fn get_profile() -> Result<Profile, ServerFnError> {
+pub async fn get_profile_api() -> Result<Profile, ServerFnError> {
     let data = retrieve_profile_api().await;
     match data {
         Ok(Some(profile)) => Ok(profile),
@@ -12,13 +12,13 @@ pub async fn get_profile() -> Result<Profile, ServerFnError> {
     }
 }
 #[server(Verify, "/api")]
-pub async fn verify(password: String) -> Result<bool, ServerFnError> {
+pub async fn verify_password_api(password: String) -> Result<bool, ServerFnError> {
     let admin_password = std::env::var("ADMIN_MODE_PASSWORD").unwrap_or("admin".to_string());
     Ok(admin_password == password)
 }
 
 #[server(CreatePDF, "/api")]
-pub async fn pdf_create(profile: Profile) -> Result<String, ServerFnError> {
+pub async fn pdf_create_api(profile: Profile) -> Result<String, ServerFnError> {
     let data = generate_pdf(profile).await;
     match data {
         Ok(encode) => Ok(encode),
@@ -26,7 +26,7 @@ pub async fn pdf_create(profile: Profile) -> Result<String, ServerFnError> {
     }
 }
 #[server(ReadPDF, "/api")]
-pub async fn get_pdf_file() -> Result<String, ServerFnError> {
+pub async fn get_pdf_file_api() -> Result<String, ServerFnError> {
     let data = read_pdf_file().await;
     match data {
         Ok(encode) => Ok(encode.expect("REASON")),
@@ -34,20 +34,19 @@ pub async fn get_pdf_file() -> Result<String, ServerFnError> {
     }
 }
 #[server(CheckPDF, "/api")]
-pub async fn check_pdf_exits() -> Result<bool, ServerFnError> {
+pub async fn check_pdf_exits_api() -> Result<bool, ServerFnError> {
     let pdf_file = get_pdf_dir().await;
-
     Ok(pdf_file?.exists())
 }
 #[server(SiteConfigs, "/api")]
-pub async fn site_config() -> Result<SiteConfig, ServerFnError> {
+pub async fn site_config_api() -> Result<SiteConfig, ServerFnError> {
     let title = std::env::var("SITE_TITLE").unwrap();
     let config = SiteConfig { title };
     Ok(config)
 }
 
 #[server(UpdatePortfolio, "/api")]
-pub async fn update_portfolio(
+pub async fn update_profile_api(
     profile: Profile,
     _is_update_skill: bool,
     _is_update_portfolio: bool,
@@ -56,7 +55,7 @@ pub async fn update_portfolio(
     _is_update_education: bool,
     _is_update_contact: bool
 ) -> Result<bool, ServerFnError> {
-    let updated = update_portfolio_api(
+    let updated = update_profile(
         profile,
         _is_update_skill,
         _is_update_portfolio,
@@ -75,7 +74,7 @@ pub async fn update_portfolio(
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use super::database;
-        use super::redis::{ update_cache, get_cache };
+        use super::redis::{ update_cache, get_cache, check_rate_limit };
         use crate::app::{
             constants::constant::{
                 PROFILE_CACHE_KEY,
@@ -87,7 +86,9 @@ cfg_if::cfg_if! {
         };
         use std::path::PathBuf;
         use std::fs;
+        use leptos::{ use_context, logging };
         use base64::{ engine::general_purpose::STANDARD, Engine as _ };
+
         pub async fn retrieve_profile_api() -> Result<Option<Profile>, ServerFnError> {
             let cached: Option<String> = get_cache(PROFILE_CACHE_KEY).await;
             if let Some(cached_json) = cached {
@@ -110,7 +111,7 @@ cfg_if::cfg_if! {
 
             // --- Cache Miss or Deserialization Failure ---
             println!("Fetching profile from database.");
-            let data = database::fetch_profile().await?;
+            let data = database::server_fetch_profile().await?;
             match serde_json::to_string(&data) {
                 Ok(data_json) => {
                     let _ = update_cache(PROFILE_CACHE_KEY, &data_json, CACHE_TTL).await;
@@ -122,7 +123,7 @@ cfg_if::cfg_if! {
 
             Ok(data)
         }
-        pub async fn update_portfolio_api(
+        pub async fn update_profile(
             profile: Profile,
             _is_update_skill: bool,
             _is_update_portfolio: bool,
@@ -131,7 +132,7 @@ cfg_if::cfg_if! {
             _is_update_education: bool,
             _is_update_contact: bool
         ) -> Result<bool, ServerFnError> {
-            let _ = database::update_all_tables(
+            let _ = database::server_update_all_tables(
                 profile,
                 _is_update_skill,
                 _is_update_portfolio,
@@ -141,7 +142,7 @@ cfg_if::cfg_if! {
                 _is_update_contact
             ).await;
             // --- Update Profile Cache---
-            let data = database::fetch_profile().await?;
+            let data = database::server_fetch_profile().await?;
             match serde_json::to_string(&data) {
                 Ok(data_json) => {
                     let _ = update_cache(PROFILE_CACHE_KEY, &data_json, CACHE_TTL).await;
@@ -214,6 +215,84 @@ cfg_if::cfg_if! {
                 }
                 Err(_e) => { Ok(None) }
             }
+        }
+        pub async fn verify_password(password: String) -> Result<bool, ServerFnError> {
+            use actix_web::HttpRequest;
+            use argon2::Argon2;
+            use password_hash::{ PasswordHash, PasswordVerifier, Error as PwHashError };
+            let http_req = use_context::<HttpRequest>();
+            let ip_address_string = if let Some(req) = http_req {
+                req.headers()
+                    .get("X-Forwarded-For")
+                    .and_then(|h| h.to_str().ok())
+                    .and_then(|s| s.split(',').next()) // Get the first IP if multiple are present
+                    .map(|s| s.trim().to_string())
+                    .or_else(|| { req.peer_addr().map(|addr| addr.ip().to_string()) })
+                    .unwrap_or_else(|| {
+                        "unknown_ip".to_string() // Use a fallback identifier
+                    })
+            } else {
+                logging::warn!("HttpRequest not found in context for rate limiting.");
+                "unknown_ip_context".to_string()
+            };
+            let allowed = check_rate_limit("admin_verify", &ip_address_string, 5, 60).await?;
+            if !allowed {
+                logging::warn!(
+                    "Rate limit exceeded for admin verify from IP: {}",
+                    ip_address_string
+                );
+                return Err(
+                    ServerFnError::ServerError(
+                        "Too many attempts. Please try again later.".to_string()
+                    )
+                );
+            }
+
+            let stored_hash = match std::env::var("ADMIN_PASSWORD_HASH") {
+                Ok(h) => h,
+                Err(_) => {
+                    logging::error!("ADMIN_PASSWORD_HASH environment variable not set!");
+                    return Err(
+                        ServerFnError::ServerError("Server configuration error.".to_string())
+                    );
+                }
+            };
+
+            let verify_result = actix_web::rt::task::spawn_blocking(move || {
+                let password_bytes = password.as_bytes();
+                let parsed_hash = match PasswordHash::new(&stored_hash) {
+                    Ok(hash) => hash,
+                    Err(e) => {
+                        logging::error!("FATAL: Stored ADMIN_PASSWORD_HASH is invalid: {}", e);
+                        return Err(PwHashError::Password);
+                    }
+                };
+
+                Argon2::default().verify_password(password_bytes, &parsed_hash)
+            }).await;
+
+            let is_correct = match verify_result {
+                Ok(Ok(())) => true,
+                Ok(Err(e)) => {
+                    if matches!(e, PwHashError::Password) {
+                        logging::log!(
+                            "Incorrect admin password attempt (Argon2 mismatch) from IP {}",
+                            ip_address_string
+                        );
+                    } else {
+                        logging::error!("Argon2 verification processing error: {}", e);
+                    }
+                    false
+                }
+                Err(e) => {
+                    logging::error!("Blocking task join error during Argon2 verification: {}", e);
+                    false
+                }
+            };
+            if is_correct {
+                logging::log!("Successful admin login from IP {}", ip_address_string);
+            }
+            Ok(is_correct)
         }
     }
 }

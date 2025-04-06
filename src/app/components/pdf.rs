@@ -3,7 +3,7 @@ use wasm_bindgen::JsValue;
 use web_sys::{ js_sys::{ self, Uint8Array }, Blob, BlobPropertyBag, Url };
 use leptos_icons::Icon;
 use icondata as i;
-use crate::app::server::api::{ check_pdf_exits, get_pdf_file, pdf_create };
+use crate::app::server::api::{ check_pdf_exits_api, get_pdf_file_api, pdf_create_api };
 use crate::app::models::Profile;
 use base64::{ engine::general_purpose::STANDARD, Engine as _ };
 
@@ -62,13 +62,13 @@ pub fn PdfExportButton(profile: Profile) -> impl IntoView {
                         return;
                     }
                     is_generating.set(true);
-                    let check_pdf_exits = check_pdf_exits().await;
-                    if !check_pdf_exits.unwrap() {
-                        let create_pdf = pdf_create(profile.clone()).await;
+                    let check_pdf_exits_api = check_pdf_exits_api().await;
+                    if !check_pdf_exits_api.unwrap() {
+                        let create_pdf = pdf_create_api(profile.clone()).await;
                         open_new_tab(create_pdf.unwrap()).await
                     } else {
-                        let get_pdf_file = get_pdf_file().await;
-                        open_new_tab(get_pdf_file.unwrap()).await
+                        let get_pdf_file_api = get_pdf_file_api().await;
+                        open_new_tab(get_pdf_file_api.unwrap()).await
                     }
                 } else {
                     if let Some(link) = &profile.pdf.pdf_link {

@@ -37,7 +37,7 @@ cfg_if::cfg_if! {
             Ok(())
         }
 
-        pub async fn fetch_profile() -> Result<Option<Profile>, ServerFnError> {
+        pub async fn server_fetch_profile() -> Result<Option<Profile>, ServerFnError> {
             use serde::Deserialize;
 
             let _ = open_db_connection().await;
@@ -120,7 +120,7 @@ cfg_if::cfg_if! {
             }
         }
 
-        pub async fn update_all_tables(
+        pub async fn server_update_all_tables(
             profile: Profile,
             _is_update_skill: bool,
             _is_update_portfolio: bool,
@@ -132,54 +132,56 @@ cfg_if::cfg_if! {
             let _ = open_db_connection().await;
 
             if _is_update_skill {
-                let _skill_result = update_skill(profile.skills.clone().expect("REASON")).await;
+                let _skill_result = server_update_skill(
+                    profile.skills.clone().expect("REASON")
+                ).await;
                 // println!("_skill_result: {:?}", _skill_result);
             }
 
             if _is_update_experience {
-                let _experience_result = update_experience(
+                let _experience_result = server_update_experience(
                     profile.experiences.clone().expect("REASON")
                 ).await;
                 // println!("_experience_result: {:?}", _experience_result);
             }
 
             if _is_update_portfolio {
-                let _portfolio_result = update_portfolio(
+                let _portfolio_result = server_update_profile_api(
                     profile.portfolios.clone().expect("REASON")
                 ).await;
                 // println!("_portfolio_result: {:?}", _portfolio_result);
             }
             if _is_update_education {
-                let _education_result = update_education(
+                let _education_result = server_update_education(
                     profile.educations.clone().expect("REASON")
                 ).await;
                 // println!("_contact_result: {:?}", _contact_result);
             }
             if _is_update_language {
-                let _language_result = update_language(
+                let _language_result = server_update_language(
                     profile.languages.clone().expect("REASON")
                 ).await;
                 // println!("_contact_result: {:?}", _contact_result);
             }
             if _is_update_contact {
-                let _contact_result = update_contact(
+                let _contact_result = server_update_contact(
                     profile.contacts.clone().expect("REASON")
                 ).await;
                 // println!("_contact_result: {:?}", _contact_result);
             }
-            let mut update_profile = profile.clone();
-            update_profile.skills = None;
-            update_profile.experiences = None;
-            update_profile.portfolios = None;
-            update_profile.contacts = None;
-            update_profile.educations = None;
-            update_profile.languages = None;
-            update_profile.id = None;
+            let mut update_profile_clone = profile.clone();
+            update_profile_clone.skills = None;
+            update_profile_clone.experiences = None;
+            update_profile_clone.portfolios = None;
+            update_profile_clone.contacts = None;
+            update_profile_clone.educations = None;
+            update_profile_clone.languages = None;
+            update_profile_clone.id = None;
 
             let res: Result<Option<Profile>, Error> = DB.update((
                 "profile",
                 profile.id.clone().unwrap(),
-            )).content(update_profile).await;
+            )).content(update_profile_clone).await;
             let _ = DB.invalidate().await;
 
             match res {
@@ -199,7 +201,7 @@ cfg_if::cfg_if! {
             }
         }
 
-        pub async fn update_skill(skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
+        pub async fn server_update_skill(skills: Vec<Skill>) -> Result<Vec<Skill>, ServerFnError> {
             let _ = open_db_connection().await;
             let delete_all_records: Result<Vec<Skill>, Error> = DB.delete("skill").await;
             match delete_all_records {
@@ -218,7 +220,7 @@ cfg_if::cfg_if! {
                 Err(e) => Err(ServerFnError::from(e)),
             }
         }
-        pub async fn update_experience(
+        pub async fn server_update_experience(
             experiences: Vec<Experience>
         ) -> Result<Vec<Experience>, ServerFnError> {
             let _ = open_db_connection().await;
@@ -239,7 +241,7 @@ cfg_if::cfg_if! {
                 Err(e) => Err(ServerFnError::from(e)),
             }
         }
-        pub async fn update_portfolio(
+        pub async fn server_update_profile_api(
             portfolios: Vec<Portfolio>
         ) -> Result<Vec<Portfolio>, ServerFnError> {
             let _ = open_db_connection().await;
@@ -260,7 +262,7 @@ cfg_if::cfg_if! {
                 Err(e) => Err(ServerFnError::from(e)),
             }
         }
-        pub async fn update_education(
+        pub async fn server_update_education(
             educations: Vec<Education>
         ) -> Result<Vec<Education>, ServerFnError> {
             let _ = open_db_connection().await;
@@ -281,7 +283,7 @@ cfg_if::cfg_if! {
                 Err(e) => Err(ServerFnError::from(e)),
             }
         }
-        pub async fn update_language(
+        pub async fn server_update_language(
             languages: Vec<Language>
         ) -> Result<Vec<Language>, ServerFnError> {
             let _ = open_db_connection().await;
@@ -302,7 +304,9 @@ cfg_if::cfg_if! {
                 Err(e) => Err(ServerFnError::from(e)),
             }
         }
-        pub async fn update_contact(contacts: Vec<Contact>) -> Result<Vec<Contact>, ServerFnError> {
+        pub async fn server_update_contact(
+            contacts: Vec<Contact>
+        ) -> Result<Vec<Contact>, ServerFnError> {
             let _ = open_db_connection().await;
             let delete_all_records: Result<Vec<Contact>, Error> = DB.delete("contact").await;
             match delete_all_records {

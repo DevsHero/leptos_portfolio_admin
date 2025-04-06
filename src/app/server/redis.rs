@@ -6,7 +6,7 @@ cfg_if! {
         use std::sync::OnceLock;
         use redis::Client as RedisClient;
         use redis::AsyncCommands;
-        use leptos::{ ServerFnError };
+        use leptos::{ ServerFnError, logging };
         static REDIS_CLIENT: OnceLock<RedisClient> = OnceLock::new();
 
         fn init_redis() -> RedisClient {
@@ -57,6 +57,32 @@ cfg_if! {
                 eprintln!("Redis SET failed for key '{}': {}", key, e);
             }
             Ok(true)
+        }
+        pub async fn check_rate_limit(
+            action_key: &str, // e.g., "admin_login"
+            identifier: &str, // e.g., IP address
+            limit: usize, // Max attempts allowed
+            window_secs: i64 // Time window in seconds
+        ) -> Result<bool, ServerFnError> {
+            let client = REDIS_CLIENT.get_or_init(init_redis);
+            let mut conn = client.get_multiplexed_async_connection().await?;
+            let key = format!("rate_limit:{}:{}", action_key, identifier);
+            let count: isize = conn.incr(&key, 1).await?;
+            if count == 1 {
+                let _: () = conn.expire(&key, window_secs).await?;
+                logging::log!("Set expiration for key '{}' to {} seconds", key, window_secs);
+            }
+            if (count as usize) > limit {
+                logging::log!(
+                    "Rate limit exceeded for key '{}'. Count: {}, Limit: {}",
+                    key,
+                    count,
+                    limit
+                );
+                Ok(false) // Rate limited
+            } else {
+                Ok(true) // Allowed
+            }
         }
     }
 }
