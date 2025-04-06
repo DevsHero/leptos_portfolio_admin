@@ -18,3 +18,6 @@ file:
 rustblog.db
 history.txt
 pdf
+style/.DS_Store
+assets/.DS_Store
+.DS_Store
