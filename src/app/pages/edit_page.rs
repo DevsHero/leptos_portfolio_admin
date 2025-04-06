@@ -22,7 +22,7 @@ use crate::app::server::api::{ get_profile, update_portfolio, verify };
 use leptos::*;
 use leptos_toaster::{ Theme, Toast, ToastId, ToastOptions, ToastVariant, ToasterPosition, Toasts };
 use web_sys::SubmitEvent;
-
+use uuid::Uuid;
 #[component]
 pub fn EditPage() -> impl IntoView {
     let (is_ready, set_is_ready) = create_signal(false);
@@ -380,6 +380,7 @@ pub fn EditPage() -> impl IntoView {
                                     !portfolio_detail.get().trim().is_empty();
                     if form_valid {
                         let new_portfolio = Portfolio {
+                            uuid:  Uuid::new_v4().to_string(),
                             index: (portfolios.get().len()  +1 )as u8,
                             portfolio_name: portfolio_name.get(),
                             portfolio_detail: portfolio_detail.get(),

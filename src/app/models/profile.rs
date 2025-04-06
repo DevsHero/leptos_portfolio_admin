@@ -1,5 +1,5 @@
 use serde::{ Deserialize, Serialize };
-
+use uuid::Uuid;
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Skill {
     pub name: String,
@@ -87,6 +87,7 @@ impl Default for Contact {
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Portfolio {
+    pub uuid: String,
     pub portfolio_name: String,
     pub portfolio_link: String,
     pub is_opensource: bool,
@@ -101,6 +102,7 @@ pub struct Portfolio {
 impl Default for Portfolio {
     fn default() -> Self {
         Self {
+            uuid: String::from(Uuid::new_v4()),
             index: u8::from(1),
             portfolio_name: String::from("Leptos Portfolio Admin"),
             portfolio_link: String::from("https://github.com/zelda2003/leptos_portfolio_admin"),

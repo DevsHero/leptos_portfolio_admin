@@ -59,6 +59,8 @@ cfg_if::cfg_if! {
             match query {
                 Ok(mut res) => {
                     // Create a temporary struct with the proper derive
+                    // Since SurrealDB's ID is of type `Thing`, not a `String`, we need to convert it to a `String`.
+                    // We can't use the `Profile` model directly, so we use a temporary model and convert it afterward.
                     #[derive(Debug, Deserialize)]
                     struct TempProfile {
                         pub first_name: String,

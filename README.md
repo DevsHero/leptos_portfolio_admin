@@ -154,6 +154,10 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     ```bash
     cargo leptos watch
     ```
+    *(If you have updated information on the web production, I suggest clearing the local Redis cache to sync the latest data from the database.)*
+      ```bash
+    docker exec -i dragonfly_redis redis-cli FLUSHDB
+    ```
 6.  Access the site at `http://localhost:3000`.
 
 ### Option 2: Via Local Docker Build

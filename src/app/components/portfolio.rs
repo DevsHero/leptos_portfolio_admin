@@ -15,21 +15,23 @@ pub fn Portfolio(
     #[prop(optional)] set_is_update: Option<WriteSignal<bool>>,
     is_edit: bool
 ) -> impl IntoView {
-    {
-        let (is_mobile, set_is_mobile) = create_signal(false);
-        create_effect(move |_| {
-            if let Some(window) = web_sys::window() {
-                if let Ok(width) = window.inner_width().map(|w| w.as_f64().unwrap_or(0.0)) {
-                    set_is_mobile(width < 768.0);
-                }
+    let (is_mobile, set_is_mobile) = create_signal(false);
+    create_effect(move |_| {
+        if let Some(window) = web_sys::window() {
+            if let Ok(width) = window.inner_width().map(|w| w.as_f64().unwrap_or(0.0)) {
+                set_is_mobile(width < 768.0);
             }
-        });
-        move ||
-            portfolios
-                .get()
-                .into_iter()
-                .enumerate()
-                .map(|(index, portfolio)| {
+        }
+    });
+    view! {
+        <For
+        each=move ||portfolios.get() 
+        key=|portfolio| portfolio.uuid.clone() 
+                children=move |portfolio: Portfolio| {
+                    let uuid_up = portfolio.uuid.clone();
+                    let uuid_down = portfolio.uuid.clone();
+                    let uuid_edit = portfolio.uuid.clone();
+                    let uuid_delete = portfolio.uuid.clone();
                     let edit_menu = {
                         if is_edit {
                             view! {
@@ -38,58 +40,79 @@ pub fn Portfolio(
                            type="button"
                            class="moveButton"
                            on:click=move |_| {
-                               if let Some(ref set_portfolios) = set_portfolios {
-                                   set_portfolios.update(|list| {
-                                       if index > 0 {
-                                           list.swap(index, index - 1);
-                                           list[index].index = index as u8;
-                                           list[index - 1].index = (index - 1) as u8;
-                                           set_is_update.unwrap()(true);
-                                       }
-                                   });
-                               }
-                           }
-                       >
+                            if let Some(ref set_portfolios) = set_portfolios {
+                                let current_index = portfolios.get()
+                                    .iter()
+                                    .position(|p| p.uuid == uuid_up)
+                                    .expect("Portfolio not found");
+                                set_portfolios.update(|list| {
+                                    if current_index > 0 {
+                                        list.swap(current_index, current_index - 1);
+                                        list[current_index].index = current_index as u8;
+                                        list[current_index - 1].index = (current_index - 1) as u8;
+                                        if let Some(set_is_update) = set_is_update {
+                                            set_is_update(true);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    >
+                       
                            <Icon icon={i::BiChevronUpCircleRegular} />
                        </button>
                        <button
                        type="button"
                            class="moveButton"
                            on:click=move |_| {
-                               if let Some(ref set_portfolios) = set_portfolios {
-                                   set_portfolios.update(|list| {
-                                       if index < list.len() - 1 {
-                                           list.swap(index, index + 1);
-                                           list[index].index = index as u8;
-                                           list[index + 1].index = (index + 1) as u8;
-                                           set_is_update.unwrap()(true);
-                                       }
-                                   });
-                               }
-                           }
-                       >
+                            if let Some(ref set_portfolios) = set_portfolios {
+                                let current_index = portfolios.get()
+                                    .iter()
+                                    .position(|p| p.uuid == uuid_down)
+                                    .expect("Portfolio not found");
+                                set_portfolios.update(|list| {
+                                    if current_index < list.len() - 1 {
+                                        list.swap(current_index, current_index + 1);
+                                        list[current_index].index = current_index as u8;
+                                        list[current_index + 1].index = (current_index + 1) as u8;
+                                        if let Some(set_is_update) = set_is_update {
+                                            set_is_update(true);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    >
                            <Icon icon={i::BiChevronDownCircleRegular} />
                        </button>
                            <button
                            type="button"
                                class="editButton"
                                on:click=move |_| {
-                                   if let Some(ref callback) = on_edit {
-                                       leptos::Callable::call(callback, index);
-                                   }
-                               }
-                           >
+                                if let Some(ref callback) = on_edit {
+                                    let current_index = portfolios.get()
+                                        .iter()
+                                        .position(|p| p.uuid == uuid_edit)
+                                        .expect("Portfolio not found");
+                                    leptos::Callable::call(callback, current_index);
+                                }
+                            }
+                        >
                                <Icon icon={i::BiEditRegular} />
                            </button>
                            <button
                            type="button"
                                class="deleteButton"
                                on:click=move |_| {
-                                   if let Some(ref callback) = on_delete {
-                                       leptos::Callable::call(callback, index);
-                                   }
-                               }
-                           >
+                                if let Some(ref callback) = on_delete {
+                                    let current_index = portfolios.get()
+                                        .iter()
+                                        .position(|p| p.uuid == uuid_delete)
+                                        .expect("Portfolio not found");
+                                    leptos::Callable::call(callback, current_index);
+                                }
+                            }
+                        >
                                <Icon icon={i::BsTrash} />
                            </button>
                        </div>
@@ -116,12 +139,11 @@ pub fn Portfolio(
                        <div class="portfolioContainer">     
                         <div class="portfolioRow">    
                         <div class="portfolioColumn">
-                    
                          <div class="portfolioHeader">
                              <img src=url alt="Portfolio Icon" />
                              <div class="experienceRowFirstItemText">
                              { if is_mobile.get() { edit_menu.clone()} else{view! {<div></div>}}}
-                             <h3><b>Name</b>: {portfolio.portfolio_name}</h3>  
+                             <h3><b>Name</b>: {portfolio.uuid}</h3>  
                              <h3><b>Opensource</b>: {if portfolio.is_opensource {"Yes"} else {"No"} } {aLink}</h3> 
                              </div>
                              
@@ -147,7 +169,7 @@ pub fn Portfolio(
                  None} }
                     </div>    
             </div>}
-                })
-                .collect::<Vec<_>>()
+                }
+                /> 
     }
 }

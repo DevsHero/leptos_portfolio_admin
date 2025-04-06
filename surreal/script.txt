@@ -92,7 +92,8 @@ INSERT INTO education {
 
 -- Insert data into the portfolio table
 INSERT INTO portfolio {
-    index:1,
+    uuid: "0a6fb385-39ca-4a4f-8e8b-4ed1643462d7",
+    index:0,
     is_opensource: false,
     portfolio_detail: "Fullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin systemFullstack rust portfolio project with admin system",
     portfolio_icon_url: "https://cdn-icons-png.flaticon.com/512/25/25231.png",
