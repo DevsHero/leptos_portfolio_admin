@@ -1,0 +1,12 @@
+pub mod skill_tab;
+pub use skill_tab::EditSkillTab;
+pub mod experience_tab;
+pub use experience_tab::EditExperienceTab;
+pub mod portfolio_tab;
+pub use portfolio_tab::EditPortfolioTab;
+pub mod education_tab;
+pub use education_tab::EditEducationTab;
+pub mod contact_tab;
+pub use contact_tab::EditContactTab;
+pub mod language_tab;
+pub use language_tab::EditLanguageTab;

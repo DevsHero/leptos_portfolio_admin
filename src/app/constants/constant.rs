@@ -1,3 +1,9 @@
+pub const GENDERS: [(&str, &str); 3] = [
+    ("Male", "Male"),
+    ("Female", "Female"),
+    ("Other", "Other"),
+];
+
 pub const SKILL_LEVELS: [(&str, &str); 3] = [
     ("1", "Basic"),
     ("2", "Middle"),
