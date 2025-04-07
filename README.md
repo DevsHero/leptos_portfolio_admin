@@ -104,7 +104,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
 
     # --- Admin Panel ---
     # Password required to access the Admin Mode for editing site content.
-    ADMIN_PASSWORD_HASH= (Argon2 Hash password)
+    ADMIN_PASSWORD_HASH_ENCODED= (Encoding Argon2 Hash password)
 
     # --- Site Configuration ---
     # The title displayed in the browser tab.
@@ -116,7 +116,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     # Redis connection URL used in the production Docker environment (connects to the 'redis' service).
     REDIS_URL_PROD="redis://redis:6379"
     ```
-    **Important:** Replace the default values (like `SURREAL_USER`, `SURREAL_PASS`, `ADMIN_PASSWORD_HASH`) with your own secure settings before deployment.
+    **Important:** Replace the default values (like `SURREAL_USER`, `SURREAL_PASS`) with your own secure settings before deployment.
 
 3.  **Setup SurrealDB:**
     You need a running SurrealDB instance. You can set one up locally or use a cloud provider.
@@ -128,7 +128,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
 ## How to Run
 ### First Step : Setup Admin Password  
 
-This project uses an environment variable (`ADMIN_PASSWORD_HASH`) stored in a `.env` file for local admin access. Use this script to generate the hash and **automatically update** the file:
+This project uses an environment variable (`ADMIN_PASSWORD_HASH_ENCODED`) stored in a `.env` file for local admin access. Use this script to generate the hash and **automatically update** the file:
 
 **1. Run the Script:**
 * Open your terminal in the **root directory** of the project (where the main `Cargo.toml` is).
@@ -139,8 +139,9 @@ This project uses an environment variable (`ADMIN_PASSWORD_HASH`) stored in a `.
 * Follow the prompts to enter and confirm your desired admin password (input will be hidden).
 
 **2. Check `.env` File:**
-* The script will automatically create or update the `.env` file in your project root, adding or replacing the `ADMIN_PASSWORD_HASH` line with the newly generated hash.
+* The script will automatically create or update the `.env` file in your project root, adding or replacing the `ADMIN_PASSWORD_HASH_ENCODED` line with the newly generated hash.
 * You can check the `.env` file to confirm the change and ensure other variables are still present.
+ *(Note: If you're running the project via Docker, make sure to copy the .env file and include your ADMIN_PASSWORD_HASH_ENCODED value inside same docker-compose.yml)*
 ### Second Step: Select an option to run the application :
 #### Option 1: Via Local Development
 
