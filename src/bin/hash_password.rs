@@ -6,6 +6,7 @@ use std::fs;
 use std::io::{ self, Write };
 use std::path::Path;
 use std::process::exit;
+use base64::{ Engine as _, engine::general_purpose };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Argon2id Password Hash Generator for ADMIN_PASSWORD_HASH");
@@ -30,6 +31,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let salt = SaltString::generate(&mut OsRng);
+
+    // Use explicit Argon2 parameters to ensure consistency
     let argon2 = Argon2::new(
         argon2::Algorithm::Argon2id,
         argon2::Version::V0x13,
@@ -46,17 +49,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Done.");
 
-    // Escape all dollar signs in the hash to prevent environment variable substitution
-    let escaped_hash = password_hash.replace('$', "\\$");
+    // Base64 encode the hash to avoid Docker env var substitution issues
+    let encoded_hash = general_purpose::STANDARD.encode(&password_hash);
 
     // --- Update .env file ---
     let env_file_path_str = ".env";
     let env_path = Path::new(env_file_path_str);
     let key_to_update = "ADMIN_PASSWORD_HASH";
-    let new_env_line = format!("{}={}", key_to_update, escaped_hash);
+    let key_encoded = "ADMIN_PASSWORD_HASH_ENCODED";
+
+    // Store both the original and encoded versions
+    let new_env_line_raw = format!(
+        "# Original hash (do not use with Docker): {}={}",
+        key_to_update,
+        password_hash
+    );
+    let new_env_line_encoded = format!("{}={}", key_encoded, encoded_hash);
 
     let mut lines: Vec<String> = Vec::new();
-    let mut key_found = false;
+    let mut key_encoded_found = false;
 
     if env_path.exists() {
         let content = fs
@@ -64,18 +75,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .map_err(|e| format!("Error reading {}: {}", env_file_path_str, e))?;
 
         for line in content.lines() {
-            if line.trim_start().starts_with(&format!("{}=", key_to_update)) {
-                lines.push(new_env_line.clone());
-                key_found = true;
+            if
+                line.trim_start().starts_with(&format!("{}=", key_to_update)) &&
+                !line.trim_start().starts_with("#")
+            {
+                continue;
+            } else if line.trim_start().starts_with(&format!("{}=", key_encoded)) {
+                lines.push(new_env_line_encoded.clone());
+                key_encoded_found = true;
             } else {
                 lines.push(line.to_string());
             }
         }
     }
 
-    // If the key wasn't found in the file (or the file didn't exist), add the new line
-    if !key_found {
-        lines.push(new_env_line);
+    // Add the commented original hash for reference
+    lines.push(new_env_line_raw);
+
+    // Add the encoded hash if it wasn't found
+    if !key_encoded_found {
+        lines.push(new_env_line_encoded);
     }
 
     fs
@@ -83,10 +102,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map_err(|e| format!("Error writing {}: {}", env_file_path_str, e))?;
 
     println!("\nSuccess!");
-    println!("{} has been updated successfully with the new hash.", env_file_path_str);
-    println!(
-        "The $ symbols have been escaped as \\$ to prevent environment variable substitution."
-    );
+    println!("{} has been updated successfully.", env_file_path_str);
+    println!("The hash has been base64 encoded to make it Docker-compatible.");
+    println!("Please update your application code to use ADMIN_PASSWORD_HASH_ENCODED instead.");
 
     Ok(())
 }

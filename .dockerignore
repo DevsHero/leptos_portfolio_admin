@@ -13,8 +13,8 @@ playwright/.cache/
 target
 # Sass cache dir
 .sass-cache/
-.env
 file:
 rustblog.db
 history.txt
 .DS_Store
+.env-example

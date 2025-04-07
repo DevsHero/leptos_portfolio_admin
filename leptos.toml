@@ -1,0 +1,3 @@
+[build]
+output_name = "leptos-portfolio-admin"
+site_root = "target/site"

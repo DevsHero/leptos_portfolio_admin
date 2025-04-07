@@ -220,6 +220,7 @@ cfg_if::cfg_if! {
             use actix_web::HttpRequest;
             use argon2::Argon2;
             use password_hash::{ PasswordHash, PasswordVerifier, Error as PwHashError };
+            use base64::{ Engine as _, engine::general_purpose };
 
             let http_req = use_context::<HttpRequest>();
             let ip_address_string = if let Some(req) = http_req {
@@ -248,32 +249,75 @@ cfg_if::cfg_if! {
                 );
             }
 
-            // Get hash from environment and log it
-            let stored_hash = match std::env::var("ADMIN_PASSWORD_HASH") {
-                Ok(h) => {
-                    // Log the hash for debugging (be careful with this in production)
-                    logging::log!("DEBUG: Retrieved hash from env: '{}'", h);
-                    h.trim().to_string() // Trim any whitespace that might be present
+            // First try to get the encoded hash (for Docker environments)
+            let stored_hash = match std::env::var("ADMIN_PASSWORD_HASH_ENCODED") {
+                Ok(encoded) => {
+                    // Decode the Base64 encoded hash
+                    match general_purpose::STANDARD.decode(encoded) {
+                        Ok(decoded_bytes) => {
+                            match String::from_utf8(decoded_bytes) {
+                                Ok(decoded_hash) => {
+                                    logging::log!(
+                                        "Using decoded hash from ADMIN_PASSWORD_HASH_ENCODED"
+                                    );
+                                    decoded_hash
+                                }
+                                Err(e) => {
+                                    logging::error!(
+                                        "Error converting decoded hash to string: {}",
+                                        e
+                                    );
+                                    return Err(
+                                        ServerFnError::ServerError(
+                                            "Server configuration error.".to_string()
+                                        )
+                                    );
+                                }
+                            }
+                        }
+                        Err(e) => {
+                            logging::error!("Error decoding Base64 hash: {}", e);
+                            return Err(
+                                ServerFnError::ServerError(
+                                    "Server configuration error.".to_string()
+                                )
+                            );
+                        }
+                    }
                 }
                 Err(_) => {
-                    logging::error!("ADMIN_PASSWORD_HASH environment variable not set!");
-                    return Err(
-                        ServerFnError::ServerError("Server configuration error.".to_string())
-                    );
+                    // Fall back to the original hash (for non-Docker environments)
+                    match std::env::var("ADMIN_PASSWORD_HASH") {
+                        Ok(h) => {
+                            logging::log!("Using original ADMIN_PASSWORD_HASH");
+                            h
+                        }
+                        Err(_) => {
+                            logging::error!(
+                                "Neither ADMIN_PASSWORD_HASH nor ADMIN_PASSWORD_HASH_ENCODED environment variables are set!"
+                            );
+                            return Err(
+                                ServerFnError::ServerError(
+                                    "Server configuration error.".to_string()
+                                )
+                            );
+                        }
+                    }
                 }
             };
+
+            logging::log!("DEBUG: Using hash: '{}'", stored_hash);
 
             let verify_result = actix_web::rt::task::spawn_blocking(move || {
                 let password_bytes = password.as_bytes();
 
-                // Explicitly log any parsing errors
                 let parsed_hash = match PasswordHash::new(&stored_hash) {
                     Ok(hash) => {
                         logging::log!("DEBUG: Successfully parsed hash");
                         hash
                     }
                     Err(e) => {
-                        logging::error!("FATAL: Stored ADMIN_PASSWORD_HASH is invalid: {}", e);
+                        logging::error!("FATAL: Stored hash is invalid: {}", e);
                         logging::error!("Hash that failed to parse: '{}'", stored_hash);
                         return Err(PwHashError::Password);
                     }
