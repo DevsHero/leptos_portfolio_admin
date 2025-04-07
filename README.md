@@ -41,6 +41,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
 -   **Language:** Displays languages known and their proficiency levels.
 -   **PDF:** Provides an option to view/download a PDF version of the portfolio.
 
+
 ### Admin Edit Page
 
 -   **Permission Modes:**
@@ -69,6 +70,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     -   *Meta Tags: Under development.*
     -   *Other SEO Tags: Planned.*
 -   **Dark Mode:** Toggle between light and dark themes.
+-   **Security:** Password hashing using Argon2 and Redis IP rate limiting.
 -   **Intro Animation:** Welcome intro animation using Tailwind CSS..
 -   **Other:** Dialog Popup , Text Field Array,
 
@@ -102,7 +104,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
 
     # --- Admin Panel ---
     # Password required to access the Admin Mode for editing site content.
-    ADMIN_MODE_PASSWORD=admin
+    ADMIN_PASSWORD_HASH= (Argon2 Hash password)
 
     # --- Site Configuration ---
     # The title displayed in the browser tab.
@@ -114,7 +116,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     # Redis connection URL used in the production Docker environment (connects to the 'redis' service).
     REDIS_URL_PROD="redis://redis:6379"
     ```
-    **Important:** Replace the default values (like `SURREAL_USER`, `SURREAL_PASS`, `ADMIN_MODE_PASSWORD`) with your own secure settings before deployment.
+    **Important:** Replace the default values (like `SURREAL_USER`, `SURREAL_PASS`, `ADMIN_PASSWORD_HASH`) with your own secure settings before deployment.
 
 3.  **Setup SurrealDB:**
     You need a running SurrealDB instance. You can set one up locally or use a cloud provider.
@@ -124,8 +126,23 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     Connect to your SurrealDB instance (using the `surreal sql` command-line tool or a GUI like [Surrealist](https://surrealist.app/)). Copy and execute all the commands from the `surreal/script.surql` file to set up the necessary tables and schemas. Ensure you are connected to the correct namespace and database defined in your `.env` file (`NAMESPACE portfolio; USE DB portfolio;`).
 
 ## How to Run
+### First Step : Setup Admin Password  
 
-### Option 1: Via Local Development
+This project uses an environment variable (`ADMIN_PASSWORD_HASH`) stored in a `.env` file for local admin access. Use this script to generate the hash and **automatically update** the file:
+
+**1. Run the Script:**
+* Open your terminal in the **root directory** of the project (where the main `Cargo.toml` is).
+* Run the script:
+    ```bash
+    cargo run --bin hash-password
+    ```
+* Follow the prompts to enter and confirm your desired admin password (input will be hidden).
+
+**2. Check `.env` File:**
+* The script will automatically create or update the `.env` file in your project root, adding or replacing the `ADMIN_PASSWORD_HASH` line with the newly generated hash.
+* You can check the `.env` file to confirm the change and ensure other variables are still present.
+### Second Step: Select an option to run the application :
+#### Option 1: Via Local Development
 
 1.  **Install Rust:**
     If you don't have Rust installed, get it from [rustup.rs](https://rustup.rs/):
@@ -160,7 +177,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     ```
 6.  Access the site at `http://localhost:3000`.
 
-### Option 2: Via Local Docker Build
+#### Option 2: Via Local Docker Build
 
 1.  **Build the Docker Image:**
     *(Note: Build times can be significant, e.g., ~15 minutes on a high-end machine. Adjust `--platform` if needed.)*
@@ -175,7 +192,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     *(This assumes your `docker-compose.yml` defines services named `leptos-portfolio-admin` and `redis`, configured to use the built image and read the `.env` file.)*
 3.  Access the site at `http://localhost:8080` (or the port mapped in your `docker-compose.yml`).
 
-### Option 3: Via Docker Hub Image (If available)
+#### Option 3: Via Docker Hub Image (If available)
 
 *(Assuming you have published an image to Docker Hub and have a suitable `docker-compose.yml`)*
 

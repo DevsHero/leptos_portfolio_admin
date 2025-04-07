@@ -123,6 +123,3 @@ INSERT INTO skill {
     level: "Middle",
     name: "MongoDB"
 };
-INSERT INTO config {
-    admin_password: crypto::argon2::generate('admin_password'), 
-};

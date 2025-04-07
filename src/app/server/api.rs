@@ -13,8 +13,8 @@ pub async fn get_profile_api() -> Result<Profile, ServerFnError> {
 }
 #[server(Verify, "/api")]
 pub async fn verify_password_api(password: String) -> Result<bool, ServerFnError> {
-    let admin_password = std::env::var("ADMIN_MODE_PASSWORD").unwrap_or("admin".to_string());
-    Ok(admin_password == password)
+    let verify = verify_password(password).await;
+    Ok(verify?)
 }
 
 #[server(CreatePDF, "/api")]
@@ -220,21 +220,21 @@ cfg_if::cfg_if! {
             use actix_web::HttpRequest;
             use argon2::Argon2;
             use password_hash::{ PasswordHash, PasswordVerifier, Error as PwHashError };
+
             let http_req = use_context::<HttpRequest>();
             let ip_address_string = if let Some(req) = http_req {
                 req.headers()
                     .get("X-Forwarded-For")
                     .and_then(|h| h.to_str().ok())
-                    .and_then(|s| s.split(',').next()) // Get the first IP if multiple are present
+                    .and_then(|s| s.split(',').next())
                     .map(|s| s.trim().to_string())
                     .or_else(|| { req.peer_addr().map(|addr| addr.ip().to_string()) })
-                    .unwrap_or_else(|| {
-                        "unknown_ip".to_string() // Use a fallback identifier
-                    })
+                    .unwrap_or_else(|| "unknown_ip".to_string())
             } else {
                 logging::warn!("HttpRequest not found in context for rate limiting.");
                 "unknown_ip_context".to_string()
             };
+
             let allowed = check_rate_limit("admin_verify", &ip_address_string, 5, 60).await?;
             if !allowed {
                 logging::warn!(
@@ -248,8 +248,13 @@ cfg_if::cfg_if! {
                 );
             }
 
+            // Get hash from environment and log it
             let stored_hash = match std::env::var("ADMIN_PASSWORD_HASH") {
-                Ok(h) => h,
+                Ok(h) => {
+                    // Log the hash for debugging (be careful with this in production)
+                    logging::log!("DEBUG: Retrieved hash from env: '{}'", h);
+                    h.trim().to_string() // Trim any whitespace that might be present
+                }
                 Err(_) => {
                     logging::error!("ADMIN_PASSWORD_HASH environment variable not set!");
                     return Err(
@@ -260,15 +265,28 @@ cfg_if::cfg_if! {
 
             let verify_result = actix_web::rt::task::spawn_blocking(move || {
                 let password_bytes = password.as_bytes();
+
+                // Explicitly log any parsing errors
                 let parsed_hash = match PasswordHash::new(&stored_hash) {
-                    Ok(hash) => hash,
+                    Ok(hash) => {
+                        logging::log!("DEBUG: Successfully parsed hash");
+                        hash
+                    }
                     Err(e) => {
                         logging::error!("FATAL: Stored ADMIN_PASSWORD_HASH is invalid: {}", e);
+                        logging::error!("Hash that failed to parse: '{}'", stored_hash);
                         return Err(PwHashError::Password);
                     }
                 };
 
-                Argon2::default().verify_password(password_bytes, &parsed_hash)
+                // Use explicit parameters matching those used for generation
+                let argon2 = Argon2::new(
+                    argon2::Algorithm::Argon2id,
+                    argon2::Version::V0x13,
+                    argon2::Params::new(19456, 2, 1, None).unwrap()
+                );
+
+                argon2.verify_password(password_bytes, &parsed_hash)
             }).await;
 
             let is_correct = match verify_result {
@@ -289,9 +307,11 @@ cfg_if::cfg_if! {
                     false
                 }
             };
+
             if is_correct {
                 logging::log!("Successful admin login from IP {}", ip_address_string);
             }
+
             Ok(is_correct)
         }
     }

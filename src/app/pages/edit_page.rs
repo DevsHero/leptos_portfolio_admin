@@ -119,7 +119,7 @@ pub fn EditPage() -> impl IntoView {
                 view! { <div>"Error loading profile: " {error}</div> }
             } else if let Some(profile) = profile.get() {              
                 {if is_init.get() { 
-                      //Profile 
+                //Profile 
                 let (first_name, set_first_name) = create_signal(profile.first_name);
                 let (last_name, set_last_name) = create_signal(profile.last_name);
                 let (about, set_about) = create_signal(profile.about);
