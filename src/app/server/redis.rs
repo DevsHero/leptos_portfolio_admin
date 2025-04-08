@@ -59,29 +59,30 @@ cfg_if! {
             Ok(true)
         }
         pub async fn check_rate_limit(
-            action_key: &str, // e.g., "admin_login"
-            identifier: &str, // e.g., IP address
+            action_key: &str, // "admin_login"
+            identifier: &str, // IP address
             limit: usize, // Max attempts allowed
-            window_secs: i64 // Time window in seconds
+            seconds: i64 // Time in seconds
         ) -> Result<bool, ServerFnError> {
             let client = REDIS_CLIENT.get_or_init(init_redis);
             let mut conn = client.get_multiplexed_async_connection().await?;
             let key = format!("rate_limit:{}:{}", action_key, identifier);
             let count: isize = conn.incr(&key, 1).await?;
             if count == 1 {
-                let _: () = conn.expire(&key, window_secs).await?;
-                logging::log!("Set expiration for key '{}' to {} seconds", key, window_secs);
+                let _: () = conn.expire(&key, seconds).await?;
+                logging::log!("Set expiration for key '{}' to {} seconds", key, seconds);
             }
             if (count as usize) > limit {
                 logging::log!(
-                    "Rate limit exceeded for key '{}'. Count: {}, Limit: {}",
+                    "Rate limit exceeded for key '{}'. Count: {}, Limit: {}, Second: {}",
                     key,
                     count,
-                    limit
+                    limit,
+                    seconds
                 );
-                Ok(false) // Rate limited
+                Ok(false)
             } else {
-                Ok(true) // Allowed
+                Ok(true)
             }
         }
     }

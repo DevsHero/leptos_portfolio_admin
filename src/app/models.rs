@@ -9,3 +9,5 @@ pub use profile::Education;
 pub use profile::Contact;
 pub mod config;
 pub use config::SiteConfig;
+pub mod server;
+pub use server::Verification;

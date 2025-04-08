@@ -1,5 +1,5 @@
 use leptos::{ server, ServerFnError };
-use crate::app::models::{ Profile, SiteConfig };
+use crate::app::models::{ Profile, SiteConfig, Verification };
 use std::env;
 
 #[server(GetProfile, "/api")]
@@ -12,7 +12,7 @@ pub async fn get_profile_api() -> Result<Profile, ServerFnError> {
     }
 }
 #[server(Verify, "/api")]
-pub async fn verify_password_api(password: String) -> Result<bool, ServerFnError> {
+pub async fn verify_password_api(password: String) -> Result<Verification, ServerFnError> {
     let verify = verify_password(password).await;
     Ok(verify?)
 }
@@ -216,7 +216,7 @@ cfg_if::cfg_if! {
                 Err(_e) => { Ok(None) }
             }
         }
-        pub async fn verify_password(password: String) -> Result<bool, ServerFnError> {
+        pub async fn verify_password(password: String) -> Result<Verification, ServerFnError> {
             use actix_web::HttpRequest;
             use argon2::Argon2;
             use password_hash::{ PasswordHash, PasswordVerifier, Error as PwHashError };
@@ -236,23 +236,24 @@ cfg_if::cfg_if! {
                 "unknown_ip_context".to_string()
             };
 
-            let allowed = check_rate_limit("admin_verify", &ip_address_string, 5, 60).await?;
+            // Check rate limit but don't immediately return error
+            let allowed = check_rate_limit("admin_verify", &ip_address_string, 5, 300).await?;
             if !allowed {
                 logging::warn!(
                     "Rate limit exceeded for admin verify from IP: {}",
                     ip_address_string
                 );
-                return Err(
-                    ServerFnError::ServerError(
-                        "Too many attempts. Please try again later.".to_string()
-                    )
-                );
+
+                // Return Verification with restrict=true and verify=false
+                return Ok(Verification {
+                    verify: false,
+                    restrict: true,
+                });
             }
 
             // First try to get the encoded hash (for Docker environments)
             let stored_hash = match std::env::var("ADMIN_PASSWORD_HASH_ENCODED") {
                 Ok(encoded) => {
-                    // Decode the Base64 encoded hash
                     match general_purpose::STANDARD.decode(encoded) {
                         Ok(decoded_bytes) => {
                             match String::from_utf8(decoded_bytes) {
@@ -356,7 +357,10 @@ cfg_if::cfg_if! {
                 logging::log!("Successful admin login from IP {}", ip_address_string);
             }
 
-            Ok(is_correct)
+            Ok(Verification {
+                verify: is_correct,
+                restrict: false,
+            })
         }
     }
 }

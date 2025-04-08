@@ -8,7 +8,6 @@ cfg_if::cfg_if! {
             Profile,
             Skill,
             Contact,
-            PDF,
             Education,
             Language,
         };
@@ -16,7 +15,7 @@ cfg_if::cfg_if! {
         use surrealdb::opt::auth::Root;
         use surrealdb::{ Surreal, Error };
         use once_cell::sync::Lazy;
-        use surrealdb::sql::Thing;
+
         static DB: Lazy<Surreal<Any>> = Lazy::new(Surreal::init);
         pub async fn open_db_connection() -> Result<(), Error> {
             let host = env
@@ -38,8 +37,7 @@ cfg_if::cfg_if! {
         }
 
         pub async fn server_fetch_profile() -> Result<Option<Profile>, ServerFnError> {
-            use serde::Deserialize;
-
+            use crate::app::models::server;
             let _ = open_db_connection().await;
             let query = DB.query(
                 "
@@ -61,30 +59,8 @@ cfg_if::cfg_if! {
                     // Create a temporary struct with the proper derive
                     // Since SurrealDB's ID is of type `Thing`, not a `String`, we need to convert it to a `String`.
                     // We can't use the `Profile` model directly, so we use a temporary model and convert it afterward.
-                    #[derive(Debug, Deserialize)]
-                    struct TempProfile {
-                        pub first_name: String,
-                        pub last_name: String,
-                        pub nick_name: String,
-                        pub gender: String,
-                        pub birth_date: String,
-                        pub role: String,
-                        pub nationality: String,
-                        pub about: String,
-                        pub avatar: String,
-                        pub address: String,
-                        pub pdf: PDF,
-                        pub id: Thing, // Using Thing instead of String
-                        pub skills: Option<Vec<Skill>>,
-                        pub experiences: Option<Vec<Experience>>,
-                        pub portfolios: Option<Vec<Portfolio>>,
-                        pub contacts: Option<Vec<Contact>>,
-                        pub educations: Option<Vec<Education>>,
-                        pub languages: Option<Vec<Language>>,
-                    }
 
-                    // First deserialize to the temporary struct
-                    let found = res.take::<Option<TempProfile>>(0);
+                    let found = res.take::<Option<server::ThingProfile>>(0);
 
                     match found {
                         Ok(Some(temp_profile)) => {
