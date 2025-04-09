@@ -1,14 +1,7 @@
-use crate::app::components::{
-    show_error_toast,
-    show_success_toast,
-    CheckBox,
-    InputArrayField,
-    InputField,
-    Portfolio,
-    RenderTab,
-    TextEditor,
-};
-
+use crate::app::components::forms::{ CheckBox, InputArrayField, InputField, TextEditor };
+use crate::app::components::records::PortfolioRecords;
+use crate::app::components::utils::{ show_error_toast, show_success_toast };
+use crate::app::components::layouts::TabRender;
 use crate::app::models::Portfolio;
 use leptos::*;
 use uuid::Uuid;
@@ -105,7 +98,7 @@ pub fn EditPortfolioTab(
     };
 
     view! {
-        <RenderTab  no=4 active_page=select_tab>
+        <TabRender  no=4 active_page=select_tab>
         <Show when=move || select_tab() == 4>
         <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }>
         <div class="editContainer">
@@ -133,7 +126,7 @@ pub fn EditPortfolioTab(
                 view!{ <div></div> }
             }
         }
-        <InputArrayField  id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
+        <InputArrayField id="screenshots_url" label="Screenshots url" set_fields=set_screenshots_url  get_values=screenshots_url require=false />
         <InputArrayField  id="stacks" label="Project Stack" set_fields=set_stacks  get_values=stacks require=false />
         <CheckBox id="use_portfolio_detail_pdf_version"  label= "Use Portfolio Detail PDF version" set_value=set_use_portfolio_detail_pdf_version get_value=use_portfolio_detail_pdf_version />
         { move ||
@@ -160,7 +153,7 @@ pub fn EditPortfolioTab(
                 on:click=add_portfolio >
                 "Add Portfolio Project"
             </button>
-          <Portfolio
+          <PortfolioRecords
           portfolios=portfolios
           is_edit=true
           set_is_update=set_is_update_portfolio
@@ -171,6 +164,6 @@ pub fn EditPortfolioTab(
           </div>
           </Suspense>
           </Show>
-        </RenderTab>
+        </TabRender>
     }
 }

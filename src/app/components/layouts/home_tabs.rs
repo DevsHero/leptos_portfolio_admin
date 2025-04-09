@@ -1,11 +1,14 @@
 use crate::app::{
-    components::{ Experience, RenderTab, Portfolio, Education },
-    models::profile::{ Experience, Portfolio, Education },
+    components::{
+        layouts::TabRender,
+        records::{ EducationRecords, ExperienceRecords, PortfolioRecords },
+    },
+    models::profile::{ Education, Experience, Portfolio },
 };
 use leptos::*;
 
 #[component]
-pub fn SelectTab(
+pub fn HomeTabs(
     experiences: Vec<Experience>,
     portfolios: Vec<Portfolio>,
     educations: Vec<Education>,
@@ -49,32 +52,32 @@ pub fn SelectTab(
                   <span  class=move || if !is_ready.get() { "loadingTab " } else { "tabRowBadget" }>  Education {if count_education > 0  {Some(view! {<p class="badget">  {count_education}</p>})} else {None}} </span> 
                 </button>
             </div>
-            <RenderTab  no=1 active_page=select_tab>
-            <Experience   
+            <TabRender  no=1 active_page=select_tab>
+            <ExperienceRecords
             experiences=experiences 
             is_edit=false
             />    
-            </RenderTab>
-            <RenderTab  no=2 active_page=select_tab>    
+            </TabRender>
+            <TabRender  no=2 active_page=select_tab>    
             <Show when=move || select_tab() == 2>
             <Suspense fallback=move || view! { <p>"LoadingIntro ..."</p> }>
-            <Portfolio  
+            <PortfolioRecords
             portfolios=portfolios
             is_edit=false
             />  
             </Suspense>
             </Show>
-            </RenderTab>
-            <RenderTab  no=3 active_page=select_tab>    
+            </TabRender>
+            <TabRender no=3 active_page=select_tab>    
             <Show when=move || select_tab() == 3>
             <Suspense fallback=move || view! { <p>"LoadingIntro ..."</p> }>
-            <Education  
+            <EducationRecords
             educations=educations
             is_edit=false
             />  
             </Suspense>
             </Show>
-            </RenderTab>
+            </TabRender>
         </section>
     }
 }

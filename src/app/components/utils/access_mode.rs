@@ -1,6 +1,10 @@
 use leptos::*;
 use crate::app::{
-    components::{ show_info_toast, show_error_toast, InputField, Topbar },
+    components::{
+        forms::InputField,
+        layouts::Topbar,
+        utils::{ show_error_toast, show_info_toast },
+    },
     server::api::verify_password_api,
 };
 #[component]

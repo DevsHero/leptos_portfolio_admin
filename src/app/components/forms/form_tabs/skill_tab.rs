@@ -1,11 +1,7 @@
-use crate::app::components::{
-    show_error_toast,
-    show_success_toast,
-    InputField,
-    SkillChips,
-    RenderTab,
-};
-
+use crate::app::components::forms::InputField;
+use crate::app::components::records::SkillRecords;
+use crate::app::components::utils::{ show_error_toast, show_success_toast };
+use crate::app::components::layouts::TabRender;
 use crate::app::constants::constant::SKILL_LEVELS;
 use crate::app::models::Skill;
 use leptos::*;
@@ -65,7 +61,7 @@ pub fn EditSkillTab(
         }
     };
     view! {
-        <RenderTab  no=2 active_page=select_tab>    
+        <TabRender  no=2 active_page=select_tab>    
         <Show when=move || select_tab() == 2>
         <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }> 
         <div class="editContainer">
@@ -100,7 +96,7 @@ pub fn EditSkillTab(
             </button>
             </div>
         </div>
-        <SkillChips
+        <SkillRecords
         skills=skills
         on_delete=Callback::new(move |index| delete_skill(index))
         on_edit=Callback::new(move |index| edit_skill(index))
@@ -108,6 +104,6 @@ pub fn EditSkillTab(
           </div>
           </Suspense>
           </Show>
-          </RenderTab>
+          </TabRender>
     }
 }

@@ -1,13 +1,13 @@
 use leptos::*;
 use crate::app::{
-    components::ImageSlider,
+    components::utils::ImageSlider,
     constants::constant::PORTFOLIO_NONE_ICON,
     models::profile::Portfolio,
 };
 use leptos_icons::Icon;
 use icondata as i;
 #[component]
-pub fn Portfolio(
+pub fn PortfolioRecords(
     portfolios: ReadSignal<Vec<Portfolio>>,
     #[prop(optional)] on_delete: Option<Callback<usize>>,
     #[prop(optional)] on_edit: Option<Callback<usize>>,

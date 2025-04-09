@@ -1,14 +1,11 @@
-use crate::app::components::{
-    show_error_toast,
-    show_success_toast,
-    CheckBox,
-    EditContacts,
-    IconDropdown,
-    InputField,
-    RenderTab,
+use crate::app::{
+    components::{
+        forms::{ CheckBox, EditContacts, IconDropdown, InputField },
+        layouts::TabRender,
+        utils::{ show_error_toast, show_success_toast },
+    },
+    models::Contact,
 };
-
-use crate::app::models::Contact;
 use leptos::*;
 
 #[component]
@@ -74,7 +71,7 @@ pub fn EditContactTab(
         }
     };
     view! {
-        <RenderTab  no=5 active_page=select_tab>
+        <TabRender  no=5 active_page=select_tab>
                   <Show when=move || select_tab() == 5>
                   <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }>
                   <div class="editContainer">
@@ -105,6 +102,6 @@ pub fn EditContactTab(
                     </div>
                     </Suspense>
                     </Show>
-                  </RenderTab>
+                  </TabRender>
     }
 }

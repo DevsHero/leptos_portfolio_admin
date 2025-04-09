@@ -2,7 +2,8 @@ use leptos::*;
 use leptos_router::A;
 use leptos_icons::Icon;
 use icondata as i;
-use crate::app::components::ThemeButton;
+
+use crate::app::components::layouts::ThemeButton;
 
 #[component]
 pub fn Topbar() -> impl IntoView {

@@ -1,10 +1,7 @@
-use crate::app::components::{
-    show_error_toast,
-    show_success_toast,
-    InputField,
-    LanguageChips,
-    RenderTab,
-};
+use crate::app::components::forms::InputField;
+use crate::app::components::records::LanguageRecords;
+use crate::app::components::utils::{ show_error_toast, show_success_toast };
+use crate::app::components::layouts::TabRender;
 
 use crate::app::constants::constant::LANGUAGE_LEVELS;
 use crate::app::models::Language;
@@ -62,7 +59,7 @@ pub fn EditLanguageTab(
         }
     };
     view! {
-        <RenderTab  no=7 active_page=select_tab>    
+        <TabRender  no=7 active_page=select_tab>    
         <Show when=move || select_tab() == 7>
         <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }> 
         <div class="editContainer">
@@ -96,7 +93,7 @@ pub fn EditLanguageTab(
             </button>
             </div>
         </div>
-        <LanguageChips
+        <LanguageRecords 
         languages=languages
         on_delete=Callback::new(move |index| delete_language(index))
         on_edit=Callback::new(move |index| edit_language(index))
@@ -104,6 +101,6 @@ pub fn EditLanguageTab(
     </div>
     </Suspense>
     </Show>
-        </RenderTab>
+        </TabRender>
     }
 }

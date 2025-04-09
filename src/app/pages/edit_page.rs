@@ -1,22 +1,22 @@
-use crate::app::components::edit_tabs::{
+use crate::app::components::forms::{
+    CheckBox,
     EditContactTab,
     EditEducationTab,
     EditExperienceTab,
     EditLanguageTab,
     EditPortfolioTab,
     EditSkillTab,
+    InputField,
+    TextEditor,
 };
-use crate::app::components::{
+
+use crate::app::components::layouts::{ EditMenu, TabRender, Topbar };
+
+use crate::app::components::utils::{
     show_error_toast,
     show_success_toast,
     AccessModes,
-    CheckBox,
-    EditMenu,
-    InputField,
     LoadingIntro,
-    RenderTab,
-    TextEditor,
-    Topbar,
 };
 use crate::app::models::{ Profile, PDF };
 use crate::app::server::api::{ get_profile_api, update_profile_api };
@@ -202,7 +202,7 @@ pub fn EditPage() -> impl IntoView {
                  languages=languages
                  />
                 <form on:submit=on_submit >
-                  <RenderTab  no=1 active_page=select_tab > 
+                  <TabRender  no=1 active_page=select_tab > 
                   <div class="editContainer ">
                   <h1>"Edit Profile"</h1>
                        <img src=avatar class="avatar-preview  mx-auto items-center justify-center align-center" alt="Avatar preview" />
@@ -249,15 +249,15 @@ pub fn EditPage() -> impl IntoView {
                       set_value=set_about
                   />
                       </div>
-                      </RenderTab>
+                      </TabRender>
                         //tab2             
-                      <EditSkillTab 
+                      <EditSkillTab
                       select_tab=select_tab 
                       set_is_update_skill=set_is_update_skill 
                       set_skills=set_skills 
                       skills=skills  />
                             //tab3          
-                      <EditExperienceTab 
+                      <EditExperienceTab
                       select_tab=select_tab 
                       set_is_update_experience=set_is_update_experience 
                       set_experiences=set_experiences 
@@ -278,20 +278,20 @@ pub fn EditPage() -> impl IntoView {
                          contacts=contacts  
                          />
                          //tab6 
-                         <EditEducationTab 
+                         <EditEducationTab
                          select_tab=select_tab 
                          set_is_update_education=set_is_update_education 
                          set_educations=set_educations 
                          educations=educations  
                          />
                           //tab7 
-                         <EditLanguageTab 
+                         <EditLanguageTab
                          select_tab=select_tab 
                          set_is_update_language=set_is_update_language 
                          set_languages=set_languages 
                          languages=languages  
                          />
-                  <RenderTab  no=8 active_page=select_tab > 
+                  <TabRender  no=8 active_page=select_tab > 
                   <div class="editContainer ">
                   <h1>"Edit PDF"</h1>
                 
@@ -352,7 +352,7 @@ pub fn EditPage() -> impl IntoView {
                
                     <CheckBox id="use_about_pdf_version"  label= "Use About PDF Version" set_value=set_use_about_pdf_version get_value=use_about_pdf_version />
                       </div>
-                      </RenderTab>
+                      </TabRender>
 
                   {if is_verify.get()  {
                       view! {   <div class="bottomForm">

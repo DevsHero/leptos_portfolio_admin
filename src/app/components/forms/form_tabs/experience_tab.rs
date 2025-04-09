@@ -1,12 +1,7 @@
-use crate::app::components::{
-    show_error_toast,
-    show_success_toast,
-    CheckBox,
-    Experience,
-    InputField,
-    RenderTab,
-    TextEditor,
-};
+use crate::app::components::forms::{ CheckBox, InputField, TextEditor };
+use crate::app::components::records::ExperienceRecords;
+use crate::app::components::utils::{ show_error_toast, show_success_toast };
+use crate::app::components::layouts::TabRender;
 use crate::app::models::Experience;
 use leptos::*;
 
@@ -100,7 +95,7 @@ pub fn EditExperienceTab(
         }
     };
     view! {
-        <RenderTab  no=3 active_page=select_tab>
+        <TabRender  no=3 active_page=select_tab>
                   <Show when=move || select_tab() == 3>
                   <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }> 
                   <div class="editContainer">
@@ -157,7 +152,7 @@ pub fn EditExperienceTab(
                           on:click=add_experience  >
                           "Add Experience"
                       </button>
-                        <Experience
+                        <ExperienceRecords
                         experiences=experiences
                         on_delete=Callback::new(move |index| delete_experience(index))
                         on_edit=Callback::new(move |index| edit_experience(index))
@@ -166,6 +161,6 @@ pub fn EditExperienceTab(
                     </div>
                     </Suspense>
                     </Show>
-                  </RenderTab>
+                  </TabRender>
     }
 }

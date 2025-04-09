@@ -2,11 +2,13 @@ use leptos::*;
 use leptos_icons::Icon;
 use icondata as i;
 
+use crate::app::components::layouts::Dialog;
+use crate::app::components::utils::PdfExportButton;
 use crate::app::models::Profile;
 use crate::app::utils::utils::get_icon_by_name;
-use crate::app::components::{ Dialog, PdfExportButton };
+
 #[component]
-pub fn HomeContacts(is_ready: ReadSignal<bool>, profile: Profile) -> impl IntoView {
+pub fn ContactRecords(is_ready: ReadSignal<bool>, profile: Profile) -> impl IntoView {
     let pdf = profile.pdf.clone();
     let profile_clone = profile.clone();
     view! {

@@ -1,12 +1,8 @@
 use crate::app::{
     components::{
-        Topbar,
-        Dialog,
-        HomeContacts,
-        LanguageChips,
-        LoadingIntro,
-        SelectTab,
-        SkillChips,
+        layouts::{ Dialog, HomeTabs, Topbar },
+        records::{ ContactRecords, LanguageRecords, SkillRecords },
+        utils::LoadingIntro,
     },
     server::api::get_profile_api,
     utils::utils::calculate_age,
@@ -95,7 +91,7 @@ pub fn HomePage() -> impl IntoView {
                                                  <p><b>Address: </b>{profile.address.clone()}</p>
                                              </div>
                                          </span>
-                                         <HomeContacts profile=profile_clone.clone()   is_ready=is_ready   />
+                                         <ContactRecords profile=profile_clone.clone()   is_ready=is_ready   />
                                      </div>
                                      <div class="about">
                                          <h2>About Me</h2>
@@ -104,7 +100,7 @@ pub fn HomePage() -> impl IntoView {
                                      <div class="skills">
                                          <h2>Skills</h2>
                                          <div>
-                                             <SkillChips
+                                             <SkillRecords
                                                  skills=skills
                                                  is_edit=false
                                              />
@@ -113,14 +109,14 @@ pub fn HomePage() -> impl IntoView {
                                      <div class="skills">
                                      <h2>Languages</h2>
                                      <div>
-                                         <LanguageChips 
+                                         <LanguageRecords
                                              languages=languages
                                              is_edit=false
                                          />
                                      </div>
                                  </div>
                                  </section>
-                                 <SelectTab 
+                                 <HomeTabs 
                                  is_ready=is_ready
                                      experiences={profile.experiences.clone().unwrap_or_default()} 
                                      portfolios={profile.portfolios.clone().unwrap_or_default()}

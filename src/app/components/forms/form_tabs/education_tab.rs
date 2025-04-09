@@ -1,11 +1,8 @@
-use crate::app::components::{
-    show_error_toast,
-    show_success_toast,
-    Education,
-    InputField,
-    RenderTab,
-};
+use crate::app::components::forms::InputField;
+use crate::app::components::layouts::TabRender;
+use crate::app::components::records::EducationRecords;
 
+use crate::app::components::utils::{ show_error_toast, show_success_toast };
 use crate::app::models::Education;
 use leptos::*;
 
@@ -86,7 +83,7 @@ pub fn EditEducationTab(
         }
     };
     view! {
-        <RenderTab  no=6 active_page=select_tab>
+        <TabRender  no=6 active_page=select_tab>
         <Show when=move || select_tab() == 6>
         <Suspense fallback=move || view! { <p>"LoadingIntro..."</p> }>
         <div class="editContainer">
@@ -104,7 +101,7 @@ pub fn EditEducationTab(
                 on:click=add_education >
                 "Add Education"
         </button>
-            <Education
+            <EducationRecords
             educations=educations  
             on_delete=Callback::new(move |index| delete_education(index))
             on_edit=Callback::new(move |index| edit_education(index))
@@ -112,6 +109,6 @@ pub fn EditEducationTab(
     </div>
     </Suspense>
     </Show>
-        </RenderTab>
+        </TabRender>
     }
 }

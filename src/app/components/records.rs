@@ -1,0 +1,12 @@
+pub mod contact;
+pub use contact::ContactRecords;
+pub mod education;
+pub use education::EducationRecords;
+pub mod experience;
+pub use experience::ExperienceRecords;
+pub mod language;
+pub use language::LanguageRecords;
+pub mod portfolio;
+pub use portfolio::PortfolioRecords;
+pub mod skill;
+pub use skill::SkillRecords;
