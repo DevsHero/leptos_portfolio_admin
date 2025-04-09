@@ -942,11 +942,11 @@ body {
   transition-duration: 0.2s;
 }
 .tabSectionSelector > button:hover {
-  background-color: var(--surface0);;
+  background-color: var(--surface0);
 }
 .tabSectionSelector > button.active {
  border-width: 1;
-  border-color: var(--surface1);;
+  border-color: var(--surface1);
 }
     
 .tabsTitle {
@@ -1766,8 +1766,22 @@ width: 100%;
 }
 .tabSectionSelector {
  margin-top: 0.5rem;
- 
+ box-shadow: none; 
 }
+.tabSectionSelector > button {
+  
+  padding: 0.3rem;
+}
+.tabSectionSelector > button:hover {
+  background-color: var(--background);
+
+}
+.tabSectionSelector > button.active {
+  color: yellow;
+  font-weight: bold;
+  border-width: 0;
+   border-color:none;
+ }
 .layout{
   width: 100%;
 }
