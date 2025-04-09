@@ -181,7 +181,7 @@ This project uses an environment variable (`ADMIN_PASSWORD_HASH_ENCODED`) stored
 #### Option 2: Via Local Docker Build
 
 1.  **Build the Docker Image:**
-    *(Note: Build times can be significant, e.g., ~15 minutes on a high-end machine. Adjust `--platform` if needed.)*
+    *(Note: Build times can be significant, e.g., ~5-10 minutes depend on machine specs. Adjust `--platform` if needed.)*
     ```bash
     docker build --platform linux/amd64 -t leptos-portfolio-admin:latest .
     ```
