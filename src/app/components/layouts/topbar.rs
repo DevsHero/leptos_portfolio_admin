@@ -6,21 +6,21 @@ use icondata as i;
 use crate::app::components::layouts::ThemeButton;
 
 #[component]
-pub fn Topbar() -> impl IntoView {
+pub fn Topbar(is_ready: ReadSignal<bool>) -> impl IntoView {
     view! {
         <section class="topbar">
-            <div class="pill">
-                <A  href="/" class="topbarButton ">
-                    <Icon icon={i::AiHomeOutlined} />
-                </A>
-                <A
-                    href="/edit"   
-                    class="topbarButton"
-                >
-                    <Icon icon={i::BiEditSolid} />
-                </A> 
-                <ThemeButton />
-            </div>
+         {move || view! {   <div class= if !is_ready.get() { "loadingPill " } else { "pill" } >
+         <A  href="/" class="topbarButton ">
+             <Icon icon={i::AiHomeOutlined} />
+         </A>
+         <A
+             href="/edit"   
+             class="topbarButton"
+         >
+             <Icon icon={i::BiEditSolid} />
+         </A> 
+         <ThemeButton />
+     </div>}}
         </section>
     }
 }

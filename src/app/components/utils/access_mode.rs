@@ -9,6 +9,7 @@ use crate::app::{
 };
 #[component]
 pub fn AccessModes(
+    is_ready: ReadSignal<bool>,
     set_is_init: WriteSignal<bool>,
     set_is_verify: WriteSignal<bool>
 ) -> impl IntoView {
@@ -50,7 +51,7 @@ pub fn AccessModes(
     });
 
     view! {
-        <Topbar/>
+        <Topbar is_ready=is_ready/>
         <div class="selectMode" >
             <b><h1 style="font-size: 1.5rem;">"Edit Page"</h1></b>
             <div style="display: flex; flex-direction: column; margin-top: 15px; gap: 1rem">

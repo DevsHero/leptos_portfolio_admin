@@ -207,7 +207,7 @@ pub fn EditPage() -> impl IntoView {
                     });
                     
                     view! {
-                      <div> <Topbar/>
+                      <div> <Topbar is_ready=is_ready />
                      <EditMenu  
                          select_tab=select_tab 
                          set_select_tab=set_select_tab
@@ -396,7 +396,7 @@ pub fn EditPage() -> impl IntoView {
                 } else {
                     view! {
                     <div>
-                        <AccessModes set_is_init=set_is_init set_is_verify=set_is_verify />
+                        <AccessModes is_ready=is_ready set_is_init=set_is_init set_is_verify=set_is_verify />
                     </div>
                     }
                 }}

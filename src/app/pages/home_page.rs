@@ -56,7 +56,7 @@ pub fn HomePage() -> impl IntoView {
                         else {    
                             view! { <div><Intro /></div> } 
                         } }}
-                        <Topbar/>
+                        <Topbar   is_ready=is_ready/>
                             { move || { 
                              if open_dialog.get() { 
                                  let clone_avatar =  profile.avatar.clone();
