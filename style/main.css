@@ -1674,7 +1674,7 @@ width: 100%;
     width: 100%;
   }
   .editPage {
- 
+  position: relative;
    padding: 1rem;
    margin-top: 1rem;
   }
@@ -1769,12 +1769,10 @@ width: 100%;
  box-shadow: none; 
 }
 .tabSectionSelector > button {
-  
   padding: 0.3rem;
 }
 .tabSectionSelector > button:hover {
   background-color: var(--background);
-
 }
 .tabSectionSelector > button.active {
   color: yellow;
@@ -1936,3 +1934,48 @@ body.hydrating button::after {
 .animate-flash {
   animation: flash 4s cubic-bezier(0.4, 0, 0.6, 1) forwards;
 }
+/* lock-dialog.css */
+.lock-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.lock-dialog {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.lock-dialog h2 {
+  margin-top: 0;
+  color: #0057c0;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #0057c0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 1.5rem auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+ 

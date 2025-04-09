@@ -1,7 +1,7 @@
 pub mod image_slider;
 pub use image_slider::ImageSlider;
-pub mod loading_intro;
-pub use loading_intro::LoadingIntro;
+pub mod intro;
+pub use intro::Intro;
 pub mod pdf;
 pub use pdf::PdfExportButton;
 pub mod access_mode;
@@ -11,3 +11,5 @@ pub use toast::show_error_toast;
 pub use toast::show_info_toast;
 pub use toast::show_success_toast;
 pub use toast::show_toast;
+pub mod lock_dialog;
+pub use lock_dialog::LockDialog;

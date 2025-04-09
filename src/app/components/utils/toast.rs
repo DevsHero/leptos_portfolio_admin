@@ -26,7 +26,7 @@ pub fn show_toast(title: View, detail: View, variant: ToastVariant) {
         Some(toast_id),
         Some(ToastOptions {
             dismissible: true,
-            duration: Some(std::time::Duration::from_secs(3)),
+            duration: Some(std::time::Duration::from_secs(2)),
             position: Some(ToasterPosition::BottomLeft),
             ..Default::default()
         })

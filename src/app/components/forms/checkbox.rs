@@ -13,7 +13,7 @@ pub fn CheckBox(
     view! {
         <div class="formGroup">
             <div class="checkboxRow">
-                <label id={id.clone()}>{label}</label>
+                <label style="width:100%;" id={id.clone()}>{label}</label>
                 <input
                     style="margin-left: 30px; border-width: 1px;"
                     type="checkbox"

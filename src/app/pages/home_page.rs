@@ -2,7 +2,7 @@ use crate::app::{
     components::{
         layouts::{ Dialog, HomeTabs, Topbar },
         records::{ ContactRecords, LanguageRecords, SkillRecords },
-        utils::LoadingIntro,
+        utils::Intro,
     },
     server::api::get_profile_api,
     utils::utils::calculate_age,
@@ -34,7 +34,7 @@ pub fn HomePage() -> impl IntoView {
     });
     view! {
         
-        <Suspense fallback=LoadingIntro>
+        <Suspense fallback=Intro>
             {move || { 
                 match get_profile_api_info.get() {
                     Some(Ok(profile)) => {
@@ -54,7 +54,7 @@ pub fn HomePage() -> impl IntoView {
                         <div>
                         { move || { if timer_finished.get() {view! { <div> </div> } }
                         else {    
-                            view! { <div><LoadingIntro /></div> } 
+                            view! { <div><Intro /></div> } 
                         } }}
                         <Topbar/>
                             { move || { 
@@ -131,7 +131,7 @@ pub fn HomePage() -> impl IntoView {
                     },
                     None => view! { 
                         <div class="indexLayout">
-                            <div>"LoadingIntro..."</div>
+                            <div>"Intro..."</div>
                         </div> 
                     }
                 }
