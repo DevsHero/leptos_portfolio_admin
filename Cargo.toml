@@ -71,6 +71,7 @@ ssr = [
   "dep:fast_qr",        
   "dep:image",
   "dep:redis", 
+  "dep:subtle"
 ]
  
 [profile.release]

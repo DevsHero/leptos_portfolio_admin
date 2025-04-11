@@ -84,6 +84,7 @@ cfg_if::cfg_if! {
                 PDF_FULL_PATH,
             },
         };
+        use rand_core::{ RngCore, OsRng };
         use std::path::PathBuf;
         use std::fs;
         use leptos::{ use_context, logging };
@@ -217,15 +218,14 @@ cfg_if::cfg_if! {
             }
         }
         pub async fn verify_password(password: String) -> Result<Verification, ServerFnError> {
-            use actix_web::HttpRequest;
+            use actix_web::{ HttpRequest, rt::time };
             use argon2::Argon2;
             use password_hash::{ PasswordHash, PasswordVerifier };
-            use base64::{ Engine as _, engine::general_purpose };
-            use rand::{ Rng, thread_rng };
             use std::time::{ Duration, Instant };
             use subtle::ConstantTimeEq;
-            let start = Instant::now();
 
+            let start = Instant::now();
+            // Get IP address for rate limiting and logging
             let ip_address_string = {
                 let http_req = use_context::<HttpRequest>();
                 if let Some(req) = http_req {
@@ -244,10 +244,14 @@ cfg_if::cfg_if! {
 
             // Check rate limit
             let allowed = check_rate_limit("admin_verify", &ip_address_string, 5, 300).await?;
-            let is_rate_limited = u8::from(!allowed).ct_eq(&1u8).unwrap_u8() == 1;
+
+            // Use constant-time comparison for rate limit check result
+            let is_rate_limited = (!allowed as u8).ct_eq(&1u8).into();
+
             if is_rate_limited {
-                let sleep_time = thread_rng().gen_range(50..150);
-                tokio::time::sleep(Duration::from_millis(sleep_time)).await;
+                // Add random sleep to mask rate limit checks
+                let sleep_time = get_random_in_range(50, 150);
+                time::sleep(Duration::from_millis(sleep_time)).await;
 
                 logging::warn!(
                     "Rate limit exceeded for admin verify from IP: {}",
@@ -259,27 +263,27 @@ cfg_if::cfg_if! {
                 });
             }
 
+            // Get stored hash with consistent timing regardless of which source is used
             let stored_hash = match get_stored_hash().await {
                 Ok(hash) => hash,
                 Err(e) => {
                     // Add delay to mimic normal processing time
-                    tokio::time::sleep(
-                        Duration::from_millis(thread_rng().gen_range(100..200))
-                    ).await;
+                    time::sleep(Duration::from_millis(get_random_in_range(100, 200))).await;
                     return Err(e);
                 }
             };
 
+            // Spawn blocking task for CPU-intensive password verification
             let verify_result = actix_web::rt::task::spawn_blocking(move || {
                 let parsed_hash = match PasswordHash::new(&stored_hash) {
                     Ok(hash) => hash,
                     Err(e) => {
-                        // Log error but don't expose it in response
                         logging::error!("FATAL: Stored hash is invalid: {}", e);
                         logging::error!("Hash that failed to parse: '{}'", stored_hash);
                         return 0u8; // Return as byte for constant-time comparison later
                     }
                 };
+
                 let argon2 = Argon2::new(
                     argon2::Algorithm::Argon2id,
                     argon2::Version::V0x13,
@@ -300,7 +304,7 @@ cfg_if::cfg_if! {
                 }
             };
 
-            let is_correct = verification_byte.ct_eq(&1u8).unwrap_u8() == 1;
+            let is_correct = verification_byte.ct_eq(&1u8).into();
             if is_correct {
                 logging::log!("Successful admin login from IP {}", ip_address_string);
             } else {
@@ -309,25 +313,38 @@ cfg_if::cfg_if! {
 
             // Add random delay to prevent timing analysis
             let base_delay = 100;
-            let jitter = thread_rng().gen_range(20..80);
+            let jitter = get_random_in_range(20, 80);
 
+            // Calculate how long to sleep to reach our target minimum time
             let elapsed = start.elapsed().as_millis() as u64;
             let target_min_time = base_delay + jitter;
 
             if elapsed < target_min_time {
-                tokio::time::sleep(Duration::from_millis(target_min_time - elapsed)).await;
+                // Use actix_web's time utilities for the final delay
+                time::sleep(Duration::from_millis(target_min_time - elapsed)).await;
             }
 
+            // Return result
             Ok(Verification {
                 verify: is_correct,
                 restrict: false,
             })
         }
 
-        // Helper function to get stored hash with constant-time behavior
+        fn get_random_in_range(min: u64, max: u64) -> u64 {
+            let mut rng = OsRng;
+            let range = max - min;
+            let mut buf = [0u8; 8];
+            rng.fill_bytes(&mut buf);
+            let random_u64 = u64::from_ne_bytes(buf);
+            min + (random_u64 % (range + 1))
+        }
+
         async fn get_stored_hash() -> Result<String, ServerFnError> {
             use base64::{ Engine as _, engine::general_purpose };
-            let encoded_hash = match std::env::var("ADMIN_PASSWORD_HASH_ENCODED") {
+            // Try both methods in sequence to maintain consistent timing
+            // 1. Try encoded hash
+            let _encoded_hash = match std::env::var("ADMIN_PASSWORD_HASH_ENCODED") {
                 Ok(encoded) => {
                     match general_purpose::STANDARD.decode(encoded) {
                         Ok(decoded_bytes) => {
@@ -354,13 +371,12 @@ cfg_if::cfg_if! {
                 Err(_) => {}
             };
 
+            // 2. Try original hash
             if let Ok(hash) = std::env::var("ADMIN_PASSWORD_HASH") {
                 logging::log!("Using original ADMIN_PASSWORD_HASH");
                 return Ok(hash);
             }
-            logging::error!(
-                "Neither ADMIN_PASSWORD_HASH nor ADMIN_PASSWORD_HASH_ENCODED environment variables are set!"
-            );
+
             Err(ServerFnError::ServerError("Server configuration error.".to_string()))
         }
     }
