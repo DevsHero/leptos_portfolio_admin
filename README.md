@@ -70,7 +70,7 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     -   *Meta Tags: Under development.*
     -   *Other SEO Tags: Planned.*
 -   **Dark Mode:** Toggle between light and dark themes.
--   **Security:** Password hashing using Argon2 and Redis IP rate limiting.
+-   **Security:** Password hashing using Argon2 with protection against timing attacks, along with Redis-based IP rate limiting.
 -   **Intro Animation:** Welcome intro animation using Tailwind CSS..
 -   **Other:** Dialog Popup , Text Field Array,
 
