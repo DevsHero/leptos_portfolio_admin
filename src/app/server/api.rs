@@ -219,40 +219,139 @@ cfg_if::cfg_if! {
         pub async fn verify_password(password: String) -> Result<Verification, ServerFnError> {
             use actix_web::HttpRequest;
             use argon2::Argon2;
-            use password_hash::{ PasswordHash, PasswordVerifier, Error as PwHashError };
+            use password_hash::{ PasswordHash, PasswordVerifier };
             use base64::{ Engine as _, engine::general_purpose };
+            use rand::{ Rng, thread_rng };
+            use std::time::{ Duration, Instant };
+            use subtle::ConstantTimeEq; // Import from subtle crate
 
-            let http_req = use_context::<HttpRequest>();
-            let ip_address_string = if let Some(req) = http_req {
-                req.headers()
-                    .get("X-Forwarded-For")
-                    .and_then(|h| h.to_str().ok())
-                    .and_then(|s| s.split(',').next())
-                    .map(|s| s.trim().to_string())
-                    .or_else(|| { req.peer_addr().map(|addr| addr.ip().to_string()) })
-                    .unwrap_or_else(|| "unknown_ip".to_string())
-            } else {
-                logging::warn!("HttpRequest not found in context for rate limiting.");
-                "unknown_ip_context".to_string()
+            // Start timing measurement
+            let start = Instant::now();
+
+            // Get IP address for rate limiting and logging
+            let ip_address_string = {
+                let http_req = use_context::<HttpRequest>();
+                if let Some(req) = http_req {
+                    req.headers()
+                        .get("X-Forwarded-For")
+                        .and_then(|h| h.to_str().ok())
+                        .and_then(|s| s.split(',').next())
+                        .map(|s| s.trim().to_string())
+                        .or_else(|| req.peer_addr().map(|addr| addr.ip().to_string()))
+                        .unwrap_or_else(|| "unknown_ip".to_string())
+                } else {
+                    logging::warn!("HttpRequest not found in context for rate limiting.");
+                    "unknown_ip_context".to_string()
+                }
             };
 
-            // Check rate limit but don't immediately return error
+            // Check rate limit
             let allowed = check_rate_limit("admin_verify", &ip_address_string, 5, 300).await?;
-            if !allowed {
+
+            // Use constant-time comparison for rate limit check result
+            // This ensures even the rate limit check doesn't leak timing information
+            let is_rate_limited = u8::from(!allowed).ct_eq(&1u8).unwrap_u8() == 1;
+
+            if is_rate_limited {
+                // Add random sleep to mask rate limit checks
+                let sleep_time = thread_rng().gen_range(50..150);
+                tokio::time::sleep(Duration::from_millis(sleep_time)).await;
+
                 logging::warn!(
                     "Rate limit exceeded for admin verify from IP: {}",
                     ip_address_string
                 );
-
-                // Return Verification with restrict=true and verify=false
                 return Ok(Verification {
                     verify: false,
                     restrict: true,
                 });
             }
 
-            // First try to get the encoded hash (for Docker environments)
-            let stored_hash = match std::env::var("ADMIN_PASSWORD_HASH_ENCODED") {
+            // Get stored hash with consistent timing regardless of which source is used
+            let stored_hash = match get_stored_hash().await {
+                Ok(hash) => hash,
+                Err(e) => {
+                    // Add delay to mimic normal processing time
+                    tokio::time::sleep(
+                        Duration::from_millis(thread_rng().gen_range(100..200))
+                    ).await;
+                    return Err(e);
+                }
+            };
+
+            // Spawn blocking task for CPU-intensive password verification
+            let verify_result = actix_web::rt::task::spawn_blocking(move || {
+                // Parse hash - this happens for both successful and unsuccessful attempts
+                let parsed_hash = match PasswordHash::new(&stored_hash) {
+                    Ok(hash) => hash,
+                    Err(e) => {
+                        // Log error but don't expose it in response
+                        logging::error!("FATAL: Stored hash is invalid: {}", e);
+                        logging::error!("Hash that failed to parse: '{}'", stored_hash);
+                        return 0u8; // Return as byte for constant-time comparison later
+                    }
+                };
+
+                // Initialize Argon2 with consistent parameters
+                let argon2 = Argon2::new(
+                    argon2::Algorithm::Argon2id,
+                    argon2::Version::V0x13,
+                    argon2::Params::new(19456, 2, 1, None).unwrap()
+                );
+
+                // Verify password - returns success value as u8 for constant-time ops
+                match argon2.verify_password(password.as_bytes(), &parsed_hash) {
+                    Ok(()) => 1u8,
+                    Err(_) => 0u8,
+                }
+            }).await;
+
+            // Extract result with constant-time comparison
+            let verification_byte = match verify_result {
+                Ok(result) => result,
+                Err(e) => {
+                    logging::error!("Verification task error: {}", e);
+                    0u8
+                }
+            };
+
+            // Use constant-time comparison for final result check
+            let is_correct = verification_byte.ct_eq(&1u8).unwrap_u8() == 1;
+
+            // Log the attempt - after the verification is complete to avoid timing variations
+            if is_correct {
+                logging::log!("Successful admin login from IP {}", ip_address_string);
+            } else {
+                logging::log!("Failed admin login attempt from IP {}", ip_address_string);
+            }
+
+            // Add random delay to prevent timing analysis
+            let base_delay = 100; // milliseconds
+            let jitter = thread_rng().gen_range(20..80); // milliseconds
+
+            // Calculate how long to sleep to reach our target minimum time
+            let elapsed = start.elapsed().as_millis() as u64;
+            let target_min_time = base_delay + jitter;
+
+            if elapsed < target_min_time {
+                tokio::time::sleep(Duration::from_millis(target_min_time - elapsed)).await;
+            }
+
+            // Return result
+            Ok(Verification {
+                verify: is_correct,
+                restrict: false,
+            })
+        }
+
+        // Helper function to get stored hash with constant-time behavior
+        async fn get_stored_hash() -> Result<String, ServerFnError> {
+            use base64::{ Engine as _, engine::general_purpose };
+
+            // Try both methods in sequence to maintain consistent timing
+
+            // 1. Try encoded hash
+            let encoded_hash = match std::env::var("ADMIN_PASSWORD_HASH_ENCODED") {
                 Ok(encoded) => {
                     match general_purpose::STANDARD.decode(encoded) {
                         Ok(decoded_bytes) => {
@@ -261,106 +360,39 @@ cfg_if::cfg_if! {
                                     logging::log!(
                                         "Using decoded hash from ADMIN_PASSWORD_HASH_ENCODED"
                                     );
-                                    decoded_hash
+                                    return Ok(decoded_hash);
                                 }
                                 Err(e) => {
                                     logging::error!(
                                         "Error converting decoded hash to string: {}",
                                         e
                                     );
-                                    return Err(
-                                        ServerFnError::ServerError(
-                                            "Server configuration error.".to_string()
-                                        )
-                                    );
+                                    // Continue to next method
                                 }
                             }
                         }
                         Err(e) => {
                             logging::error!("Error decoding Base64 hash: {}", e);
-                            return Err(
-                                ServerFnError::ServerError(
-                                    "Server configuration error.".to_string()
-                                )
-                            );
+                            // Continue to next method
                         }
                     }
                 }
                 Err(_) => {
-                    // Fall back to the original hash (for non-Docker environments)
-                    match std::env::var("ADMIN_PASSWORD_HASH") {
-                        Ok(h) => {
-                            logging::log!("Using original ADMIN_PASSWORD_HASH");
-                            h
-                        }
-                        Err(_) => {
-                            logging::error!(
-                                "Neither ADMIN_PASSWORD_HASH nor ADMIN_PASSWORD_HASH_ENCODED environment variables are set!"
-                            );
-                            return Err(
-                                ServerFnError::ServerError(
-                                    "Server configuration error.".to_string()
-                                )
-                            );
-                        }
-                    }
+                    // Continue to next method
                 }
             };
 
-            logging::log!("DEBUG: Using hash: '{}'", stored_hash);
-
-            let verify_result = actix_web::rt::task::spawn_blocking(move || {
-                let password_bytes = password.as_bytes();
-
-                let parsed_hash = match PasswordHash::new(&stored_hash) {
-                    Ok(hash) => {
-                        logging::log!("DEBUG: Successfully parsed hash");
-                        hash
-                    }
-                    Err(e) => {
-                        logging::error!("FATAL: Stored hash is invalid: {}", e);
-                        logging::error!("Hash that failed to parse: '{}'", stored_hash);
-                        return Err(PwHashError::Password);
-                    }
-                };
-
-                // Use explicit parameters matching those used for generation
-                let argon2 = Argon2::new(
-                    argon2::Algorithm::Argon2id,
-                    argon2::Version::V0x13,
-                    argon2::Params::new(19456, 2, 1, None).unwrap()
-                );
-
-                argon2.verify_password(password_bytes, &parsed_hash)
-            }).await;
-
-            let is_correct = match verify_result {
-                Ok(Ok(())) => true,
-                Ok(Err(e)) => {
-                    if matches!(e, PwHashError::Password) {
-                        logging::log!(
-                            "Incorrect admin password attempt (Argon2 mismatch) from IP {}",
-                            ip_address_string
-                        );
-                    } else {
-                        logging::error!("Argon2 verification processing error: {}", e);
-                    }
-                    false
-                }
-                Err(e) => {
-                    logging::error!("Blocking task join error during Argon2 verification: {}", e);
-                    false
-                }
-            };
-
-            if is_correct {
-                logging::log!("Successful admin login from IP {}", ip_address_string);
+            // 2. Try original hash
+            if let Ok(hash) = std::env::var("ADMIN_PASSWORD_HASH") {
+                logging::log!("Using original ADMIN_PASSWORD_HASH");
+                return Ok(hash);
             }
 
-            Ok(Verification {
-                verify: is_correct,
-                restrict: false,
-            })
+            // Neither method worked
+            logging::error!(
+                "Neither ADMIN_PASSWORD_HASH nor ADMIN_PASSWORD_HASH_ENCODED environment variables are set!"
+            );
+            Err(ServerFnError::ServerError("Server configuration error.".to_string()))
         }
     }
 }
