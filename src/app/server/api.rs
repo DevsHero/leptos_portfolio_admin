@@ -225,7 +225,6 @@ cfg_if::cfg_if! {
             use subtle::ConstantTimeEq;
 
             let start = Instant::now();
-            // Get IP address for rate limiting and logging
             let ip_address_string = {
                 let http_req = use_context::<HttpRequest>();
                 if let Some(req) = http_req {
@@ -267,7 +266,6 @@ cfg_if::cfg_if! {
             let stored_hash = match get_stored_hash().await {
                 Ok(hash) => hash,
                 Err(e) => {
-                    // Add delay to mimic normal processing time
                     time::sleep(Duration::from_millis(get_random_in_range(100, 200))).await;
                     return Err(e);
                 }
@@ -280,7 +278,7 @@ cfg_if::cfg_if! {
                     Err(e) => {
                         logging::error!("FATAL: Stored hash is invalid: {}", e);
                         logging::error!("Hash that failed to parse: '{}'", stored_hash);
-                        return 0u8; // Return as byte for constant-time comparison later
+                        return 0u8;
                     }
                 };
 
@@ -295,7 +293,6 @@ cfg_if::cfg_if! {
                 }
             }).await;
 
-            // Extract result with constant-time comparison
             let verification_byte = match verify_result {
                 Ok(result) => result,
                 Err(e) => {
@@ -314,17 +311,13 @@ cfg_if::cfg_if! {
             // Add random delay to prevent timing analysis
             let base_delay = 100;
             let jitter = get_random_in_range(20, 80);
-
-            // Calculate how long to sleep to reach our target minimum time
             let elapsed = start.elapsed().as_millis() as u64;
             let target_min_time = base_delay + jitter;
 
             if elapsed < target_min_time {
-                // Use actix_web's time utilities for the final delay
                 time::sleep(Duration::from_millis(target_min_time - elapsed)).await;
             }
 
-            // Return result
             Ok(Verification {
                 verify: is_correct,
                 restrict: false,

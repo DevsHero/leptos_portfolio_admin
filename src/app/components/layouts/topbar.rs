@@ -19,6 +19,12 @@ pub fn Topbar(is_ready: ReadSignal<bool>) -> impl IntoView {
          >
              <Icon icon={i::BiEditSolid} />
          </A> 
+         <A
+         href="/chat"   
+         class="topbarButton"
+     >
+         <Icon icon={i::MdiFaceAgent} />
+     </A> 
          <ThemeButton />
      </div>}}
         </section>

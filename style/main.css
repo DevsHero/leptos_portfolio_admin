@@ -1986,4 +1986,114 @@ body.hydrating button::after {
   100% { transform: rotate(360deg); }
 }
 
- 
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 400px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.message {
+  max-width: 80%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  margin-bottom: 0.5rem;
+  word-break: break-word;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.agent-message {
+  align-self: flex-start;
+  background-color: #f1f1f1;
+  color: #333;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.error-message {
+  align-self: center;
+  color: #ff3e3e;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background-color: #fff0f0;
+  border-radius: 0.5rem;
+  border: 1px solid #ffd0d0;
+}
+
+.connection-status {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.chat-input-container {
+  display: flex;
+  border-top: 1px solid #eee;
+  padding: 0.75rem;
+  background-color: #f9f9f9;
+}
+
+.chat-input {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 1.5rem;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  resize: none;
+  height: 2.5rem;
+  margin-right: 0.5rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chat-input:focus {
+  border-color: #007bff;
+}
+
+.chat-send-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.chat-send-button:hover:not(:disabled) {
+  background-color: #0069d9;
+}
+
+.chat-send-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.chat-send-button svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}

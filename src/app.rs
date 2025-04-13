@@ -9,7 +9,7 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::{ Route, Router, Routes, SsrMode };
 use leptos_toaster::Toaster;
-use pages::{ HomePage, EditPage };
+use pages::{ ChatPage, EditPage, HomePage };
 use server::api::site_config_api;
 #[component]
 pub fn App() -> impl IntoView {
@@ -40,6 +40,11 @@ pub fn App() -> impl IntoView {
                     <Route path="/edit" ssr=SsrMode::Async view=move || {
                         view! {
                             <EditPage />
+                        }
+                    }/>
+                    <Route path="/chat" ssr=SsrMode::Async view=move || {
+                        view! {
+                            <ChatPage />
                         }
                     }/>
                     <Route path="/*any" view=NotFound/>
