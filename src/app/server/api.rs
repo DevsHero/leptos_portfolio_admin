@@ -71,6 +71,17 @@ pub async fn update_profile_api(
     }
 }
 
+#[server(GetWsApiKey, "/api")]
+pub async fn get_ws_api_key() -> Result<Option<String>, ServerFnError> {
+    // This function runs ONLY on the server.
+    // It reads an environment variable intended for the client.
+    // Ensure this variable is set during your build/deployment process for the server.
+    match std::env::var("WS_API_KEY") {
+        Ok(key) if !key.is_empty() => Ok(Some(key)),
+        _ => Ok(None), // Return None if the key is not set or is empty
+    }
+}
+
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use super::database;

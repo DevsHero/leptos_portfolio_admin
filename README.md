@@ -8,71 +8,81 @@ Leptos Portfolio Admin is a comprehensive, full-stack portfolio website solution
 
 **Key Highlights:**
 
-* **Dynamic Content Management:** Features a secure admin panel allowing the site owner to easily add, update, and delete portfolio content (profile, skills, experience, projects, education, contact info) without modifying static code. The admin panel includes a WYSIWYG editor (TinyMCE) for rich text formatting.
-* **Pure Rust Stack:** Demonstrates a full-stack web application using popular Rust crates like Leptos (SSR Frontend), Actix Web (Backend), SurrealDB (Database), and Redis (Caching).
-* **Rich Portfolio Display:** Presents a clean, responsive portfolio page showcasing detailed information, including rich text descriptions ("About Me"), project galleries with tech stacks, skill levels, professional experience timelines, and more.
-* **PDF Generation:** Includes functionality to automatically generate a downloadable PDF version of the portfolio content using Chromium in the backend.
-* **Configurable & Themeable:** Supports site title customization and includes a dark mode toggle.
-* **Learning Resource:** Serves as a practical example for developers interested in exploring Rust for web development, particularly SSR with Leptos and backend integration with Actix Web and SurrealDB.
+*   **Dynamic Content Management:** Features a secure admin panel allowing the site owner to easily add, update, and delete portfolio content (profile, skills, experience, projects, education, contact info) without modifying static code. The admin panel includes a WYSIWYG editor (TinyMCE) for rich text formatting.
+*   **LLM Chat Integration:** Includes an interactive chat page powered by a separate AI agent backend ([dynamic-agent](https://github.com/DevsHero/dynamic-agent)), allowing visitors to ask questions about the portfolio content.
+*   **Pure Rust Stack:** Demonstrates a full-stack web application using popular Rust crates like Leptos (SSR Frontend), Actix Web (Backend), SurrealDB (Database), and Redis (Caching).
+*   **Rich Portfolio Display:** Presents a clean, responsive portfolio page showcasing detailed information, including rich text descriptions ("About Me"), project galleries with tech stacks, skill levels, professional experience timelines, and more.
+*   **PDF Generation:** Includes functionality to automatically generate a downloadable PDF version of the portfolio content using Chromium in the backend.
+*   **Configurable & Themeable:** Supports site title customization and includes a dark mode toggle.
+*   **Learning Resource:** Serves as a practical example for developers interested in exploring Rust for web development, particularly SSR with Leptos and backend integration with Actix Web and SurrealDB.
 
-This project aims to provide a ready-to-use, customizable portfolio site that is easy to maintain through its dedicated admin interface.
+This project aims to provide a ready-to-use, customizable portfolio site that is easy to maintain through its dedicated admin interface and offers an engaging chat experience.
 
 ## Stacks
 
--   **[Leptos 0.6](https://leptos.dev/)**: A Rust frontend framework with SSR capabilities.
--   **[Actix Web](https://actix.rs/)**: A Rust backend framework for API handling.
--   **[SurrealDB](https://surrealdb.com/)**: The database used for data storage.
--   **[Tailwind CSS](https://tailwindcss.com/)**: A utility-first CSS framework for UI design.
--   **[Redis](https://redis.io/)**: Used for caching database queries.
--   **[Chromium](https://www.chromium.org/chromium-projects/)**: Used by the backend to generate PDF versions of the portfolio from HTML.
--   **[TinyMCE](https://www.tiny.cloud/)**: A WYSIWYG HTML editor integrated into the admin panel.
+*   **[Leptos 0.6](https://leptos.dev/)**: A Rust frontend framework with SSR capabilities.
+*   **[Actix Web](https://actix.rs/)**: A Rust backend framework for API handling.
+*   **[SurrealDB](https://surrealdb.com/)**: The database used for data storage.
+*   **[Tailwind CSS](https://tailwindcss.com/)**: A utility-first CSS framework for UI design.
+*   **[Redis](https://redis.io/)**: Used for caching database queries.
+*   **[Chromium](https://www.chromium.org/chromium-projects/)**: Used by the backend to generate PDF versions of the portfolio from HTML.
+*   **[TinyMCE](https://www.tiny.cloud/)**: A WYSIWYG HTML editor integrated into the admin panel.
+*   **[dynamic-agent](https://github.com/DevsHero/dynamic-agent)** (Optional Backend): A Rust-based AI agent framework for powering the LLM chat feature.
 
 ## Features
 
 ### Portfolio Page (Public View)
 
--   **Profile:** Displays name, age, nationality, gender, and job role.
--   **About Me:** Supports rich HTML text for detailed descriptions.
--   **Skills:** Lists skills with proficiency levels.
--   **Contact:** Dynamically configurable contact methods with associated icons show as link or popup message.
--   **Experiences:** Shows professional history including company logo, name, position, work period, and description.
--   **Portfolio:** Features projects with names, photos, open-source status, descriptions, and technology stacks.
--   **Education:** Lists educational background including institute name, address, major, degree, and GPA.
--   **Language:** Displays languages known and their proficiency levels.
--   **PDF:** Provides an option to view/download a PDF version of the portfolio.
+*   **Profile:** Displays name, age, nationality, gender, and job role.
+*   **About Me:** Supports rich HTML text for detailed descriptions.
+*   **Skills:** Lists skills with proficiency levels.
+*   **Contact:** Dynamically configurable contact methods with associated icons show as link or popup message.
+*   **Experiences:** Shows professional history including company logo, name, position, work period, and description.
+*   **Portfolio:** Features projects with names, photos, open-source status, descriptions, and technology stacks.
+*   **Education:** Lists educational background including institute name, address, major, degree, and GPA.
+*   **Language:** Displays languages known and their proficiency levels.
+*   **PDF:** Provides an option to view/download a PDF version of the portfolio.
 
+### LLM Chat Page (Requires [dynamic-agent](https://github.com/DevsHero/dynamic-agent) backend)
+
+*   **Interactive Chat:** Allows visitors to ask questions about the portfolio content (profile, experience, projects, etc.).
+*   **Real-time Responses:** Provides responses generated by a configured Large Language Model via a WebSocket connection.
+*   **Processing Indicator:** Shows when the AI agent is processing a request.
+*   **Timestamps:** Displays timestamps for both user messages and agent responses.
+*   **Secure Connection:** Supports API key authentication and optional TLS (WSS) for the WebSocket connection.
 
 ### Admin Edit Page
 
--   **Permission Modes:**
-    -   **Viewer Mode:** Allows viewing the admin sections without requiring a password (read-only).
-    -   **Admin Mode:** Requires a password (set in `.env`) to enable adding, editing, and deleting content.
--   **Editable Sections:**
-    -   **Profile:** Edit profile details and the "About Me" section using TinyMCE.
-    -   **Skills:** Add/Edit/Remove skills order by high level.
-    -   **Experiences:** Add/Edit/Remove work experiences order by job start date.
-    -   **Portfolio:** Add/Edit/Remove portfolio projects order by index (can reindex).
-    -   **Contact:** Add/Edit/Remove contact and dynamic icon order by button type.
-    -   **Education:** Add/Edit/Remove education entries order by graduated year .
-    -   **Language:** Add/Edit/Remove language proficiencies order by high level.
-    -   **PDF:** Configure PDF generation (e.g., use generated HTML or a custom PDF link) and other related settings.
+*   **Permission Modes:**
+    *   **Viewer Mode:** Allows viewing the admin sections without requiring a password (read-only).
+    *   **Admin Mode:** Requires a password (set in `.env`) to enable adding, editing, and deleting content.
+*   **Editable Sections:**
+    *   **Profile:** Edit profile details and the "About Me" section using TinyMCE.
+    *   **Skills:** Add/Edit/Remove skills order by high level.
+    *   **Experiences:** Add/Edit/Remove work experiences order by job start date.
+    *   **Portfolio:** Add/Edit/Remove portfolio projects order by index (can reindex).
+    *   **Contact:** Add/Edit/Remove contact and dynamic icon order by button type.
+    *   **Education:** Add/Edit/Remove education entries order by graduated year .
+    *   **Language:** Add/Edit/Remove language proficiencies order by high level.
+    *   **PDF:** Configure PDF generation (e.g., use generated HTML or a custom PDF link) and other related settings.
 
 ### General Features
--   **WYSIWYG Content:** Display your content as HTML, allowing complete freedom to design beautiful information.
--   **PDF Template:** Generate an HTML PDF from portfolio data using a minimal, cool resume template.
--   **Form Validation:** Ensure that all required fields are validated and prevent updates if any required fields are missing.
--   **Toast Notifications:** Provides feedback for actions performed on the admin page.
--   **Backend Server:** A simple Actix Web API server that interacts with the SurrealDB database.
--   **Responsive UI:** The user interface adapts smoothly to all devices screen sizes using Tailwind CSS.
--   **Caching:** Utilizes Redis to cache profile data and generated PDF files, improving website performance by reducing database queries and server processing.
--   **Site Configuration:**
-    -   Set the website title.
-    -   *Meta Tags: Under development.*
-    -   *Other SEO Tags: Planned.*
--   **Dark Mode:** Toggle between light and dark themes.
--   **Security:** Password hashing using Argon2 with protection against timing attacks, along with Redis-based IP rate limiting.
--   **Intro Animation:** Welcome intro animation using Tailwind CSS..
--   **Other:** Dialog Popup , Text Field Array,
+
+*   **WYSIWYG Content:** Display your content as HTML, allowing complete freedom to design beautiful information.
+*   **PDF Template:** Generate an HTML PDF from portfolio data using a minimal, cool resume template.
+*   **Form Validation:** Ensure that all required fields are validated and prevent updates if any required fields are missing.
+*   **Toast Notifications:** Provides feedback for actions performed on the admin page.
+*   **Backend Server:** A simple Actix Web API server that interacts with the SurrealDB database.
+*   **Responsive UI:** The user interface adapts smoothly to all devices screen sizes using Tailwind CSS.
+*   **Caching:** Utilizes Redis to cache profile data and generated PDF files, improving website performance by reducing database queries and server processing.
+*   **Site Configuration:**
+    *   Set the website title.
+    *   *Meta Tags: Under development.*
+    *   *Other SEO Tags: Planned.*
+*   **Dark Mode:** Toggle between light and dark themes.
+*   **Security:** Password hashing using Argon2 with protection against timing attacks, along with Redis-based IP rate limiting. WebSocket security via API Key and optional TLS.
+*   **Intro Animation:** Welcome intro animation using Tailwind CSS..
+*   **Other:** Dialog Popup , Text Field Array,
 
 ## Prerequisites
 
@@ -104,7 +114,8 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
 
     # --- Admin Panel ---
     # Password required to access the Admin Mode for editing site content.
-    ADMIN_PASSWORD_HASH_ENCODED= (Encoding Argon2 Hash password)
+    # Generate this using `cargo run --bin hash-password`
+    ADMIN_PASSWORD_HASH_ENCODED=
 
     # --- Site Configuration ---
     # The title displayed in the browser tab.
@@ -115,40 +126,85 @@ This project aims to provide a ready-to-use, customizable portfolio site that is
     REDIS_URL_DEV="redis://localhost:6379"
     # Redis connection URL used in the production Docker environment (connects to the 'redis' service).
     REDIS_URL_PROD="redis://redis:6379"
+
+    # --- LLM Chat WebSocket Configuration (Optional) ---
+    # Full WebSocket URL (including ws:// or wss:// and port) for the dynamic-agent backend.
+    # Example: ws://127.0.0.1:4000 or wss://your-agent.example.com
+    WS_HOST="ws://127.0.0.1:4000"
+    # Optional API key required by the dynamic-agent backend (if SERVER_API_KEY is set there).
+    # This key is fetched by the Leptos server and provided to the client-side chat component.
+    CLIENT_WS_API_KEY=
     ```
-    **Important:** Replace the default values (like `SURREAL_USER`, `SURREAL_PASS`) with your own secure settings before deployment.
+    **Important:** Replace the default values (like `SURREAL_USER`, `SURREAL_PASS`) with your own secure settings before deployment. Ensure `ADMIN_PASSWORD_HASH_ENCODED` is generated and `WS_HOST` points to your running `dynamic-agent` instance if using the chat feature.
 
 3.  **Setup SurrealDB:**
     You need a running SurrealDB instance. You can set one up locally or use a cloud provider.
-    -   **Local:** Follow the [official SurrealDB installation guide](https://surrealdb.com/install).
-    -   **Cloud:** Services like [SurrealDB Cloud](https://surrealdb.com/cloud) are available.
+    *   **Local:** Follow the [official SurrealDB installation guide](https://surrealdb.com/install).
+    *   **Cloud:** Services like [SurrealDB Cloud](https://surrealdb.com/cloud) are available.
 4.  **Initialize Database Schema:**
     Connect to your SurrealDB instance (using the `surreal sql` command-line tool or a GUI like [Surrealist](https://surrealist.app/)). Copy and execute all the commands from the `surreal/script.surql` file to set up the necessary tables and schemas. Ensure you are connected to the correct namespace and database defined in your `.env` file (`NAMESPACE portfolio; USE DB portfolio;`).
 
 ## How to Run
-### First Step : Setup Admin Password  
+
+### First Step: Setup Admin Password
 
 This project uses an environment variable (`ADMIN_PASSWORD_HASH_ENCODED`) stored in a `.env` file for local admin access. Use this script to generate the hash and **automatically update** the file:
 
 **1. Run the Script:**
-* Open your terminal in the **root directory** of the project (where the main `Cargo.toml` is).
-* Run the script:
+*   Open your terminal in the **root directory** of the project (where the main `Cargo.toml` is).
+*   Run the script:
     ```bash
     cargo run --bin hash-password
     ```
-* Follow the prompts to enter and confirm your desired admin password (input will be hidden).
+*   Follow the prompts to enter and confirm your desired admin password (input will be hidden).
 
 **2. Check `.env` File:**
-* The script will automatically create or update the `.env` file in your project root, adding or replacing the `ADMIN_PASSWORD_HASH_ENCODED` line with the newly generated hash.
-* You can check the `.env` file to confirm the change and ensure other variables are still present.
- *(Note: If you're running the project via Docker, make sure to copy the .env file and include your ADMIN_PASSWORD_HASH_ENCODED value inside same docker-compose.yml)*
-### Second Step: Select an option to run the application :
+*   The script will automatically create or update the `.env` file in your project root, adding or replacing the `ADMIN_PASSWORD_HASH_ENCODED` line with the newly generated hash.
+*   You can check the `.env` file to confirm the change and ensure other variables are still present.
+    *(Note: If you're running the project via Docker, make sure to copy the .env file and include your ADMIN_PASSWORD_HASH_ENCODED value inside same docker-compose.yml)*
+
+### Second Step: Setup LLM Chat Backend (Optional)
+
+To enable the LLM Chat feature, you need to run the [dynamic-agent](https://github.com/DevsHero/dynamic-agent) project as the backend.
+
+1.  **Clone `dynamic-agent`:**
+    ```bash
+    git clone https://github.com/DevsHero/dynamic-agent.git
+    cd dynamic-agent
+    ```
+2.  **Configure `dynamic-agent`:**
+    *   Copy the example environment file: `cp .env-example .env`
+    *   Edit the `.env` file in the `dynamic-agent` directory. You **must** configure:
+        *   Your chosen LLM provider API key (e.g., `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`).
+        *   Vector store settings (e.g., Qdrant URL/API Key or local path).
+        *   The data source for the agent (e.g., path to markdown files, database connection details). This data will be used by the agent to answer questions about your portfolio.
+    *   **Crucially**, configure the WebSocket server settings:
+        *   `LISTEN_ADDR`: The address and port the agent server will listen on (e.g., `0.0.0.0:4000`).
+        *   `SERVER_API_KEY` (Optional): If you set this, clients (like `leptos_portfolio_admin`) must provide this key to connect.
+        *   `TLS_CERT_PATH` / `TLS_KEY_PATH` (Optional): Provide paths to your TLS certificate and key files to enable secure `wss://` connections.
+    *   Refer to the `dynamic-agent` README for detailed configuration options.
+3.  **Run `dynamic-agent`:**
+    *   **Locally:**
+        ```bash
+        cargo run --release
+        ```
+    *   **Via Docker:** (Refer to `dynamic-agent`'s Docker instructions if available).
+4.  **Configure `leptos_portfolio_admin`:**
+    *   Go back to the `leptos_portfolio_admin` directory.
+    *   Edit your `.env` file:
+        *   Set `WS_HOST` to the full URL of your running `dynamic-agent` server (e.g., `ws://127.0.0.1:4000` or `wss://your-agent.domain.com` if using TLS).
+        *   If you set `SERVER_API_KEY` in `dynamic-agent`, set the **same value** for `CLIENT_WS_API_KEY` in `leptos_portfolio_admin`'s `.env` file.
+
+### Third Step: Run the Portfolio Application
+
+Select an option to run the main `leptos_portfolio_admin` application:
+
 #### Option 1: Via Local Development
 
 1.  **Install Rust:**
     If you don't have Rust installed, get it from [rustup.rs](https://rustup.rs/):
     ```bash
-    curl --proto '=https' --tlsv1.2 -sSf [https://sh.rustup.rs](https://sh.rustup.rs) | sh
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     source "$HOME/.cargo/env" # Or restart your terminal
     ```
 2.  **Install Leptos Toolchain:**
@@ -162,21 +218,21 @@ This project uses an environment variable (`ADMIN_PASSWORD_HASH_ENCODED`) stored
     The easiest way is often using Docker:
     ```bash
     # Ensure Docker is running
-    docker compose -f docker-compose.dev.yml up -d redis
+    docker compose -f docker-compose.yml up -d redis
     ```
     *(Alternatively, install Redis directly via your system's package manager.)*
 4.  **Install Chromium:**
     This is required for PDF generation. It must be `chromium`, not `google-chrome`. Installation methods vary by OS. See this guide for help: [Chromium Installation Guide](https://github.com/ArchiveBox/ArchiveBox/wiki/Chromium-Install)
 5.  **Run the Application:**
-    This command compiles both frontend (WASM) and backend, watches for changes, and serves the site using the settings in your `.env` file (specifically `REDIS_URL_DEV`).
+    This command compiles both frontend (WASM) and backend, watches for changes, and serves the site using the settings in your `.env` file (specifically `REDIS_URL_DEV` and potentially `WS_HOST`/`CLIENT_WS_API_KEY`).
     ```bash
     cargo leptos watch
     ```
     *(If you have updated information on the web production, I suggest clearing the local Redis cache to sync the latest data from the database.)*
-      ```bash
+    ```bash
     docker exec -i dragonfly_redis redis-cli FLUSHDB
     ```
-6.  Access the site at `http://localhost:3000`.
+6.  Access the site at `http://localhost:3000`. The chat page should now connect to your `dynamic-agent` backend if configured.
 
 #### Option 2: Via Local Docker Build
 
@@ -186,7 +242,7 @@ This project uses an environment variable (`ADMIN_PASSWORD_HASH_ENCODED`) stored
     docker build --platform linux/amd64 -t leptos-portfolio-admin:latest .
     ```
 2.  **Run using Docker Compose:**
-    Make sure your `.env` file is configured correctly in the project root. This command will start the application container and the Redis container. The application inside Docker uses `REDIS_URL_PROD`.
+    Make sure your `.env` file is configured correctly in the project root. This command will start the application container and the Redis container. The application inside Docker uses `REDIS_URL_PROD`. Ensure `WS_HOST` in your `.env` is accessible from within the Docker network (e.g., use Docker service names if `dynamic-agent` is also containerized).
     ```bash
     docker compose -f docker-compose.yml up -d --force-recreate leptos-portfolio-admin redis
     ```
@@ -198,7 +254,7 @@ This project uses an environment variable (`ADMIN_PASSWORD_HASH_ENCODED`) stored
 *(Assuming you have published an image to Docker Hub and have a suitable `docker-compose.yml`)*
 
 1.  **Pull and Start Containers:**
-    Make sure your `.env` file is configured.
+    Make sure your `.env` file is configured, paying attention to `WS_HOST` accessibility.
     ```bash
     # Ensure your docker-compose.yml points to the Docker Hub image for the leptos-portfolio-admin service
     docker compose pull && docker compose up -d --force-recreate
@@ -206,16 +262,8 @@ This project uses an environment variable (`ADMIN_PASSWORD_HASH_ENCODED`) stored
 2.  Access the site at `http://localhost:8080` (or the port mapped in your `docker-compose.yml`).
 
 ## Planned Features
-
--   **LLM Chat Integration:** Integrate a Large Language Model (LLM) for chat-based interactions about the portfolio content.
--   **Agentic AI Features:** Implement AI-driven assistance for visitors, such as:
-    -   Sending email inquiries to the portfolio owner.
-    -   Booking meetings via a scheduling service.
-    -   Translating content.
-    -   Answering questions intelligently (Q&A).
-    -   Providing deeper insights into profile details or projects.
--   **One-Script Setup:** Develop a shell script for automated setup of all prerequisites and dependencies.
--   **Migration Leptos 0.7:** Migrated to branch migration-leptos-v7 but encountered several bugs and performance issues that I couldn't resolve. Maybe I'll try again next time.
+*   **One-Script Setup:** Develop a shell script for automated setup of all prerequisites and dependencies.
+*   **Migration Leptos 0.7:** Migrated to branch migration-leptos-v7 but encountered several bugs and performance issues that I couldn't resolve. Maybe I'll try again next time.
 
 ## Contributing
 
@@ -226,5 +274,5 @@ This is my first Rust project, Contributions are highly welcome! If you find any
 ## Contact Me
 
 Thanon Aphithanawat (Hero)
--   **mail@thanon.dev** 
--   **thanon@aphithanawat.me**  
+*   **mail@thanon.dev**
+*   **thanon@aphithanawat.me**

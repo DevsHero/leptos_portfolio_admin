@@ -1990,8 +1990,11 @@ body.hydrating button::after {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 400px;
-  border-radius: 8px;
+  height: 500px;
+  overflow-x: scroll;
+  scrollbar-width: thin; 
+  scrollbar-color: rgb(150, 150, 150) transparent; 
+  border-radius: 1.5rem;
   background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -2007,25 +2010,19 @@ body.hydrating button::after {
 }
 
 .message {
-  max-width: 80%;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  margin-bottom: 0.5rem;
-  word-break: break-word;
+    display: flex; /* Use flexbox for alignment */
+    margin-bottom: 12px; /* Space between messages */
+    max-width: 80%; /* Limit message width */
 }
 
 .user-message {
-  align-self: flex-end;
-  background-color: #007bff;
-  color: white;
-  border-bottom-right-radius: 0.25rem;
+  justify-content: flex-end; /* Align user messages to the right */
+  margin-left: auto; /* Push to the right */
 }
 
 .agent-message {
-  align-self: flex-start;
-  background-color: #f1f1f1;
-  color: #333;
-  border-bottom-left-radius: 0.25rem;
+  justify-content: flex-start; /* Align agent messages to the left */
+  margin-right: auto; /* Push to the left */
 }
 
 .error-message {
@@ -2051,6 +2048,8 @@ body.hydrating button::after {
   border-top: 1px solid #eee;
   padding: 0.75rem;
   background-color: #f9f9f9;
+  justify-content: center; 
+  align-items: center;
 }
 
 .chat-input {
@@ -2097,3 +2096,132 @@ body.hydrating button::after {
   width: 1.2rem;
   height: 1.2rem;
 }
+
+/* Typing indicator styling */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  column-gap: 4px;
+  padding: 12px 16px;
+  min-height: 24px;
+}
+
+.typing-indicator .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #888;
+  opacity: 0.6;
+  animation: typingAnimation 1.4s infinite;
+}
+
+.typing-indicator .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingAnimation {
+  0% { 
+      opacity: 0.6; 
+      transform: scale(1);
+  }
+  50% { 
+      opacity: 1; 
+      transform: scale(1.2);
+  }
+  100% { 
+      opacity: 0.6; 
+      transform: scale(1);
+  }
+}
+
+/* Ensure your existing processing-message class has appropriate styling */
+.processing-message {
+  background-color: rgba(240, 240, 240, 0.8);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  max-width: 80%;
+  align-self: flex-start;
+}
+
+.chat-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(95, 95, 95, 0.2);
+  border-top-color: rgba(70, 70, 70, 0.6);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  background: transparent;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 4px;
+}
+
+/* Keyframes for spinner */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Inner container to stack timestamp and content */
+.message-inner-container {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+}
+
+/* Timestamp Styling */
+.message-timestamp {
+  font-size: 0.65rem; /* Small text */
+  color: #9ca3af; /* gray-400 */
+  margin-bottom: 4px; /* Space below timestamp */
+  padding: 0 4px; /* Minimal horizontal padding */
+}
+
+.user-message .message-timestamp {
+  text-align: right; /* Align timestamp right for user messages */
+}
+
+.agent-message .message-timestamp {
+  text-align: left; /* Align timestamp left for agent messages */
+}
+
+/* Message Content Bubble Styling */
+.message-content {
+  padding: 8px 12px;
+  border-radius: 10px;
+  word-wrap: break-word; /* Allow long words to break */
+  max-width: 100%; /* Ensure content doesn't overflow container */
+}
+
+.user-message .message-content {
+  background-color: #3b82f6; /* Example: Blue for user */
+  color: white;
+  border-bottom-right-radius: 2px; /* Optional: Tail effect */
+}
+
+.agent-message .message-content {
+  background-color: #e5e7eb; /* Example: Gray for agent */
+  color: #1f2937; /* Dark text */
+  border-bottom-left-radius: 2px; /* Optional: Tail effect */
+}
+
+/* Processing Spinner Specific Styles */
+.processing-message {
+  /* Keep alignment from agent-message */
+  background: none; /* No background for the processing container itself */
+  padding: 0;
+  margin-bottom: 12px; /* Consistent spacing */
+}
+  .chat-wrapper{
+
+    margin-top: 3.5rem;
+
+  }
