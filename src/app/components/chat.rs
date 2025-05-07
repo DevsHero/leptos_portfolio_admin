@@ -399,7 +399,7 @@ pub fn ChatComponent() -> impl IntoView {
                         "Connected".to_string()
                     }
                      else {
-                        "Connecting...".to_string()
+                        "Not Connected".to_string()
                     }}
                 </div>
             </div>

@@ -4,13 +4,13 @@
     "icon": "BsChatRightText",
     "suggestions": [
     "Hello how are you?",
-     "How do you feel"    ]
+    "How do you feel today?"    ]
   },
   {
-    "group_title": "Vector Database (Profile)",
+    "group_title": "Vector Search (Keyword: Profile)",
     "icon": "ImProfile",
     "suggestions": [
-        "What profile fullname?",
+        "What profile Fullname?",
         "List profile position name from experiences."
     ]
   } 
