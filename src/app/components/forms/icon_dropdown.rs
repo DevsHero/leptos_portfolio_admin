@@ -17,18 +17,15 @@ pub fn IconDropdown(
     let (is_open, set_is_open) = create_signal(false);
     let (error, set_error) = create_signal(None::<String>);
 
-    // Initialize selected icon from the current value when component mounts
     create_effect(move |_| {
         let current_value = get_value.get();
         if !current_value.is_empty() {
-            // Only update if we have a value and it's different
             if selected_icon.get() != current_value {
                 set_selected_icon.set(current_value);
             }
         }
     });
 
-    // Validation function
     let validate = move || {
         let value = get_value.get();
         if require && value.is_empty() {

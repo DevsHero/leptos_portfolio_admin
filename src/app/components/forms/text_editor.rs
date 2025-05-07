@@ -63,12 +63,11 @@ pub fn TextEditor(
         );
         let js_value = closure.as_ref().clone();
 
-        closure.forget(); // Prevent Rust from dropping the closure
+        closure.forget();
         js_value
     };
 
     create_effect(move |_| {
-        // Initialize editor with timeout to ensure DOM is ready
         let window = web_sys::window().expect("no global window exists");
         let editor_selector = editor_selector.clone();
         let initial_content = initial_content.clone();
@@ -92,7 +91,7 @@ pub fn TextEditor(
     on_cleanup(move || {
         destroy_tiny_mce(&editor_id_clone);
     });
-    // hidden upgrade button from tinymce
+    
     let window = web_sys::window().expect("no global window exists");
     let document = window.document().expect("no document exists");
     if let Ok(Some(head)) = document.query_selector("head") {
