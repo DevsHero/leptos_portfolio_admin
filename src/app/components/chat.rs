@@ -2,10 +2,14 @@ use leptos::*;
 use leptos_icons::*;
 use serde::{ Deserialize, Serialize };
 use wasm_bindgen::{ prelude::*, JsCast };
-use web_sys::{ js_sys, BinaryType, CloseEvent, ErrorEvent, MessageEvent, WebSocket };
+use web_sys::{ js_sys, BinaryType, CloseEvent, ErrorEvent, MessageEvent, WebSocket, Request, RequestInit, Response };
+use wasm_bindgen_futures::JsFuture;
+ 
 use chrono::{ Local, TimeZone };
 use crate::app::models::server::WSSignedConfig;
 use crate::app::server::api::get_ws_signed_config_api;
+use crate::app::utils::utils::get_icon_by_name;
+use serde_wasm_bindgen;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
@@ -37,6 +41,15 @@ struct ChatMessage {
     timestamp: Option<i64>,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct SuggestionGroup {
+    group_title: String,
+    icon: String,
+    suggestions: Vec<String>,
+}
+
+ 
+
 fn format_timestamp(timestamp: i64) -> String {
     match Local.timestamp_opt(timestamp, 0) {
         chrono::LocalResult::Single(dt) => dt.format("%Y-%m-%d %H:%M").to_string(),
@@ -52,11 +65,35 @@ pub fn ChatComponent() -> impl IntoView {
     let (is_error, set_is_error) = create_signal(false);
     let (error_message, set_error_message) = create_signal(String::new());
     let (is_processing, set_is_processing) = create_signal(false);
+    let (suggestion_groups, set_suggestion_groups) = create_signal(Vec::<SuggestionGroup>::new());
+    
     let ws_cfg = create_resource(
         || (),
         |_| async move { get_ws_signed_config_api().await }
     );
+    
+    let suggestions_resource = create_resource(
+        || (),
+        |_| async move {
+            match fetch_suggestions().await {
+                Ok(data) => {
+                    logging::log!("Loaded suggestions: {:?}", data);
+                    data
+                }
+                Err(e) => {
+                    logging::error!("Failed to load suggestions: {:?}", e);
+                    Vec::new()
+                }
+            }
+        }
+    );
 
+    create_effect(move |_| {
+        if let Some(loaded_groups) = suggestions_resource.get() {
+            set_suggestion_groups.set(loaded_groups);
+        }
+    });
+    
     let ws_stored = create_local_resource(
         move || ws_cfg.get().and_then(|result| result.ok()),
         move |maybe_signed: Option<WSSignedConfig>| async move {
@@ -264,6 +301,58 @@ pub fn ChatComponent() -> impl IntoView {
     view! {
         <div class="chat-container">
             <div class="chat-messages" id="chat-messages">
+                {move || {
+                    if messages.get().is_empty() && !is_processing.get() && is_connected.get() {
+                        view! {
+                            <div class="suggestions-center-container">
+                                <div class="suggestions-wrapper">
+                                    <h3 class="suggestions-title">How can I help you today?</h3>
+                                    <div class="suggestions-groups">
+                                        {suggestion_groups.get().into_iter().map(|group| {
+                                            let icon_data = get_icon_by_name(&group.icon)
+                                                .unwrap_or(icondata::BsQuestionCircle);
+                                                
+                                            view! {
+                                                <div class="suggestion-group">
+                                                    <div class="suggestion-group-header">
+                                                        <Icon icon=icon_data class="suggestion-group-icon" />
+                                                        <span class="suggestion-group-title">{group.group_title}</span>
+                                                    </div>
+                                                    <div class="suggestion-group-items">
+                                                        {group.suggestions.into_iter().map(|sugg| {
+                                                            let sugg_clone = sugg.clone();
+                                                            view! {
+                                                                <button
+                                                                    class="suggestion-item"
+                                                                    on:click=move |_| {
+                                                                        set_input_text.set(sugg_clone.clone());
+                                                                        if let Some(window) = web_sys::window() {
+                                                                            if let Some(document) = window.document() {
+                                                                                if let Some(textarea) = document.query_selector(".chat-input").ok().flatten() {
+                                                                                    let _ = textarea.dyn_into::<web_sys::HtmlTextAreaElement>()
+                                                                                        .map(|el| { let _ = el.focus(); });
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                >
+                                                                    {sugg}
+                                                                </button>
+                                                            }
+                                                        }).collect_view()}
+                                                    </div>
+                                                </div>
+                                            }
+                                        }).collect_view()}
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    } else {
+                        view! { <div></div> }
+                    }
+                }}
+
                 {move || messages.get().into_iter().map(|msg| {
                     if msg.is_processing {
 
@@ -336,4 +425,25 @@ pub fn ChatComponent() -> impl IntoView {
             </div>
         </div>
     }
+}
+
+async fn fetch_suggestions() -> Result<Vec<SuggestionGroup>, JsValue> {
+    let   opts = RequestInit::new();
+    opts.set_method("GET");
+    
+    let request = Request::new_with_str_and_init("/assets/pre-suggest.json", &opts)?;
+    
+    let window = web_sys::window().ok_or_else(|| JsValue::from_str("No window"))?;
+    let resp_value = JsFuture::from(window.fetch_with_request(&request)).await?;
+    
+    let resp: Response = resp_value.dyn_into()?;
+    
+    if !resp.ok() {
+        return Err(JsValue::from_str(&format!("HTTP error: {}", resp.status())));
+    }
+
+    let json = JsFuture::from(resp.json()?).await?;
+    
+    let groups: Vec<SuggestionGroup> = serde_wasm_bindgen::from_value(json)?;
+    Ok(groups)
 }

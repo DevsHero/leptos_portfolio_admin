@@ -2761,12 +2761,14 @@ dependencies = [
  "redis",
  "rpassword",
  "serde",
+ "serde-wasm-bindgen",
  "serde_json",
  "sha2",
  "subtle",
  "surrealdb",
  "uuid",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
  "web-sys",
 ]
 

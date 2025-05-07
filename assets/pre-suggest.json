@@ -1,0 +1,17 @@
+[
+  {
+    "group_title": "General Topics",
+    "icon": "BsChatRightText",
+    "suggestions": [
+    "Hello how are you?",
+     "How do you feel"    ]
+  },
+  {
+    "group_title": "Vector Database (Profile)",
+    "icon": "ImProfile",
+    "suggestions": [
+        "What profile fullname?",
+        "List profile position name from experiences."
+    ]
+  } 
+]

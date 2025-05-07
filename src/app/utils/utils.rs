@@ -76,6 +76,8 @@ pub static ICON_MAP: phf::Map<
     "Kik" => i::SiKik,
     "QQ" => i::AiQqCircleFilled,
     "Signal" => i::BsSignal,
+    "BsChatRightText" => i::BsChatRightText,
+    "ImProfile" => i::ImProfile
 
 };
 pub static FONT_AWESOME_MAP: phf::Map<

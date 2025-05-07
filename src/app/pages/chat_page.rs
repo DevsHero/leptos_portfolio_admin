@@ -1,5 +1,5 @@
 use leptos::*;
-use crate::app::components::{ agents::chat::ChatComponent, layouts::Topbar };
+use crate::app::components::{ chat::ChatComponent, layouts::Topbar };
 
 #[component]
 pub fn ChatPage() -> impl IntoView {
@@ -12,7 +12,7 @@ pub fn ChatPage() -> impl IntoView {
         <Suspense fallback=move || view! { <p>"Loading Chat..."</p> }>
         <Topbar is_ready=is_ready/>
         <div class="chat-wrapper">
-            <b><h1 style="font-size: 1.2rem; text-align:center; margin-bottom: 0.5rem;">"Chat With AI"</h1></b>
+            <b><h1 style="font-size: 1.2rem; text-align:center; margin-bottom: 0.5rem;">"LLM Chat"</h1></b>
                 <ChatComponent />
            
         </div>

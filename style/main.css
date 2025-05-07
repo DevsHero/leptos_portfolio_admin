@@ -2010,19 +2010,19 @@ body.hydrating button::after {
 }
 
 .message {
-    display: flex; /* Use flexbox for alignment */
-    margin-bottom: 12px; /* Space between messages */
-    max-width: 80%; /* Limit message width */
+    display: flex; 
+    margin-bottom: 12px; 
+    max-width: 80%; 
 }
 
 .user-message {
-  justify-content: flex-end; /* Align user messages to the right */
-  margin-left: auto; /* Push to the right */
+  justify-content: flex-end; 
+  margin-left: auto;
 }
 
 .agent-message {
-  justify-content: flex-start; /* Align agent messages to the left */
-  margin-right: auto; /* Push to the left */
+  justify-content: flex-start;
+  margin-right: auto;
 }
 
 .error-message {
@@ -2097,7 +2097,6 @@ body.hydrating button::after {
   height: 1.2rem;
 }
 
-/* Typing indicator styling */
 .typing-indicator {
   display: flex;
   align-items: center;
@@ -2139,7 +2138,6 @@ body.hydrating button::after {
   }
 }
 
-/* Ensure your existing processing-message class has appropriate styling */
 .processing-message {
   background-color: rgba(240, 240, 240, 0.8);
   border-radius: 10px;
@@ -2161,7 +2159,6 @@ body.hydrating button::after {
   margin: 0 4px;
 }
 
-/* Keyframes for spinner */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -2171,57 +2168,179 @@ body.hydrating button::after {
   }
 }
 
-/* Inner container to stack timestamp and content */
 .message-inner-container {
   display: flex;
-  flex-direction: column; /* Stack items vertically */
+  flex-direction: column;
 }
 
-/* Timestamp Styling */
 .message-timestamp {
-  font-size: 0.65rem; /* Small text */
-  color: #9ca3af; /* gray-400 */
-  margin-bottom: 4px; /* Space below timestamp */
-  padding: 0 4px; /* Minimal horizontal padding */
+  font-size: 0.65rem; 
+  color: #9ca3af;
+  margin-bottom: 4px; 
+  padding: 0 4px; 
 }
 
 .user-message .message-timestamp {
-  text-align: right; /* Align timestamp right for user messages */
+  text-align: right; 
 }
 
 .agent-message .message-timestamp {
-  text-align: left; /* Align timestamp left for agent messages */
+  text-align: left; 
 }
 
-/* Message Content Bubble Styling */
 .message-content {
   padding: 8px 12px;
   border-radius: 10px;
-  word-wrap: break-word; /* Allow long words to break */
-  max-width: 100%; /* Ensure content doesn't overflow container */
+  word-wrap: break-word; 
+  max-width: 100%; 
 }
 
 .user-message .message-content {
-  background-color: #3b82f6; /* Example: Blue for user */
+  background-color: #3b82f6; 
   color: white;
-  border-bottom-right-radius: 2px; /* Optional: Tail effect */
+  border-bottom-right-radius: 2px; 
 }
 
 .agent-message .message-content {
-  background-color: #e5e7eb; /* Example: Gray for agent */
-  color: #1f2937; /* Dark text */
-  border-bottom-left-radius: 2px; /* Optional: Tail effect */
+  background-color: #e5e7eb;
+  color: #1f2937; 
+  border-bottom-left-radius: 2px; 
 }
 
-/* Processing Spinner Specific Styles */
+
 .processing-message {
-  /* Keep alignment from agent-message */
-  background: none; /* No background for the processing container itself */
+  background: none; 
   padding: 0;
-  margin-bottom: 12px; /* Consistent spacing */
+  margin-bottom: 12px;
 }
   .chat-wrapper{
 
     margin-top: 3.5rem;
 
   }
+
+  /* Add to your CSS file */
+
+.suggestions-center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.suggestions-wrapper {
+  max-width: 700px;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.suggestions-title {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.suggestions-groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .suggestions-groups {
+    grid-template-columns: 1fr;
+  }
+}
+
+.suggestion-group {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #f8f8f8;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.suggestion-group:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.suggestion-group-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.suggestion-group-icon {
+  font-size: 1.1rem;
+  margin-right: 8px;
+  color: #555;
+}
+
+.suggestion-group-title {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.suggestion-group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.suggestion-item {
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.suggestion-item:hover {
+  background-color: #e0e0e0;
+}
+
+/* Dark mode styles */
+:root.dark .suggestions-wrapper {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+:root.dark .suggestions-title {
+  color: #e0e0e0;
+}
+
+:root.dark .suggestion-group {
+  border-color: #444;
+  background-color: #262626;
+}
+
+:root.dark .suggestion-group-header {
+  color: #e0e0e0;
+}
+
+:root.dark .suggestion-group-icon {
+  color: #bbb;
+}
+
+:root.dark .suggestion-item {
+  border-color: #444;
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+:root.dark .suggestion-item:hover {
+  background-color: #444;
+}

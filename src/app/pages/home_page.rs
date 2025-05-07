@@ -18,7 +18,6 @@ pub fn HomePage() -> impl IntoView {
     let (is_ready, set_is_ready) = create_signal(false);
     let (timer_finished, set_timer_finished) = create_signal(false);
 
-    //This effect is used to set a loading intro timeout
     create_effect(move |_| {
         let handle = set_timeout(move || {
             set_timer_finished.set(true);
