@@ -31,8 +31,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let salt = SaltString::generate(&mut OsRng);
-
-    // Use explicit Argon2 parameters to ensure consistency
     let argon2 = Argon2::new(
         argon2::Algorithm::Argon2id,
         argon2::Version::V0x13,
@@ -49,16 +47,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Done.");
 
-    // Base64 encode the hash to avoid Docker env var substitution issues
     let encoded_hash = general_purpose::STANDARD.encode(&password_hash);
-
-    // --- Update .env file ---
     let env_file_path_str = ".env";
     let env_path = Path::new(env_file_path_str);
     let key_to_update = "ADMIN_PASSWORD_HASH";
     let key_encoded = "ADMIN_PASSWORD_HASH_ENCODED";
 
-    // Store both the original and encoded versions
     let new_env_line_raw = format!(
         "# Original hash (do not use with Docker): {}={}",
         key_to_update,
@@ -89,10 +83,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    // Add the commented original hash for reference
     lines.push(new_env_line_raw);
 
-    // Add the encoded hash if it wasn't found
     if !key_encoded_found {
         lines.push(new_env_line_encoded);
     }

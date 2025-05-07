@@ -59,10 +59,10 @@ cfg_if! {
             Ok(true)
         }
         pub async fn check_rate_limit(
-            action_key: &str, // "admin_login"
-            identifier: &str, // IP address
-            limit: usize, // Max attempts allowed
-            seconds: i64 // Time in seconds
+            action_key: &str, 
+            identifier: &str,
+            limit: usize,
+            seconds: i64
         ) -> Result<bool, ServerFnError> {
             let client = REDIS_CLIENT.get_or_init(init_redis);
             let mut conn = client.get_multiplexed_async_connection().await?;

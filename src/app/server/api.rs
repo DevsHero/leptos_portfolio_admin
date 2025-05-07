@@ -1,5 +1,5 @@
 use leptos::{ server, ServerFnError };
-use crate::app::models::{ Profile, SiteConfig, Verification };
+use crate::app::models::{ server::WSSignedConfig, Profile, SiteConfig, Verification };
 use std::env;
 
 #[server(GetProfile, "/api")]
@@ -70,22 +70,24 @@ pub async fn update_profile_api(
         Err(e) => Err(ServerFnError::from(e)),
     }
 }
+ 
+ 
+#[server(GetWSSignedConfig, "/api")]
+pub async fn get_ws_signed_config_api() -> Result<WSSignedConfig, ServerFnError> {
+   let config: WSSignedConfig = ws_signing_key().await?;
+  
 
-#[server(GetWsApiKey, "/api")]
-pub async fn get_ws_api_key() -> Result<Option<String>, ServerFnError> {
-    // This function runs ONLY on the server.
-    // It reads an environment variable intended for the client.
-    // Ensure this variable is set during your build/deployment process for the server.
-    match std::env::var("WS_API_KEY") {
-        Ok(key) if !key.is_empty() => Ok(Some(key)),
-        _ => Ok(None), // Return None if the key is not set or is empty
-    }
+    Ok(config)
 }
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use super::database;
         use super::redis::{ update_cache, get_cache, check_rate_limit };
+        use chrono::Utc;
+        use hmac::{ Hmac, Mac };
+        use sha2::Sha256;
+        use hex;
         use crate::app::{
             constants::constant::{
                 PROFILE_CACHE_KEY,
@@ -121,7 +123,6 @@ cfg_if::cfg_if! {
                 println!("Cache miss for key: {}", PROFILE_CACHE_KEY);
             }
 
-            // --- Cache Miss or Deserialization Failure ---
             println!("Fetching profile from database.");
             let data = database::server_fetch_profile().await?;
             match serde_json::to_string(&data) {
@@ -129,7 +130,7 @@ cfg_if::cfg_if! {
                     let _ = update_cache(PROFILE_CACHE_KEY, &data_json, CACHE_TTL).await;
                 }
                 Err(e) => {
-                    eprintln!("Failed to serialize profile for caching: {}", e); // Log serialization error but continue
+                    eprintln!("Failed to serialize profile for caching: {}", e);  
                 }
             }
 
@@ -153,7 +154,7 @@ cfg_if::cfg_if! {
                 _is_update_education,
                 _is_update_contact
             ).await;
-            // --- Update Profile Cache---
+
             let data = database::server_fetch_profile().await?;
             match serde_json::to_string(&data) {
                 Ok(data_json) => {
@@ -215,7 +216,7 @@ cfg_if::cfg_if! {
             }
         }
         pub async fn read_pdf_file() -> Result<Option<String>, ServerFnError> {
-            let _pdf_bytes_result = fs::read(PDF_FULL_PATH.to_string()); // Use ? for cleaner error propagation
+            let _pdf_bytes_result = fs::read(PDF_FULL_PATH.to_string()); 
             #[cfg(not(feature = "ssr"))]
             let _pdf_bytes_result: Result<Vec<u8>, String> = Err(
                 "PDF generation is only available on the server.".to_string()
@@ -252,14 +253,10 @@ cfg_if::cfg_if! {
                 }
             };
 
-            // Check rate limit
             let allowed = check_rate_limit("admin_verify", &ip_address_string, 5, 300).await?;
-
-            // Use constant-time comparison for rate limit check result
             let is_rate_limited = (!allowed as u8).ct_eq(&1u8).into();
 
             if is_rate_limited {
-                // Add random sleep to mask rate limit checks
                 let sleep_time = get_random_in_range(50, 150);
                 time::sleep(Duration::from_millis(sleep_time)).await;
 
@@ -273,8 +270,7 @@ cfg_if::cfg_if! {
                 });
             }
 
-            // Get stored hash with consistent timing regardless of which source is used
-            let stored_hash = match get_stored_hash().await {
+             let stored_hash = match get_stored_hash().await {
                 Ok(hash) => hash,
                 Err(e) => {
                     time::sleep(Duration::from_millis(get_random_in_range(100, 200))).await;
@@ -282,8 +278,7 @@ cfg_if::cfg_if! {
                 }
             };
 
-            // Spawn blocking task for CPU-intensive password verification
-            let verify_result = actix_web::rt::task::spawn_blocking(move || {
+             let verify_result = actix_web::rt::task::spawn_blocking(move || {
                 let parsed_hash = match PasswordHash::new(&stored_hash) {
                     Ok(hash) => hash,
                     Err(e) => {
@@ -319,7 +314,6 @@ cfg_if::cfg_if! {
                 logging::log!("Failed admin login attempt from IP {}", ip_address_string);
             }
 
-            // Add random delay to prevent timing analysis
             let base_delay = 100;
             let jitter = get_random_in_range(20, 80);
             let elapsed = start.elapsed().as_millis() as u64;
@@ -346,8 +340,6 @@ cfg_if::cfg_if! {
 
         async fn get_stored_hash() -> Result<String, ServerFnError> {
             use base64::{ Engine as _, engine::general_purpose };
-            // Try both methods in sequence to maintain consistent timing
-            // 1. Try encoded hash
             let _encoded_hash = match std::env::var("ADMIN_PASSWORD_HASH_ENCODED") {
                 Ok(encoded) => {
                     match general_purpose::STANDARD.decode(encoded) {
@@ -375,7 +367,6 @@ cfg_if::cfg_if! {
                 Err(_) => {}
             };
 
-            // 2. Try original hash
             if let Ok(hash) = std::env::var("ADMIN_PASSWORD_HASH") {
                 logging::log!("Using original ADMIN_PASSWORD_HASH");
                 return Ok(hash);
@@ -383,5 +374,31 @@ cfg_if::cfg_if! {
 
             Err(ServerFnError::ServerError("Server configuration error.".to_string()))
         }
+        pub async fn ws_signing_key( ) -> Result<WSSignedConfig, ServerFnError> {
+            let host = std::env::var("WS_HOST")
+                .ok().filter(|h| !h.is_empty())
+                .unwrap_or_else(|| {
+                    logging::warn!("WS_HOST not set, defaulting to ws://localhost:4000");
+                    "ws://localhost:4000".to_string()
+                });
+            let secret = std::env::var("WS_API_KEY")
+                .unwrap_or_else(|_| "".to_string());
+
+            let ts = Utc::now().timestamp().to_string();
+
+            let sig = {
+                let mut mac: Hmac<Sha256> =
+                 Hmac::new_from_slice(secret.as_bytes()).expect("HMAC valid key");
+                mac.update(ts.as_bytes());
+                hex::encode(mac.finalize().into_bytes())
+            };
+
+            Ok(WSSignedConfig {
+                host,
+                ts,
+                sig,
+            })
+        }
     }
+   
 }

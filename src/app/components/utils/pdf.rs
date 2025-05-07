@@ -35,7 +35,7 @@ pub fn PdfExportButton(profile: Profile) -> impl IntoView {
                                                 } else {
                                                     println!("Revoked Object URL");
                                                 }
-                                            }, std::time::Duration::from_secs(10)); // Adjust delay for delete blob
+                                            }, std::time::Duration::from_secs(10));
                                         }
                                         Ok(None) => println!("Browser blocked opening new tab."),
                                         Err(e) => println!("Error opening new tab: {:?}", e),
@@ -50,7 +50,7 @@ pub fn PdfExportButton(profile: Profile) -> impl IntoView {
             }
             Err(e) => println!("Error decoding base64 PDF data: {:?}", e),
         }
-        is_generating.set(false); // Set loading false on success
+        is_generating.set(false); 
     };
 
     let handler = {
@@ -92,7 +92,7 @@ pub fn PdfExportButton(profile: Profile) -> impl IntoView {
             on:click=handler 
         >
            { move || if is_generating.get() {
-                view! { <Icon icon=i::FaSpinnerSolid class="logo-animate" />} // Example loading spinner
+                view! { <Icon icon=i::FaSpinnerSolid class="logo-animate" />} 
            } else {
                 view! { <Icon icon=i::FaFilePdfRegular /> }
            }}

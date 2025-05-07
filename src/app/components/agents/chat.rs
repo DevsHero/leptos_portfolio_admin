@@ -4,14 +4,8 @@ use serde::{ Deserialize, Serialize };
 use wasm_bindgen::{ prelude::*, JsCast };
 use web_sys::{ js_sys, BinaryType, CloseEvent, ErrorEvent, MessageEvent, WebSocket };
 use chrono::{ Local, TimeZone };
-use crate::app::server::api::get_ws_api_key;
-
-static WS_HOST: &str = {
-    match option_env!("WS_HOST") {
-        Some(val) => val,
-        None => "ws://localhost:4000",
-    }
-};
+use crate::app::models::server::WSSignedConfig;
+use crate::app::server::api::get_ws_signed_config_api;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
@@ -58,36 +52,31 @@ pub fn ChatComponent() -> impl IntoView {
     let (is_error, set_is_error) = create_signal(false);
     let (error_message, set_error_message) = create_signal(String::new());
     let (is_processing, set_is_processing) = create_signal(false);
-
-    let api_key_resource = create_resource(
+    let ws_cfg = create_resource(
         || (),
-        |_| async move { get_ws_api_key().await }
+        |_| async move { get_ws_signed_config_api().await }
     );
 
     let ws_stored = create_local_resource(
-        move || api_key_resource.get(),
-        move |api_key_res| async move {
-            let mut url = WS_HOST.to_string();
-
-            if let Some(Ok(Some(key))) = api_key_res {
-                if !key.is_empty() {
-                    url.push_str(&format!("?api_key={}", key));
+        move || ws_cfg.get().and_then(|result| result.ok()),
+        move |maybe_signed: Option<WSSignedConfig>| async move {
+            if let Some(signed) = maybe_signed {
+                let url = format!(
+                    "{}?X-Api-Ts={}&X-Api-Sign={}",
+                    signed.host, signed.ts, signed.sig
+                );
+                logging::log!("Connecting to WebSocket: {}", url);
+                match WebSocket::new(&url) {
+                    Ok(ws) => { ws.set_binary_type(BinaryType::Arraybuffer); Some(ws) }
+                    Err(err) => {
+                        logging::error!("WS new failed: {:?}", err);
+                        None
+                    }
                 }
+            } else {
+                None
             }
-            logging::log!("Connecting to WebSocket: {}", url);
-            match WebSocket::new(&url) {
-                Ok(ws) => {
-                    ws.set_binary_type(BinaryType::Arraybuffer);
-                    Some(ws)
-                }
-                Err(err) => {
-                    set_is_error.set(true);
-                    set_error_message.set(format!("WebSocket connection error: {:?}", err));
-                    logging::log!("Failed to create WebSocket: {:?}", err);
-                    None
-                }
-            }
-        }
+        },
     );
 
     create_effect(move |_| {
@@ -251,7 +240,12 @@ pub fn ChatComponent() -> impl IntoView {
             } else {
                 set_is_error.set(true);
                 set_error_message.set("WebSocket is not connected".to_string());
+                logging::log!("Attempted to send message, but WebSocket is not connected. State: {}", ws.ready_state());
             }
+        } else {
+            set_is_error.set(true);
+            set_error_message.set("WebSocket is not available to send message.".to_string());
+            logging::log!("Attempted to send message, but WebSocket is not available (ws_stored is None or inner None).");
         }
 
         set_input_text.set("".to_string());
@@ -268,14 +262,14 @@ pub fn ChatComponent() -> impl IntoView {
     };
 
     view! {
-        <div class="chat-container"> 
+        <div class="chat-container">
             <div class="chat-messages" id="chat-messages">
                 {move || messages.get().into_iter().map(|msg| {
                     if msg.is_processing {
 
                         view! {
                             <div class="message agent-message processing-message">
-                                <div class="spinner-container"> 
+                                <div class="spinner-container">
                                     <div class="spinner"></div>
                                 </div>
                             </div>
@@ -291,8 +285,8 @@ pub fn ChatComponent() -> impl IntoView {
 
                             <div class=outer_cls>
                                 <div class="message-inner-container">
-                                {timestamp_display} 
-                                    <div class="message-content">{msg.content}</div> 
+                                {timestamp_display}
+                                    <div class="message-content">{msg.content}</div>
                                 </div>
                             </div>
                         }
@@ -313,11 +307,10 @@ pub fn ChatComponent() -> impl IntoView {
 
                 <div class="connection-status">
                     {move || if is_connected.get() {
-                        "Connected"
-                    } else if is_error.get() { 
-                        "Connection Error"
-                    } else {
-                        "Connecting..."
+                        "Connected".to_string()
+                    }
+                     else {
+                        "Connecting...".to_string()
                     }}
                 </div>
             </div>

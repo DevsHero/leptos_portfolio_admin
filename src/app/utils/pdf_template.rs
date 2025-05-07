@@ -20,7 +20,7 @@ cfg_if::cfg_if! {
             let output_path_str = output_pdf_dir
                 .to_str()
                 .ok_or("Failed to create valid output path string")?;
-            // --- Write HTML to Temporary File ---
+
             {
                 let mut input_file = File::create(&input_html_path).map_err(|e|
                     format!("Failed to create temp HTML file '{}': {}", input_path_str, e)
@@ -83,7 +83,7 @@ cfg_if::cfg_if! {
                 let qrcode = QRBuilder::new(text.as_bytes()).build().unwrap();
                 let image_builder = ImageBuilder::default()
                     .shape(Shape::RoundedSquare)
-                    .background_color([255, 255, 255, 0]) // Handles transparency
+                    .background_color([255, 255, 255, 0]) 
                     .fit_width(100)
                     .to_bytes(&qrcode)
                     .unwrap();
@@ -94,8 +94,8 @@ cfg_if::cfg_if! {
         pub fn generate_html_string(profile: &Profile) -> Result<String, std::fmt::Error> {
             use std::fmt::Write;
             use super::utils::calculate_age;
-            let mut html = String::with_capacity(16384); // Increased capacity slightly
-            // --- HEAD ---
+            let mut html = String::with_capacity(16384); 
+
             write!(
                 html,
                 r#"<!DOCTYPE html>
@@ -120,10 +120,9 @@ cfg_if::cfg_if! {
                 html_escape(&profile.first_name),
                 html_escape(&profile.last_name),
                 html_escape(&profile.role),
-                pdf_css() // Embed CSS here
+                pdf_css() 
             )?;
 
-            // --- Avatar Section ---
             if profile.pdf.show_avatar {
                 write!(
                     html,
@@ -144,7 +143,6 @@ cfg_if::cfg_if! {
                 html_escape(&profile.role.to_uppercase())
             )?;
 
-            // --- Profile Section ---
             if profile.pdf.show_profile {
                 let age = calculate_age(&profile.birth_date);
                 write!(
@@ -163,7 +161,7 @@ cfg_if::cfg_if! {
                     &profile.nationality
                 )?;
             }
-            // --- Contact Section ---
+
             if profile.pdf.show_contact {
                 if let Some(contacts) = &profile.contacts {
                     write!(
@@ -171,7 +169,6 @@ cfg_if::cfg_if! {
                         r#"<div class="section contact-section"><h2><i class="fas fa-envelope-open-text"></i> Contact</h2><ul class="contact-list">"#
                     )?;
 
-                    // Handle Address separately
                     if !profile.address.is_empty() {
                         let address_icon = FONT_AWESOME_MAP.get("Address")
                             .copied()
@@ -184,38 +181,31 @@ cfg_if::cfg_if! {
                         )?;
                     }
 
-                    // Loop through contacts
+
                     for contact in contacts {
-                        // Get icon class from map
                         let icon_class = FONT_AWESOME_MAP.get(contact.contact_icon.as_str())
                             .copied()
-                            .unwrap_or("fas fa-link"); // Fallback icon
+                            .unwrap_or("fas fa-link");
 
-                        // --- Check if value is an HTTP URL ---
                         let value_is_http_url =
                             contact.contact_value.starts_with("http://") ||
                             contact.contact_value.starts_with("https://");
 
-                        // Write the list item start and icon
                         write!(html, r#"<li><i class="{}"></i> "#, icon_class)?;
 
-                        // --- Logic Branching ---
                         if value_is_http_url {
-                            // --- Attempt QR Code Generation (SSR only) ---
                             #[cfg(feature = "ssr")]
                             {
                                 match qr_gen::generate_qr_code_data_uri(&contact.contact_value) {
                                     Ok(qr_data_uri) => {
-                                        // Embed the QR code image (size set via CSS or attributes)
-                                        write!(
+                                       write!(
                                             html,
-                                            r#"<img class="qr-code" src="{}" alt="QR Code for {}" width="50" height="50">"#, // Example with attributes
+                                            r#"<img class="qr-code" src="{}" alt="QR Code for {}" width="50" height="50">"#,
                                             qr_data_uri,
                                             html_escape(&contact.contact_value)
                                         )?;
                                     }
                                     Err(e) => {
-                                        // Fallback: Log error and display the URL as a text link
                                         eprintln!("SSR QR Generation Error: {}", e);
                                         write!(
                                             html,
@@ -232,8 +222,6 @@ cfg_if::cfg_if! {
                             }
                             #[cfg(not(feature = "ssr"))]
                             {
-                                // Non-SSR Fallback (client-side, shouldn't normally render this HTML, but good practice)
-                                // Just render as a link
                                 write!(
                                     html,
                                     r#"<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>"#,
@@ -245,29 +233,25 @@ cfg_if::cfg_if! {
                                     )
                                 )?;
                             }
-                            // --- End QR Code Logic ---
                         } else if contact.use_link {
-                            // --- Not an HTTP URL, BUT use_link is TRUE: Render as a standard link (like original code) ---
-                            // This handles cases like mailto:, tel:, or other values intended as links
-                            write!(
+                           write!(
                                 html,
-                                r#"<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>"#, // Modify href target if needed for mailto/tel
-                                html_escape(&contact.contact_value), // Consider prefixing mailto: or tel: if needed based on contact_icon
+                                r#"<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>"#, 
+                                html_escape(&contact.contact_value), 
                                 html_escape(
                                     contact.contact_title.as_ref().unwrap_or(&contact.contact_value)
                                 )
                             )?;
                         } else {
-                            // --- Not an HTTP URL and use_link is FALSE: Render as plain text ---
                             write!(html, "{}", html_escape(&contact.contact_value))?;
                         }
 
-                        // Close the list item
                         write!(html, "</li>")?;
                     }
                     write!(html, "</ul></div>")?;
                 }
-            } // --- Languages Section ---
+            } 
+
             if profile.pdf.show_language {
                 if let Some(languages) = &profile.languages {
                     if !languages.is_empty() {
@@ -287,11 +271,11 @@ cfg_if::cfg_if! {
                                 html_escape(&level_info.1)
                             )?;
                         }
-                        write!(html, r#"</div>"#)?; // Close skills section
+                        write!(html, r#"</div>"#)?;
                     }
                 }
             }
-            // --- Skills Section ---
+      
             if profile.pdf.show_skill {
                 if let Some(skills) = &profile.skills {
                     if !skills.is_empty() {
@@ -311,20 +295,18 @@ cfg_if::cfg_if! {
                                 html_escape(&level_info.1)
                             )?;
                         }
-                        write!(html, r#"</div>"#)?; // Close skills section
+                        write!(html, r#"</div>"#)?; 
                     }
                 }
             }
-            // --- Close Left Column ---
+        
             write!(
                 html,
                 r#"</div><!-- ==================== Left Column End ==================== -->"#
             )?;
 
-            // --- ==================== Right Column Start ==================== ---
             write!(html, r#"<div class="right-column">"#)?;
 
-            // --- About Me Section ---
             if profile.pdf.show_about {
                 if !profile.about.is_empty() {
                     write!(
@@ -338,7 +320,7 @@ cfg_if::cfg_if! {
                     )?;
                 }
             }
-            // --- Education Section ---
+
             if profile.pdf.show_education {
                 if let Some(educations) = &profile.educations {
                     if !educations.is_empty() {
@@ -373,7 +355,7 @@ cfg_if::cfg_if! {
                     }
                 }
             }
-            // --- Work Experience Section ---
+
             if profile.pdf.show_experience {
                 if let Some(experiences) = &profile.experiences {
                     if !experiences.is_empty() {
@@ -415,7 +397,7 @@ cfg_if::cfg_if! {
                     }
                 }
             }
-            // --- Portfolio Section ---
+
             if profile.pdf.show_portfolio {
                 if let Some(portfolios) = &profile.portfolios {
                     if !portfolios.is_empty() {
@@ -451,19 +433,18 @@ cfg_if::cfg_if! {
                                 html_escape(&portfolio.portfolio_detail)
                             })?;
                             write!(html, r#"</ul>"#)?;
-                            write!(html, r#"</div></div>"#)?; // Close timeline-content and timeline-item
+                            write!(html, r#"</div></div>"#)?; 
                         }
-                        write!(html, r#"</div></div>"#)?; // Close timeline and section
+                        write!(html, r#"</div></div>"#)?;
                     }
                 }
             }
-            // --- Close Right Column ---
+
             write!(
                 html,
                 r#"</div><!-- ==================== Right Column End ==================== -->"#
             )?;
 
-            // --- Closing Tags ---
             write!(html, r#"</div> <!-- Close resume-container --></body></html>"#)?;
 
             Ok(html)

@@ -33,7 +33,6 @@ pub fn show_toast(title: View, detail: View, variant: ToastVariant) {
     );
 }
 
-// Optional: Create specific helpers for common toast types
 pub fn show_success_toast(title: &str, detail: &str) {
     show_toast(
         (view! { <p class="toastSuccess">{title.to_string()}</p> }).into_view(),
@@ -54,6 +53,6 @@ pub fn show_info_toast(title: &str, detail: &str) {
     show_toast(
         (view! { <p class="toastInfo">{title.to_string()}</p> }).into_view(),
         detail.to_string().into_view(),
-        ToastVariant::Info // Or another appropriate variant like Normal
+        ToastVariant::Info 
     );
 }

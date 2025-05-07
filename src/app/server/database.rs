@@ -56,15 +56,10 @@ cfg_if::cfg_if! {
 
             match query {
                 Ok(mut res) => {
-                    // Create a temporary struct with the proper derive
-                    // Since SurrealDB's ID is of type `Thing`, not a `String`, we need to convert it to a `String`.
-                    // We can't use the `Profile` model directly, so we use a temporary model and convert it afterward.
-
-                    let found = res.take::<Option<server::ThingProfile>>(0);
+                  let found = res.take::<Option<server::ThingProfile>>(0);
 
                     match found {
                         Ok(Some(temp_profile)) => {
-                            // Convert to the actual Profile type with String id
                             let profile = Profile {
                                 first_name: temp_profile.first_name,
                                 last_name: temp_profile.last_name,
@@ -77,7 +72,7 @@ cfg_if::cfg_if! {
                                 about: temp_profile.about,
                                 avatar: temp_profile.avatar,
                                 address: temp_profile.address,
-                                id: Some(temp_profile.id.id.to_string()), // Convert Thing to String
+                                id: Some(temp_profile.id.id.to_string()), 
                                 skills: temp_profile.skills,
                                 experiences: temp_profile.experiences,
                                 portfolios: temp_profile.portfolios,
@@ -111,39 +106,33 @@ cfg_if::cfg_if! {
                 let _skill_result = server_update_skill(
                     profile.skills.clone().expect("REASON")
                 ).await;
-                // println!("_skill_result: {:?}", _skill_result);
             }
 
             if _is_update_experience {
                 let _experience_result = server_update_experience(
                     profile.experiences.clone().expect("REASON")
                 ).await;
-                // println!("_experience_result: {:?}", _experience_result);
             }
 
             if _is_update_portfolio {
                 let _portfolio_result = server_update_profile_api(
                     profile.portfolios.clone().expect("REASON")
                 ).await;
-                // println!("_portfolio_result: {:?}", _portfolio_result);
             }
             if _is_update_education {
                 let _education_result = server_update_education(
                     profile.educations.clone().expect("REASON")
                 ).await;
-                // println!("_contact_result: {:?}", _contact_result);
             }
             if _is_update_language {
                 let _language_result = server_update_language(
                     profile.languages.clone().expect("REASON")
                 ).await;
-                // println!("_contact_result: {:?}", _contact_result);
             }
             if _is_update_contact {
                 let _contact_result = server_update_contact(
                     profile.contacts.clone().expect("REASON")
                 ).await;
-                // println!("_contact_result: {:?}", _contact_result);
             }
             let mut update_profile_clone = profile.clone();
             update_profile_clone.skills = None;
@@ -172,7 +161,7 @@ cfg_if::cfg_if! {
                     {
                         return Ok(true);
                     }
-                    Err(ServerFnError::from(e)) // Re-throw other errors
+                    Err(ServerFnError::from(e)) 
                 }
             }
         }
@@ -186,10 +175,8 @@ cfg_if::cfg_if! {
                     let insert_records: Result<Vec<Skill>, Error> = DB.insert("skill").content(
                         json_value
                     ).await;
-                    // println!("Query result: {:?}",insert_records);
                     match insert_records {
                         Ok(inserted) => Ok(inserted),
-                        // let _ = DB.invalidate().await;
                         Err(e) => Err(ServerFnError::from(e)),
                     }
                 }
@@ -207,10 +194,8 @@ cfg_if::cfg_if! {
                     let insert_records: Result<Vec<Experience>, Error> = DB.insert(
                         "experience"
                     ).content(json_value).await;
-                    // println!("Query result: {:?}",insert_records);
                     match insert_records {
                         Ok(inserted) => Ok(inserted),
-                        // let _ = DB.invalidate().await;
                         Err(e) => Err(ServerFnError::from(e)),
                     }
                 }
@@ -228,10 +213,8 @@ cfg_if::cfg_if! {
                     let insert_records: Result<Vec<Portfolio>, Error> = DB.insert(
                         "portfolio"
                     ).content(json_value).await;
-                    // println!("Query result: {:?}",insert_records);
                     match insert_records {
                         Ok(inserted) => Ok(inserted),
-                        // let _ = DB.invalidate().await;
                         Err(e) => Err(ServerFnError::from(e)),
                     }
                 }
@@ -249,10 +232,8 @@ cfg_if::cfg_if! {
                     let insert_records: Result<Vec<Education>, Error> = DB.insert(
                         "education"
                     ).content(json_value).await;
-                    // println!("Query result: {:?}",insert_records);
                     match insert_records {
                         Ok(inserted) => Ok(inserted),
-                        // let _ = DB.invalidate().await;
                         Err(e) => Err(ServerFnError::from(e)),
                     }
                 }
@@ -270,10 +251,8 @@ cfg_if::cfg_if! {
                     let insert_records: Result<Vec<Language>, Error> = DB.insert(
                         "language"
                     ).content(json_value).await;
-                    // println!("Query result: {:?}",insert_records);
                     match insert_records {
                         Ok(inserted) => Ok(inserted),
-                        // let _ = DB.invalidate().await;
                         Err(e) => Err(ServerFnError::from(e)),
                     }
                 }
@@ -291,10 +270,8 @@ cfg_if::cfg_if! {
                     let insert_records: Result<Vec<Contact>, Error> = DB.insert("contact").content(
                         json_value
                     ).await;
-                    // println!("Query result: {:?}",insert_records);
                     match insert_records {
                         Ok(inserted) => Ok(inserted),
-                        // let _ = DB.invalidate().await;
                         Err(e) => Err(ServerFnError::from(e)),
                     }
                 }

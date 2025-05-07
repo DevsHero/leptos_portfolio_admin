@@ -3,15 +3,12 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 extern "C" {
-    // Initialize TinyMCE editor
     #[wasm_bindgen(js_namespace = window, js_name = init_tiny_mce)]
     fn init_tiny_mce(selector: &str, initial_content: &str, callback: &JsValue);
 
-    // Set editor content
     #[wasm_bindgen(js_namespace = window, js_name = set_tiny_mce_content)]
     fn set_tiny_mce_content(editor_id: &str, content: &str);
 
-    // Destroy editor instance
     #[wasm_bindgen(js_namespace = window, js_name = destroy_tiny_mce)]
     fn destroy_tiny_mce(editor_id: &str);
 }
@@ -31,7 +28,6 @@ pub fn TextEditor(
     let error_label = label.clone();
     let error2_label = label.clone();
     let (error, set_error) = create_signal(None::<String>);
-    // Create a function to validate the input
     let validate = move || {
         let get_value = get_value.get();
         if require && get_value.trim().is_empty() {
@@ -44,7 +40,6 @@ pub fn TextEditor(
     };
     if let Some(trigger) = validation {
         create_effect(move |_| {
-            // When the trigger changes to true, perform validation
             if trigger.get() {
                 validate();
             }

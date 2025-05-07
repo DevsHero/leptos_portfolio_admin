@@ -17,7 +17,6 @@ pub fn InputField(
     let label_for_input = label.clone();
     let (error, set_error) = create_signal(None::<String>);
 
-    // Create a function to validate the input
     let validate = move || {
         let value = get_value.get();
         if require && value.trim().is_empty() {
@@ -29,10 +28,8 @@ pub fn InputField(
         }
     };
 
-    // If a validation trigger is provided, create an effect to watch it
     if let Some(trigger) = validation {
         create_effect(move |_| {
-            // When the trigger changes to true, perform validation
             if trigger.get() {
                 validate();
             }
@@ -49,7 +46,6 @@ pub fn InputField(
                 on:input=move |ev| {
                     let value = event_target_value(&ev);
                     set_value(value.clone());
-                    // Optionally perform live validation:
                     if require && value.trim().is_empty() {
                         set_error(Some(format!("{} is required.", label_for_input.clone())));
                     } else {

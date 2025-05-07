@@ -4,10 +4,8 @@ use leptos_icons::Icon;
 use icondata as i;
 #[component]
 pub fn ImageSlider(images: Vec<String>) -> impl IntoView {
-    // Signal to keep track of the current slide index.
     let (current_index, set_current_index) = create_signal(0);
     let images2 = images.clone();
-    // Function to go to the next slide.
     let next_image = {
         let images = images.clone();
         move |_| {
@@ -17,7 +15,6 @@ pub fn ImageSlider(images: Vec<String>) -> impl IntoView {
         }
     };
 
-    // Function to go to the previous slide.
     let prev_image = {
         let images = images.clone();
         move |_| {

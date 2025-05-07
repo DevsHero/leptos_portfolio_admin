@@ -56,7 +56,6 @@ pub fn App() -> impl IntoView {
     }
 }
 
-// 404 - Not Found
 #[component]
 fn NotFound() -> impl IntoView {
     #[cfg(feature = "ssr")]

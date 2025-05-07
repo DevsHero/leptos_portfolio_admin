@@ -4,7 +4,7 @@ use icondata as i;
 use wasm_bindgen::prelude::*;
 pub fn calculate_age(birth_date: &str) -> i64 {
     let parsed_date = NaiveDate::parse_from_str(birth_date, "%Y-%m-%d").unwrap();
-    let now = Utc::now().naive_utc().date(); // Get the current date in UTC
+    let now = Utc::now().naive_utc().date();  
     let birth_year = parsed_date.year();
     let birth_month = parsed_date.month();
     let birth_day = parsed_date.day();
@@ -29,17 +29,16 @@ pub fn convert_date_format(input: &String) -> String {
                 return date.format("%m/%Y").to_string();
             }
         }
-        // Fallback to default date
+
         NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().format("%m/%Y").to_string()
     }
 }
 pub fn format_date_for_input(date_str: &str) -> String {
-    // Parse the ISO 8601 date string
+
     if let Ok(datetime) = NaiveDateTime::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%SZ") {
-        // Format as YYYY-MM-DD
         datetime.format("%Y-%m-%d").to_string()
     } else {
-        // Return a default date if parsing fails
+    
         String::from("2000-01-01")
     }
 }

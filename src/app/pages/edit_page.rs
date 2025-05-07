@@ -71,7 +71,7 @@ pub fn EditPage() -> impl IntoView {
                     view! { <div>"Error loading profile: " {error}</div> }
                 } else if let Some(profile) = profile.get() {              
                     {if is_init.get() { 
-                    //Profile 
+
                     let (first_name, set_first_name) = create_signal(profile.first_name);
                     let (last_name, set_last_name) = create_signal(profile.last_name);
                     let (about, set_about) = create_signal(profile.about);
@@ -82,7 +82,6 @@ pub fn EditPage() -> impl IntoView {
                     let (nationality, set_nationality) = create_signal(profile.nationality);
                     let (avatar, set_avatar) = create_signal(profile.avatar);
                     let (address, set_address) = create_signal(profile.address);
-                    //PDF
                     let (use_pdf, set_use_pdf) = create_signal(profile.pdf.use_pdf);
                     let (use_generate, set_use_generate) = create_signal(profile.pdf.use_generate);
                     let (pdf_link, set_pdf_link) = create_signal(profile.pdf.pdf_link.unwrap_or_default());
@@ -99,14 +98,12 @@ pub fn EditPage() -> impl IntoView {
                     let (show_skill, set_show_skill) = create_signal(profile.pdf.show_skill);
                     let (show_profile, set_show_profile) = create_signal(profile.pdf.show_profile);
                     let (show_avatar, set_show_avatar) = create_signal(profile.pdf.show_avatar);         
-                  
                     let (languages, set_languages) = create_signal(profile.languages.unwrap_or_else(Vec::new));         
                     let (educations, set_educations) = create_signal(profile.educations.unwrap_or_else(Vec::new));
                     let (experiences, set_experiences) = create_signal(profile.experiences.unwrap_or_else(Vec::new));
                     let (skills, set_skills) = create_signal(profile.skills.unwrap_or_else(Vec::new));
                     let (portfolios, set_portfolios) = create_signal(profile.portfolios.unwrap_or_else(Vec::new));   
                     let (contacts, set_contacts) = create_signal(profile.contacts.unwrap_or_else(Vec::new));    
-
                     let (_is_update_skill, set_is_update_skill) = create_signal(false);
                     let (_is_update_experience, set_is_update_experience) = create_signal(false);
                     let (_is_update_portfolio, set_is_update_portfolio) = create_signal(false);
@@ -201,7 +198,6 @@ pub fn EditPage() -> impl IntoView {
                     
                     create_effect(move |_| {
                         if let Some(Ok(_)) = update_profile_action.value().get() {
-                            // Refresh data after successful update
                             get_profile_api_info.refetch();
                         }
                     });

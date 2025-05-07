@@ -24,7 +24,7 @@ cfg_if::cfg_if! {
             pub avatar: String,
             pub address: String,
             pub pdf: PDF,
-            pub id: Thing, // Using Thing instead of String
+            pub id: Thing, 
             pub skills: Option<Vec<Skill>>,
             pub experiences: Option<Vec<Experience>>,
             pub portfolios: Option<Vec<Portfolio>>,
@@ -38,4 +38,11 @@ cfg_if::cfg_if! {
 pub struct Verification {
     pub verify: bool,
     pub restrict: bool,
+}
+ 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)] 
+pub struct WSSignedConfig {
+    pub host: String,
+    pub ts:   String,
+    pub sig:  String,
 }

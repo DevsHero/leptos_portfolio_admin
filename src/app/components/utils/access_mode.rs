@@ -24,20 +24,19 @@ pub fn AccessModes(
             match result {
                 Ok(verification) => {
                     if verification.restrict {
-                        // Handle rate limit restriction
                         set_is_restricted(true);
                         show_error_toast(
                             "Rate Limited",
                             "Too many attempts. Please try again later."
                         );
                     } else if verification.verify {
-                        // Password verified successfully
+
                         set_is_incorrect(false);
                         set_is_verify(true);
                         set_is_init(true);
                         show_info_toast("Admin Mode", "Welcome Admin user.");
                     } else {
-                        // Password incorrect
+
                         show_error_toast("Failed", "Incorrect Password.");
                         set_is_incorrect(true);
                     }
@@ -81,7 +80,7 @@ pub fn AccessModes(
             {move || {
                 if use_password.get() {
                     if is_restricted.get() {
-                        // Show rate limit message when restricted
+
                         view! {
                             <div style="width: 20rem; margin-top: 30px; text-align: center;">
                                 <div style="padding: 15px; border: 1px solid #ffcccc; background-color: #fff8f8; border-radius: 5px;">
@@ -96,7 +95,7 @@ pub fn AccessModes(
                             </div>
                         }
                     } else {
-                        // Show password input when not restricted
+
                         view! {
                             <div style="width: 20rem; margin-top: 30px;">
                                 <InputField 
