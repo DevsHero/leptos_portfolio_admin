@@ -4,7 +4,6 @@ use serde::{ Deserialize, Serialize };
 use wasm_bindgen::{ prelude::*, JsCast };
 use web_sys::{ js_sys, BinaryType, CloseEvent, ErrorEvent, MessageEvent, WebSocket, Request, RequestInit, Response };
 use wasm_bindgen_futures::JsFuture;
- 
 use chrono::{ Local, TimeZone };
 use crate::app::models::server::WSSignedConfig;
 use crate::app::server::api::get_ws_signed_config_api;
@@ -126,8 +125,8 @@ pub fn ChatComponent() -> impl IntoView {
                 }) as Box<dyn FnMut(JsValue)>
             );
 
-            let set_messages_clone = set_messages.clone();
-            let set_is_processing_clone = set_is_processing.clone();
+         
+          
             let on_message = Closure::wrap(
                 Box::new(move |e: MessageEvent| {
                     if let Ok(text) = e.data().dyn_into::<js_sys::JsString>() {
@@ -135,8 +134,8 @@ pub fn ChatComponent() -> impl IntoView {
 
                         match serde_json::from_str::<ServerMessage>(&text_string) {
                             Ok(ServerMessage::Response { content, timestamp }) => {
-                                set_is_processing_clone.set(false);
-                                set_messages_clone.update(|messages| {
+                                set_is_processing.set(false);
+                                set_messages.update(|messages| {
                                     if let Some(last) = messages.last_mut() {
                                         if last.is_processing {
                                             messages.pop();
@@ -151,8 +150,8 @@ pub fn ChatComponent() -> impl IntoView {
                                 });
                             }
                             Ok(ServerMessage::Processing) => {
-                                set_is_processing_clone.set(true);
-                                set_messages_clone.update(|messages| {
+                                set_is_processing.set(true);
+                                set_messages.update(|messages| {
                                     if let Some(last) = messages.last_mut() {
                                         if last.is_processing {
                                             messages.pop();
@@ -168,15 +167,15 @@ pub fn ChatComponent() -> impl IntoView {
                                 logging::log!("Server is processing...");
                             }
                             Ok(ServerMessage::Error { message }) => {
-                                set_is_processing_clone.set(false);
-                                set_messages_clone.update(|messages| {
+                                set_is_processing.set(false);
+                                set_messages.update(|messages| {
                                     if let Some(last) = messages.last_mut() {
                                         if last.is_processing {
                                             messages.pop();
                                         }
                                     }
                                     messages.push(ChatMessage {
-                                        content: format!("Error: {}", message),
+                                        content: format!("Error: {message}"  ),
                                         is_user: false,
                                         is_processing: false,
                                         timestamp: None,
@@ -184,10 +183,10 @@ pub fn ChatComponent() -> impl IntoView {
                                 });
                             }
                             Err(e) => {
-                                set_is_processing_clone.set(false);
+                                set_is_processing.set(false);
                                 logging::log!("Failed to parse message: {:?}", e);
 
-                                set_messages_clone.update(|messages| {
+                                set_messages.update(|messages| {
                                     messages.push(ChatMessage {
                                         content: format!("Error parsing server message."),
                                         is_user: false,
@@ -204,12 +203,12 @@ pub fn ChatComponent() -> impl IntoView {
             let set_is_connected_clone = set_is_connected.clone();
             let set_is_error_clone = set_is_error.clone();
             let set_error_message_clone = set_error_message.clone();
-            let set_is_processing_clone_close = set_is_processing.clone();
+            let set_is_processing_close = set_is_processing.clone();
             let on_close = Closure::wrap(
                 Box::new(move |e: CloseEvent| {
                     set_is_connected_clone.set(false);
                     set_is_error_clone.set(true);
-                    set_is_processing_clone_close.set(false);
+                    set_is_processing_close.set(false);
                     set_error_message_clone.set(
                         format!("WebSocket closed: {} ({})", e.reason(), e.code())
                     );
@@ -219,11 +218,11 @@ pub fn ChatComponent() -> impl IntoView {
 
             let set_is_error_clone = set_is_error.clone();
             let set_error_message_clone = set_error_message.clone();
-            let set_is_processing_clone_error = set_is_processing.clone();
+            let set_is_processing_error = set_is_processing.clone();
             let on_error = Closure::wrap(
                 Box::new(move |e: ErrorEvent| {
                     set_is_error_clone.set(true);
-                    set_is_processing_clone_error.set(false);
+                    set_is_processing_error.set(false);
                     set_error_message_clone.set(format!("WebSocket error: {}", e.message()));
                     logging::log!("WebSocket error: {}", e.message());
                 }) as Box<dyn FnMut(ErrorEvent)>

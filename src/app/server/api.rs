@@ -75,7 +75,6 @@ pub async fn update_profile_api(
 #[server(GetWSSignedConfig, "/api")]
 pub async fn get_ws_signed_config_api() -> Result<WSSignedConfig, ServerFnError> {
    let config: WSSignedConfig = ws_signing_key().await?;
-  
 
     Ok(config)
 }
